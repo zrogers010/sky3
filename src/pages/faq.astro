@@ -25,7 +25,7 @@ const description = 'Common questions about Sky3, the data-ingestion beta, how t
         <div class="faq-list">
           <div class="faq-item" id="what-is-sky3">
             <h2>What is Sky3?</h2>
-            <p>Sky3 is an open, community-governed network for testing spatial AI and physical world models against real-world data. Contributors submit difficult real-world spatial cases—LiDAR scans, CAD files, robot trajectories and geometry imagery. Independent reviewers verify those submissions. Models are then scored on geometric accuracy, structural understanding and physical reasoning, and the results are published on a public leaderboard.</p>
+            <p>Sky3 is an open, community-governed network for testing spatial AI and physical world models against real-world data. Contributors will submit difficult real-world spatial cases—LiDAR scans, CAD files, robot trajectories and geometry imagery. Independent reviewers will verify those submissions. Models will then be scored on geometric accuracy, structural understanding and physical reasoning, and the results will be published on a public leaderboard.</p>
             <p>The goal is to provide neutral, reproducible benchmarks that reflect how models perform on real-world edge cases, not just on data their developers selected.</p>
           </div>
           
@@ -48,20 +48,19 @@ const description = 'Common questions about Sky3, the data-ingestion beta, how t
           
           <div class="faq-item" id="data-privacy">
             <h2>How is data privacy and sanitization handled?</h2>
-            <p>All contributed data goes through a sanitization pipeline before entering the archive:</p>
+            <p>The protocol is designed with a sanitization pipeline for contributed data:</p>
             <ul>
-              <li><strong>Metadata stripping:</strong> GPS coordinates, timestamps, device identifiers and file metadata are removed.</li>
-              <li><strong>Face and personal information removal:</strong> images and scans are processed to detect and blur faces, license plates and other personally identifiable information.</li>
-              <li><strong>Contributor control:</strong> contributors can mark submissions as private (used only for verification, not public benchmarks) or request deletion within a review window.</li>
+              <li><strong>Metadata stripping:</strong> GPS coordinates, timestamps, device identifiers and file metadata will be removed.</li>
+              <li><strong>Face and personal information removal:</strong> images and scans will be processed to detect and blur faces, license plates and other personally identifiable information.</li>
             </ul>
-            <p>The protocol is designed so that spatial edge cases can be shared for benchmarking without exposing private or proprietary information. Details of the sanitization process will be published as part of the protocol documentation.</p>
+            <p>The goal is to enable spatial edge cases to be shared for benchmarking without exposing private or proprietary information. Details of the sanitization process will be published as part of the protocol documentation.</p>
           </div>
           
           <div class="faq-item" id="governance">
             <h2>How is Sky3 governed?</h2>
-            <p>Sky3 is being built as a community-governed protocol, stewarded by a non-profit foundation (currently in formation). Governance decisions—such as which metrics to use, how verification works, and what changes to make to the protocol—will be made through an open process with input from contributors, reviewers and model developers.</p>
-            <p>The foundation's role is to maintain the archive, run the infrastructure, publish results and facilitate the governance process. It does not control which models are tested or which cases are accepted; those decisions follow the community-defined protocol.</p>
-            <p>Points earned during the beta are a record of contribution. They have no monetary value, and any future use of points (for example, in governance voting) will be decided through the governance process itself, not unilaterally by the foundation.</p>
+            <p>Sky3 is being built as a community-governed protocol, with plans for a non-profit foundation (currently in formation). Governance decisions—such as which metrics to use, how verification works, and what changes to make to the protocol—will be made through an open process with input from contributors, reviewers and model developers.</p>
+            <p>The planned foundation's role will be to maintain the archive, run the infrastructure, publish results and facilitate the governance process. It will not control which models are tested or which cases are accepted; those decisions will follow the community-defined protocol.</p>
+            <p>Points earned during the beta are a record of contribution. They have no monetary value, and any future use of points (for example, in governance voting) will be decided through the governance process itself.</p>
           </div>
           
           <div class="faq-item" id="who-can-join">
@@ -77,7 +76,7 @@ const description = 'Common questions about Sky3, the data-ingestion beta, how t
           
           <div class="faq-item" id="submission-formats">
             <h2>What data formats are accepted?</h2>
-            <p>The beta accepts:</p>
+            <p>The beta is planned to accept:</p>
             <ul>
               <li><strong>Point clouds:</strong> .las, .laz, .ply, .xyz</li>
               <li><strong>CAD files:</strong> .step, .stp, .stl, .obj, .iges</li>
@@ -95,8 +94,8 @@ const description = 'Common questions about Sky3, the data-ingestion beta, how t
           
           <div class="faq-item" id="cost">
             <h2>Does it cost anything to participate?</h2>
-            <p>No. Contribution, review and evaluation during the beta are free. There is no fee to submit data, verify cases or test models on the benchmark.</p>
-            <p>Sky3 is funded as a public good. Long-term sustainability may come from optional enterprise services (such as private evaluation, custom benchmarks or dataset licensing to companies) while keeping the core protocol and public leaderboard free and open.</p>
+            <p>No. Contribution, review and evaluation during the beta will be free. There will be no fee to submit data, verify cases or test models on the benchmark.</p>
+            <p>Long-term sustainability may come from optional enterprise services (such as private evaluation, custom benchmarks or dataset licensing to companies) while keeping the core protocol and public leaderboard free and open.</p>
           </div>
           
           <div class="faq-item" id="open-source">
@@ -246,7 +245,7 @@ const description = 'Common questions about Sky3, the data-ingestion beta, how t
       "name": "What is Sky3?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Sky3 is an open, community-governed network for testing spatial AI and physical world models against real-world data. Contributors submit difficult real-world spatial cases, independent reviewers verify those submissions, and models are scored on geometric accuracy, structural understanding and physical reasoning."
+        "text": "Sky3 is an open, community-governed network for testing spatial AI and physical world models against real-world data. Contributors will submit difficult real-world spatial cases, independent reviewers will verify those submissions, and models will then be scored on geometric accuracy, structural understanding and physical reasoning."
       }
     },
     {

@@ -22,7 +22,7 @@ const description = 'Detailed explanation of the metrics used to evaluate spatia
         
         <h1>Evaluation Metrics</h1>
         
-        <p class="lead">Sky3 scores spatial AI models on geometric accuracy, structural understanding and physical reasoning. This page explains each metric, how it is calculated, and which are standard industry metrics versus Sky3's proposed protocol metrics.</p>
+        <p class="lead">Sky3 scores spatial AI models on geometric accuracy, structural understanding and physical reasoning. This page explains each metric, how it is calculated, and which are standard industry metrics versus Sky3's proposed protocol metrics. For context on related public benchmarks, see the <a href="/benchmarks">benchmarks directory</a>.</p>
         
         <h2 id="2d-to-3d">2D-to-3D Construction Accuracy</h2>
         
@@ -38,7 +38,7 @@ const description = 'Detailed explanation of the metrics used to evaluate spatia
           <li>Hybrid inputs combining images with partial 3D data (sparse point clouds, depth maps)</li>
         </ul>
         
-        <p>Sky3 evaluates 2D-to-3D construction by comparing the predicted 3D output to verified ground truth captured via LiDAR, photogrammetry or high-precision CAD. Accuracy is measured using geometry metrics (IoU, Chamfer distance, surface normals) and completeness checks (coverage of visible and occluded regions).</p>
+        <p>Sky3 will evaluate 2D-to-3D construction by comparing the predicted 3D output to verified ground truth captured via LiDAR, photogrammetry or high-precision CAD. Accuracy will be measured using geometry metrics (IoU, Chamfer distance, surface normals) and completeness checks (coverage of visible and occluded regions).</p>
         
         <p><strong>Why it matters:</strong> 2D-to-3D construction is a core capability for robotics (understanding scenes from camera input), autonomous systems (mapping environments), and CAD automation (converting sketches to models). Models that fail on real-world edge cases—unusual perspectives, occlusions, non-standard objects—cannot be trusted in deployed systems.</p>
         
@@ -79,7 +79,7 @@ const description = 'Detailed explanation of the metrics used to evaluate spatia
           <li>Average AP across all classes to produce mAP.</li>
         </ol>
         
-        <p>Sky3 reports mAP at IoU thresholds of 0.5 and 0.75 for both 2D and 3D detection tasks. Higher mAP indicates better localization and fewer false positives.</p>
+        <p>Sky3 will report mAP at IoU thresholds of 0.5 and 0.75 for both 2D and 3D detection tasks. Higher mAP indicates better localization and fewer false positives.</p>
         
         <p><strong>Why it matters:</strong> Bounding box detection is the foundation for scene understanding. Robotics, warehouse automation, and autonomous vehicles rely on accurate object localization. Errors in bounding boxes propagate to downstream tasks like grasping, path planning and collision avoidance.</p>
         
@@ -116,7 +116,7 @@ const description = 'Detailed explanation of the metrics used to evaluate spatia
           <li><strong>V(P ∪ G)</strong> is the volume of union</li>
         </ul>
         
-        <p>IoU ranges from 0 (no overlap) to 1 (perfect match). Sky3 reports mean IoU across all verified test cases. For scenes with multiple objects, we compute per-object IoU and average them. For voxel grids, intersection and union are counted at the voxel level.</p>
+        <p>IoU ranges from 0 (no overlap) to 1 (perfect match). Sky3 will report mean IoU across all verified test cases. For scenes with multiple objects, per-object IoU will be computed and averaged. For voxel grids, intersection and union will be counted at the voxel level.</p>
         
         <p><strong>Why it matters:</strong> IoU is a standard measure of spatial accuracy in 3D reconstruction and object detection. Higher IoU means the model's geometry is closer to the real structure.</p>
         
@@ -179,19 +179,19 @@ const description = 'Detailed explanation of the metrics used to evaluate spatia
         
         <p><strong>Type:</strong> Sky3 proposed metric</p>
         
-        <p>Physical logic checks test whether a predicted reconstruction obeys basic physical constraints. We run a suite of automated tests on each reconstruction:</p>
+        <p>Physical logic checks test whether a predicted reconstruction obeys basic physical constraints. The protocol will run a suite of automated tests on each reconstruction:</p>
         
         <h3>Stability check</h3>
         
-        <p>Does the structure have a stable center of mass and base of support? We compute the center of mass assuming uniform density and check whether it falls within the support polygon defined by contact points with the ground or supporting surfaces.</p>
+        <p>Does the structure have a stable center of mass and base of support? The test will compute the center of mass assuming uniform density and check whether it falls within the support polygon defined by contact points with the ground or supporting surfaces.</p>
         
         <h3>Support check</h3>
         
-        <p>Are objects resting on appropriate supports? Floating objects (not in contact with a surface and not designated as suspended) fail this check.</p>
+        <p>Are objects resting on appropriate supports? Floating objects (not in contact with a surface and not designated as suspended) will fail this check.</p>
         
         <h3>Contact check</h3>
         
-        <p>Do connected parts actually touch or overlap? We verify that parts declared as connected have non-zero contact area in the predicted geometry.</p>
+        <p>Do connected parts actually touch or overlap? The test will verify that parts declared as connected have non-zero contact area in the predicted geometry.</p>
         
         <h3>Penetration check</h3>
         

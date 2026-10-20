@@ -331,6 +331,16 @@
   const emailInput = document.getElementById('email') as HTMLInputElement;
   const consentInput = document.getElementById('consent') as HTMLInputElement;
   
+  emailInput?.addEventListener('input', () => {
+    if (emailInput.value && validateEmail(emailInput.value)) {
+      emailInput.removeAttribute('aria-invalid');
+      const emailError = document.getElementById('email-error');
+      if (emailError) {
+        emailError.textContent = '';
+      }
+    }
+  });
+
   emailInput?.addEventListener('blur', () => {
     if (emailInput.value && !validateEmail(emailInput.value)) {
       emailInput.setAttribute('aria-invalid', 'true');
