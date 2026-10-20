@@ -82,7 +82,7 @@ jobs:
           
           # Test 2: /privacy returns 200 and is NOT the homepage
           echo "Test 2: /privacy route"
-          HTTP_CODE=$(curl -sf -o /tmp/privacy.html -w "%{http_code}" http://localhost:8080/privacy)
+          HTTP_CODE=$(curl -sfL -o /tmp/privacy.html -w "%{http_code}" http://localhost:8080/privacy)
           if [ "$HTTP_CODE" != "200" ]; then
             echo "FAIL: /privacy returned $HTTP_CODE, expected 200"
             exit 1
