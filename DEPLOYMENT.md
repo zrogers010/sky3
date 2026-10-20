@@ -19,6 +19,30 @@ The production deployment uses AWS Copilot to deploy to Fargate:
 
 These commands must be run once in AWS CloudShell by someone with admin access to account `486638851283`.
 
+#### 0. DNS Delegation (Prerequisite)
+
+**Before requesting the ACM certificate**, ensure the `sky3.org` domain is delegated to DigitalOcean nameservers:
+
+At GoDaddy (or current registrar), set the nameservers for `sky3.org` to:
+- `ns1.digitalocean.com`
+- `ns2.digitalocean.com`
+- `ns3.digitalocean.com`
+
+The DigitalOcean DNS zone for `sky3.org` already exists.
+
+**Wait for DNS propagation** (typically 5-30 minutes, up to 48 hours) and verify:
+
+```bash
+# Check that public DNS shows DigitalOcean nameservers
+dig +short NS sky3.org
+# or
+nslookup -type=NS sky3.org
+```
+
+Expected output should include `ns1.digitalocean.com`, `ns2.digitalocean.com`, and `ns3.digitalocean.com`.
+
+**Note**: As of this writing, live DNS still shows GoDaddy parking. Complete this delegation before proceeding.
+
 #### 1. Install Copilot CLI
 
 Run in AWS CloudShell (working directory: `~`):
@@ -295,9 +319,18 @@ Value: sky3-prod-web-XXXXX.us-east-1.elb.amazonaws.com.
 TTL: 1800
 ```
 
-**Apex Redirect** (existing, no changes):
+**Apex Redirect**:
 
-The apex `sky3.org` already redirects to `www.sky3.org` via an existing DigitalOcean droplet at `164.92.87.51`. This remains unchanged.
+The apex `sky3.org` redirects to `www.sky3.org` via the DigitalOcean droplet `apex-redirect-2` at `209.38.66.29`.
+
+```
+Type: A
+Hostname: @
+Value: 209.38.66.29
+TTL: 1800
+```
+
+The `apex-redirect-2` droplet needs a `sky3.org` server block and certificate, which is handled by Chief of Staff.
 
 ---
 
