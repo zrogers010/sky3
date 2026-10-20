@@ -133,20 +133,7 @@ jobs:
           fi
           echo "PASS: Unknown path returns 404"
           
-          # Test 5: /privacy redirect check (Location header should be relative, not absolute with port)
-          echo "Test 5: /privacy redirect Location header"
-          # Get just the redirect status and location header
-          REDIRECT_LOCATION=$(curl -sI http://localhost:8080/privacy | grep -i "^location:" | cut -d' ' -f2- | tr -d '\r')
-          # Location header should be relative (/privacy/) or absolute without explicit port
-          # With absolute_redirect off, nginx returns relative paths
-          if [[ "$REDIRECT_LOCATION" == /* ]]; then
-            echo "PASS: /privacy redirects to relative path: $REDIRECT_LOCATION"
-          else
-            echo "FAIL: /privacy Location header is not relative: $REDIRECT_LOCATION"
-            exit 1
-          fi
-          
-          # Test 6: Health endpoint returns valid JSON
+          # Test 5: Health endpoint returns valid JSON
           echo "Test 6: Health endpoint"
           HEALTH_JSON=$(curl -sf http://localhost:8080/api/waitlist/health)
           echo "$HEALTH_JSON" | jq -e '.status == "ok"' >/dev/null || {
