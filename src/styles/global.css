@@ -148,6 +148,10 @@ section:last-of-type {
   border-bottom: none;
 }
 
+section[id] {
+  scroll-margin-top: calc(var(--header-height) + 20px);
+}
+
 @media (max-width: 768px) {
   h1 {
     font-size: 2rem;
