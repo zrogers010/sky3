@@ -80,19 +80,19 @@ jobs:
           fi
           echo "PASS: Homepage returns 200"
           
-          # Test 2: /faq returns 200 and is NOT the homepage
-          echo "Test 2: /faq route"
-          HTTP_CODE=$(curl -sf -o /tmp/faq.html -w "%{http_code}" http://localhost:8080/faq)
+          # Test 2: /privacy returns 200 and is NOT the homepage
+          echo "Test 2: /privacy route"
+          HTTP_CODE=$(curl -sf -o /tmp/privacy.html -w "%{http_code}" http://localhost:8080/privacy)
           if [ "$HTTP_CODE" != "200" ]; then
-            echo "FAIL: /faq returned $HTTP_CODE, expected 200"
+            echo "FAIL: /privacy returned $HTTP_CODE, expected 200"
             exit 1
           fi
           # Check it's not serving the homepage (different content)
-          if diff -q /tmp/homepage.html /tmp/faq.html >/dev/null 2>&1; then
-            echo "FAIL: /faq serves the same content as homepage (SPA fallback active)"
+          if diff -q /tmp/homepage.html /tmp/privacy.html >/dev/null 2>&1; then
+            echo "FAIL: /privacy serves the same content as homepage (SPA fallback active)"
             exit 1
           fi
-          echo "PASS: /faq returns 200 with unique content"
+          echo "PASS: /privacy returns 200 with unique content"
           
           # Test 3: Unknown path returns 404
           echo "Test 3: 404 for unknown paths"
