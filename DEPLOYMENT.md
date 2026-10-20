@@ -97,28 +97,14 @@ It should show `"ISSUED"`. If still "PENDING_VALIDATION", wait a bit longer.
 
 #### 5. Initialize Copilot Application
 
+Run in AWS CloudShell (working directory: `~`):
+
 ```bash
-# Initialize the app (creates VPC, ALB, etc.)
+# Initialize the app
 copilot app init sky3
 ```
 
-#### 6. Initialize Environment with Imported Certificate
-
-```bash
-# Create the 'prod' environment in us-east-1
-# Replace <ARN> with your certificate ARN from step 2
-copilot env init \
-  --name prod \
-  --profile default \
-  --region us-east-1 \
-  --import-cert-arns <ARN> \
-  --default-config
-
-# Deploy the environment
-copilot env deploy --name prod
-```
-
-**Note**: If `--profile default` fails, first create `~/.aws/config`:
+**Note**: If `--profile default` fails in the next step, first create `~/.aws/config`:
 ```bash
 mkdir -p ~/.aws
 cat > ~/.aws/config << EOF
@@ -127,43 +113,55 @@ region = us-east-1
 EOF
 ```
 
-#### 7. Update Environment Manifest with Certificate ARN
+#### 6. Initialize Environment with Imported Certificate
 
-The `env init --import-cert-arns` creates `copilot/environments/prod/manifest.yml`, but verify it contains the certificate:
+Run in AWS CloudShell (working directory: `~`):
 
 ```bash
-cat copilot/environments/prod/manifest.yml
+# Create the 'prod' environment in us-east-1 and import the validated certificate
+# Replace <ARN> with your certificate ARN from step 2
+copilot env init \
+  --name prod \
+  --profile default \
+  --region us-east-1 \
+  --import-cert-arns <ARN> \
+  --default-config
+
+# Deploy the environment (creates VPC, ALB, etc.)
+copilot env deploy --name prod
 ```
 
-It should show:
+The `env init --import-cert-arns` command creates the environment manifest at `~/copilot/environments/prod/manifest.yml` (outside the repository clone). Future `copilot env deploy` commands must be run from `~` so they can find this manifest.
 
-```yaml
-http:
-  public:
-    certificates:
-      - <your-certificate-ARN>
-```
+#### 7. Initial Service Deployment
 
-If not present, edit the file and add it.
+**Important**: This step must be run **after** the PR merges to `main`. The service manifests in `copilot/` are not yet on `main`.
 
-#### 8. Initial Deployment
-
-Clone the repository and deploy:
+Run in AWS CloudShell (working directory: changes to `~/sky3`):
 
 ```bash
 cd ~/
 git clone https://github.com/zrogers010/sky3.git
 cd sky3
-git checkout main
 
-# Deploy the service (EFS volume is created automatically from manifest)
-copilot svc deploy --name web --env prod --app sky3
+# Check out the merged main branch with the Copilot manifests
+git checkout main
+git pull origin main
+
+# Register the service with Copilot (creates ECR repo and stores service config)
+copilot svc init --name web
+
+# Deploy the service for the first time (builds image, pushes to ECR, deploys to Fargate)
+# EFS volume is created automatically from the manifest
+copilot svc deploy --name web --env prod
 
 # Get the ALB DNS name
-copilot svc show --name web --app sky3 --json | jq -r '.routes[0].url'
+copilot svc show --name web --json | jq -r '.routes[0].url'
 ```
 
 The output will show something like: `sky3-prod-web-XXXXX.us-east-1.elb.amazonaws.com`
+
+**Note**: The `scripts/deploy-cloudshell.sh` script is for **subsequent** deploys after this initial setup. It assumes the service is already registered with Copilot.
 
 #### 8. Add www CNAME in DigitalOcean
 
