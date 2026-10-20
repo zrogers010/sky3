@@ -1,0 +1,25 @@
+{
+  "name": "sky3-waitlist-api",
+  "version": "1.0.0",
+  "description": "Waitlist API service for Sky3 Network",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "export": "node export-csv.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/express": "^5.0.1"
+  },
+  "engines": {
+    "node": ">=22.22.0"
+  }
+}

@@ -1,0 +1,14 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#FFFFFF"/>
+  <text x="600" y="280" font-family="system-ui, sans-serif" font-size="56" font-weight="600" fill="#111111" text-anchor="middle">
+    Sky3 Network
+  </text>
+  <text x="600" y="340" font-family="system-ui, sans-serif" font-size="32" fill="#555555" text-anchor="middle">
+    Decentralized Trust for Spatial AI
+  </text>
+  <g transform="translate(500, 380)" stroke="#1F4FD8" stroke-width="2" fill="none">
+    <path d="M20 20 L20 80 L80 80 L80 20 Z" />
+    <path d="M20 20 L50 5 L110 5 L80 20" />
+    <path d="M80 20 L110 5 L110 65 L80 80" />
+  </g>
+</svg>

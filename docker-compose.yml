@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./dist:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    volumes:
+      - waitlist-data:/data
+    environment:
+      - PORT=3001
+      - DB_PATH=/data/waitlist.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/api/waitlist/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  waitlist-data:

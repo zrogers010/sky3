@@ -1,0 +1,24 @@
+[Unit]
+Description=Sky3 Network Waitlist API
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/sky3/api
+Environment="PORT=3001"
+Environment="DB_PATH=/var/www/sky3/data/waitlist.db"
+Environment="NODE_ENV=production"
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=10
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/sky3/data
+
+[Install]
+WantedBy=multi-user.target

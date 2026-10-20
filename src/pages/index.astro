@@ -1,0 +1,443 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Leaderboard from '../components/Leaderboard.astro';
+import WaitlistForm from '../components/WaitlistForm.astro';
+
+const title = 'Sky3 Network: Decentralized Trust for Spatial AI';
+const description = 'Sky3 is an open, community-governed network for testing spatial and physical-world AI models against real-world data. Contributors supply hard cases. Independent reviewers verify them. Models are scored in public.';
+---
+
+<BaseLayout title={title} description={description}>
+  <Header />
+  
+  <main id="top">
+    <section id="hero">
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-text">
+            <div class="kicker">OPEN PROTOCOL · DRAFT v0.1</div>
+            <h1>Decentralized Trust for Spatial AI</h1>
+            <p class="subhead">Sky3 is an open, community-governed network for testing spatial and physical-world AI models against real-world data. Contributors supply hard cases from the physical world. Independent reviewers verify them. Models are scored in public.</p>
+            
+            <div class="cta-group">
+              <a href="#waitlist" class="btn btn-primary">Join the data-ingestion beta</a>
+              <a href="#manifesto" class="btn-link">Read the manifesto →</a>
+            </div>
+          </div>
+          
+          <div class="hero-visual">
+            <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <g stroke="currentColor" stroke-width="1.5" fill="none">
+                <path d="M100 100 L100 300 L300 300 L300 100 Z" />
+                <path d="M100 100 L200 50 L400 50 L300 100" />
+                <path d="M300 100 L400 50 L400 250 L300 300" />
+                <path d="M150 150 L150 250 L250 250 L250 150 Z" />
+                <path d="M150 150 L200 120 L300 120 L250 150" />
+                <path d="M250 150 L300 120 L300 220 L250 250" />
+                <circle cx="150" cy="150" r="3" fill="currentColor" />
+                <circle cx="250" cy="150" r="3" fill="currentColor" />
+                <circle cx="250" cy="250" r="3" fill="currentColor" />
+                <circle cx="150" cy="250" r="3" fill="currentColor" />
+                <circle cx="200" cy="120" r="3" fill="currentColor" />
+                <circle cx="300" cy="120" r="3" fill="currentColor" />
+                <circle cx="300" cy="220" r="3" fill="currentColor" />
+                <circle cx="200" cy="220" r="3" fill="currentColor" />
+              </g>
+            </svg>
+          </div>
+        </div>
+        
+        <div class="fact-strip">
+          <div class="fact-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z"></path>
+              <path d="M15 9l-6 0"></path>
+              <path d="M9 15l6 0"></path>
+              <path d="M9 12l0 3"></path>
+              <path d="M15 12l0 -3"></path>
+            </svg>
+            <span>Real-world spatial data: LiDAR, CAD, robot trajectories, geometry imagery</span>
+          </div>
+          <div class="fact-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 12l2 2l4 -4"></path>
+              <path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"></path>
+            </svg>
+            <span>Human and automated verification of every submission</span>
+          </div>
+          <div class="fact-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
+              <path d="M9 8m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
+              <path d="M15 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
+            </svg>
+            <span>Public, reproducible model scores</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section id="manifesto">
+      <div class="container">
+        <div class="section-label">MANIFESTO · DRAFT v0.1</div>
+        <h2>Why spatial AI needs a neutral referee</h2>
+        
+        <div class="manifesto-body">
+          <p>Models that reason about the physical world are moving from research into robots, factories and buildings. Today, the claims about how well they work mostly come from the people who built them, measured on benchmarks they chose.</p>
+          
+          <p>Simulation does not capture everything. A model that scores well on synthetic scenes can still misread a cluttered shelf, a non-standard fastener or a structure that only holds together because of one hidden joint. These gaps show up when a system is deployed, and that is the most expensive place to find them.</p>
+          
+          <p>Sky3 proposes a simple alternative: test models on real-world cases that the model's builders did not pick, and publish the results.</p>
+        </div>
+        
+        <ol class="principles-list">
+          <li>
+            <strong>Independent.</strong> Benchmarks are run by the network, not by the teams whose models are being scored.
+          </li>
+          <li>
+            <strong>Grounded in the real world.</strong> Test cases come from physical scans, drawings and recordings, with a focus on rare and difficult cases.
+          </li>
+          <li>
+            <strong>Verified.</strong> Every contributed case is checked by automated tests and by human reviewers before it is used for scoring.
+          </li>
+          <li>
+            <strong>Reproducible.</strong> Metrics, scoring code and evaluation splits are published so anyone can check a result.
+          </li>
+          <li>
+            <strong>Private by default.</strong> Submissions are stripped of metadata, faces and identifying information before they enter the archive.
+          </li>
+          <li>
+            <strong>Community-governed.</strong> The test suite and the rules for changing it are governed by contributors and reviewers through an open process, stewarded by a non-profit foundation.
+          </li>
+        </ol>
+        
+        <p class="footnote">This is a draft. The protocol, metrics and governance model will change based on feedback from the beta.</p>
+      </div>
+    </section>
+    
+    <section id="leaderboard">
+      <div class="container">
+        <div class="section-label">SPATIAL LEADERBOARD · PREVIEW</div>
+        <h2>What a public scorecard looks like</h2>
+        <p class="intro-text">The leaderboard will rank spatial and physical-world models on verified real-world cases. The table below uses <strong>made-up models and made-up numbers</strong> to show the format.</p>
+        
+        <Leaderboard />
+      </div>
+    </section>
+    
+    <section id="how">
+      <div class="container">
+        <div class="section-label">HOW IT WORKS</div>
+        <h2>From real-world data to a public score</h2>
+        
+        <div class="steps">
+          <div class="step">
+            <div class="step-header">
+              <div class="step-number">01</div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path>
+                <path d="M7 9l5 -5l5 5"></path>
+                <path d="M12 4l0 12"></path>
+              </svg>
+            </div>
+            <h3>Contribute real-world edge cases</h3>
+            <p>Contributors submit spatial data that models find hard: LiDAR scans, CAD files, robot trajectories and images of real geometry. Rare and complex cases are worth more. Accepted submissions earn points that record each contributor's share of the archive.</p>
+            <ul class="detail-list">
+              <li>Accepted formats in the beta: point clouds (.las, .laz, .ply), CAD (.step, .stl, .obj), trajectories (.csv, .json), images (.jpg, .png).</li>
+              <li>Files are sanitized on intake: metadata stripped, faces and personal information removed.</li>
+            </ul>
+          </div>
+          
+          <div class="step-arrow" aria-hidden="true">→</div>
+          
+          <div class="step">
+            <div class="step-header">
+              <div class="step-number">02</div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"></path>
+                <path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z"></path>
+                <path d="M9 14l.01 0"></path>
+                <path d="M13 14l.01 0"></path>
+                <path d="M9 17l.01 0"></path>
+                <path d="M13 17l.01 0"></path>
+              </svg>
+            </div>
+            <h3>Verify every case before it counts</h3>
+            <p>Each submission goes through automated checks for format, duplication and quality, then review by independent human verifiers. A case enters the benchmark only when reviewers agree on its labels. Reviewers earn points for accurate reviews.</p>
+            <ul class="detail-list">
+              <li>Automated checks: file integrity, duplicate detection, label consistency.</li>
+              <li>Human review: multiple independent reviewers per case, agreement required.</li>
+            </ul>
+          </div>
+          
+          <div class="step-arrow" aria-hidden="true">→</div>
+          
+          <div class="step">
+            <div class="step-header">
+              <div class="step-number">03</div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
+                <path d="M9 8m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
+                <path d="M15 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
+              </svg>
+            </div>
+            <h3>Score models in public</h3>
+            <p>Verified cases form held-out evaluation sets. Models are scored on geometric accuracy, structural understanding and physical reasoning, and results are published on the Spatial Leaderboard with the method used to produce them.</p>
+            <ul class="detail-list">
+              <li>Metrics include IoU, structural integrity, assembly tree accuracy and physical logic (defined in the leaderboard).</li>
+              <li>Model developers will be able to submit through a sandbox API (planned).</li>
+            </ul>
+          </div>
+        </div>
+        
+        <p class="disclaimer">Points are a record of contribution during the beta. They have no monetary value, and any future use will be decided through the governance process.</p>
+      </div>
+    </section>
+    
+    <section id="waitlist">
+      <div class="container">
+        <div class="section-label">DATA-INGESTION BETA</div>
+        <h2>Join the beta</h2>
+        <p class="intro-text">We're opening the first data-ingestion beta to a small group of contributors, AI developers and researchers. Leave your details and we'll email you when there's a place.</p>
+        
+        <WaitlistForm />
+      </div>
+    </section>
+  </main>
+  
+  <Footer />
+</BaseLayout>
+
+<style>
+  #hero {
+    padding: 100px 0 80px;
+  }
+  
+  .hero-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    margin-bottom: 60px;
+  }
+  
+  .hero-text {
+    max-width: 560px;
+  }
+  
+  .subhead {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+  
+  .cta-group {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .btn-link {
+    color: var(--accent);
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+  }
+  
+  .btn-link:hover {
+    opacity: 0.8;
+  }
+  
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .hero-visual svg {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    color: var(--text-primary);
+  }
+  
+  .fact-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    padding-top: 60px;
+    border-top: 1px solid var(--border);
+  }
+  
+  .fact-item {
+    display: flex;
+    gap: 12px;
+    align-items: start;
+  }
+  
+  .fact-item svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--accent);
+  }
+  
+  .fact-item span {
+    font-family: var(--mono);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+  }
+  
+  .manifesto-body {
+    max-width: 720px;
+    margin: 32px 0;
+  }
+  
+  .manifesto-body p {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+  }
+  
+  .principles-list {
+    max-width: 720px;
+    margin: 40px 0;
+    padding-left: 24px;
+  }
+  
+  .principles-list li {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+  
+  .principles-list li strong {
+    color: var(--text-primary);
+  }
+  
+  .footnote {
+    font-size: 0.9375rem;
+    color: var(--text-tertiary);
+    margin-top: 32px;
+  }
+  
+  .intro-text {
+    max-width: 720px;
+    font-size: 1.0625rem;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+  }
+  
+  .steps {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: 32px;
+    margin: 48px 0 40px;
+  }
+  
+  .step {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .step-number {
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  
+  .step-header svg {
+    color: var(--accent);
+  }
+  
+  .step h3 {
+    margin-bottom: 12px;
+  }
+  
+  .step p {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  
+  .detail-list {
+    padding-left: 20px;
+  }
+  
+  .detail-list li {
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  
+  .step-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--border-strong);
+    margin-top: 60px;
+  }
+  
+  .disclaimer {
+    font-size: 0.9375rem;
+    color: var(--text-tertiary);
+    max-width: 720px;
+  }
+  
+  @media (max-width: 1024px) {
+    .steps {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    
+    .step-arrow {
+      display: none;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    #hero {
+      padding: 60px 0;
+    }
+    
+    .hero-content {
+      grid-template-columns: 1fr;
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+    
+    .hero-visual {
+      order: -1;
+    }
+    
+    .fact-strip {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      padding-top: 40px;
+    }
+    
+    .cta-group {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .cta-group .btn {
+      width: 100%;
+    }
+  }
+</style>

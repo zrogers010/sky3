@@ -1,0 +1,841 @@
+---
+// Interactive leaderboard component with sample data
+---
+
+<div id="leaderboard-container">
+  <div class="leaderboard-warning">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 9v4"></path>
+      <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z"></path>
+      <path d="M12 16h.01"></path>
+    </svg>
+    <span>SAMPLE DATA · FICTIONAL MODELS</span>
+  </div>
+  
+  <div class="leaderboard-controls">
+    <div class="metric-focus">
+      <button data-metric="overall" class="active">Overall</button>
+      <button data-metric="iou">IoU</button>
+      <button data-metric="structural">Structural</button>
+      <button data-metric="assembly">Assembly</button>
+      <button data-metric="physical">Physical</button>
+    </div>
+    
+    <div class="task-filter">
+      <label for="task-select" class="visually-hidden">Filter by task</label>
+      <select id="task-select">
+        <option value="all">All tasks</option>
+        <option value="reconstruction">2D-to-3D reconstruction</option>
+        <option value="parsing">Structural parsing</option>
+        <option value="assembly">Assembly</option>
+      </select>
+    </div>
+  </div>
+  
+  <div class="table-container">
+    <table id="leaderboard-table">
+      <thead>
+        <tr>
+          <th scope="col" class="col-rank">
+            <button data-sort="rank">Rank</button>
+          </th>
+          <th scope="col" class="col-model">
+            <button data-sort="model">Model</button>
+          </th>
+          <th scope="col" class="col-metric">
+            <button data-sort="iou" class="sortable">
+              IoU (3D)
+              <span class="info-icon" role="button" tabindex="0" aria-label="Information about IoU metric" data-tooltip="mean 3D intersection-over-union against verified boxes and meshes. Higher is better.">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+                  <path d="M12 9h.01"></path>
+                  <path d="M11 12h1v4h1"></path>
+                </svg>
+              </span>
+            </button>
+          </th>
+          <th scope="col" class="col-metric">
+            <button data-sort="structural" class="sortable">
+              Structural
+              <span class="info-icon" role="button" tabindex="0" aria-label="Information about Structural metric" data-tooltip="share of reconstructions that keep load-bearing parts and connections intact. Higher is better.">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+                  <path d="M12 9h.01"></path>
+                  <path d="M11 12h1v4h1"></path>
+                </svg>
+              </span>
+            </button>
+          </th>
+          <th scope="col" class="col-metric">
+            <button data-sort="assembly" class="sortable">
+              Assembly
+              <span class="info-icon" role="button" tabindex="0" aria-label="Information about Assembly metric" data-tooltip="match between the predicted part hierarchy and the verified assembly tree. Higher is better.">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+                  <path d="M12 9h.01"></path>
+                  <path d="M11 12h1v4h1"></path>
+                </svg>
+              </span>
+            </button>
+          </th>
+          <th scope="col" class="col-metric">
+            <button data-sort="physical" class="sortable">
+              Physical
+              <span class="info-icon" role="button" tabindex="0" aria-label="Information about Physical metric" data-tooltip="pass rate on stability, support and contact checks. Higher is better.">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+                  <path d="M12 9h.01"></path>
+                  <path d="M11 12h1v4h1"></path>
+                </svg>
+              </span>
+            </button>
+          </th>
+          <th scope="col" class="col-metric">
+            <button data-sort="overall" class="sortable active">
+              Overall
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sort-icon">
+                <path d="M6 15l6 -6l6 6"></path>
+              </svg>
+            </button>
+          </th>
+          <th scope="col" class="col-cases">
+            <button data-sort="cases">Cases</button>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="mobile-cards" id="mobile-cards">
+  </div>
+  
+  <div class="tooltip" id="tooltip" role="tooltip" hidden></div>
+  
+  <p class="leaderboard-caption">
+    All model names and scores are invented for illustration. No real model has been evaluated.
+  </p>
+</div>
+
+<style>
+  #leaderboard-container {
+    position: relative;
+  }
+  
+  .leaderboard-warning {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+  }
+  
+  .leaderboard-warning svg {
+    flex-shrink: 0;
+  }
+  
+  .leaderboard-controls {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  
+  .metric-focus {
+    display: flex;
+    gap: 4px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4px;
+    background: var(--bg-secondary);
+  }
+  
+  .metric-focus button {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    border-radius: calc(var(--radius) - 2px);
+    transition: all 0.2s ease;
+  }
+  
+  .metric-focus button:hover {
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.05);
+  }
+  
+  .metric-focus button.active {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .task-filter select {
+    padding: 8px 32px 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-primary);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6l6 -6'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+  }
+  
+  .task-filter select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  
+  #leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-primary);
+  }
+  
+  #leaderboard-table th {
+    background: var(--bg-secondary);
+    font-weight: 500;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  #leaderboard-table th button {
+    width: 100%;
+    padding: 12px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  
+  #leaderboard-table th button:hover {
+    background: rgba(0, 0, 0, 0.02);
+  }
+  
+  #leaderboard-table th button.sortable {
+    cursor: pointer;
+  }
+  
+  .col-rank,
+  .col-cases {
+    width: 80px;
+  }
+  
+  .col-metric {
+    width: 110px;
+  }
+  
+  .col-rank button,
+  .col-cases button,
+  .col-metric button {
+    justify-content: flex-end;
+  }
+  
+  .sort-icon {
+    margin-left: auto;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  #leaderboard-table th button.active .sort-icon {
+    opacity: 1;
+  }
+  
+  #leaderboard-table th button.desc .sort-icon {
+    transform: rotate(180deg);
+  }
+  
+  .info-icon {
+    cursor: help;
+    color: var(--text-tertiary);
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .info-icon:hover {
+    color: var(--accent);
+  }
+  
+  #leaderboard-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  #leaderboard-table tbody tr:hover {
+    background: var(--bg-secondary);
+  }
+  
+  #leaderboard-table tbody tr:last-child {
+    border-bottom: none;
+  }
+  
+  #leaderboard-table td {
+    padding: 12px;
+  }
+  
+  .col-rank {
+    font-family: var(--mono);
+    text-align: right;
+    color: var(--text-secondary);
+  }
+  
+  .model-name {
+    font-weight: 500;
+  }
+  
+  .model-org {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+  
+  .metric-value {
+    font-family: var(--mono);
+    text-align: right;
+    font-size: 0.9375rem;
+  }
+  
+  .metric-value.overall {
+    font-weight: 600;
+  }
+  
+  .expand-content {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+  }
+  
+  .expand-content td {
+    padding: 24px;
+  }
+  
+  .expand-title {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+  
+  .metric-bars {
+    display: grid;
+    gap: 12px;
+  }
+  
+  .metric-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .metric-bar-label {
+    font-size: 0.875rem;
+    min-width: 100px;
+  }
+  
+  .metric-bar-track {
+    flex: 1;
+    height: 24px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .metric-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.3s ease;
+  }
+  
+  .metric-bar-value {
+    font-family: var(--mono);
+    font-size: 0.875rem;
+    min-width: 60px;
+    text-align: right;
+  }
+  
+  .mobile-cards {
+    display: none;
+  }
+  
+  .leaderboard-caption {
+    margin-top: 16px;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+  
+  .tooltip {
+    position: absolute;
+    z-index: 1000;
+    max-width: 300px;
+    padding: 8px 12px;
+    background: var(--text-primary);
+    color: white;
+    font-size: 0.875rem;
+    border-radius: var(--radius);
+    pointer-events: none;
+    line-height: 1.4;
+  }
+  
+  @media (max-width: 768px) {
+    .table-container {
+      display: none;
+    }
+    
+    .mobile-cards {
+      display: grid;
+      gap: 16px;
+    }
+    
+    .mobile-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      background: var(--bg-primary);
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    
+    .mobile-card:hover {
+      background: var(--bg-secondary);
+    }
+    
+    .mobile-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+    
+    .mobile-card-rank {
+      font-family: var(--mono);
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    
+    .mobile-card-overall {
+      font-family: var(--mono);
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    .mobile-card-model {
+      margin-bottom: 12px;
+    }
+    
+    .mobile-card-model-name {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    
+    .mobile-card-model-org {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    
+    .mobile-card-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    
+    .mobile-card-metric {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .mobile-card-metric-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .mobile-card-metric-value {
+      font-family: var(--mono);
+      font-size: 0.9375rem;
+    }
+    
+    .mobile-card-expand {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+  }
+</style>
+
+<script>
+  import type { Dataset, Model } from '../types/leaderboard';
+  import { datasets } from '../data/leaderboard-data';
+  
+  interface SortState {
+    column: string;
+    direction: 'asc' | 'desc';
+  }
+  
+  let currentDataset: Dataset = datasets.all;
+  let sortState: SortState = { column: 'overall', direction: 'desc' };
+  let expandedRow: number | null = null;
+  
+  function calculateOverall(model: Model): number {
+    return Number(((model.iou * 100 + model.structural + model.assembly + model.physical) / 4).toFixed(1));
+  }
+  
+  function sortModels(models: Model[], column: string, direction: 'asc' | 'desc'): Model[] {
+    const sorted = [...models].sort((a, b) => {
+      let aVal: number | string = 0;
+      let bVal: number | string = 0;
+      
+      switch(column) {
+        case 'rank':
+          return 0;
+        case 'model':
+          aVal = a.name;
+          bVal = b.name;
+          break;
+        case 'iou':
+          aVal = a.iou;
+          bVal = b.iou;
+          break;
+        case 'structural':
+          aVal = a.structural;
+          bVal = b.structural;
+          break;
+        case 'assembly':
+          aVal = a.assembly;
+          bVal = b.assembly;
+          break;
+        case 'physical':
+          aVal = a.physical;
+          bVal = b.physical;
+          break;
+        case 'overall':
+          aVal = calculateOverall(a);
+          bVal = calculateOverall(b);
+          break;
+        case 'cases':
+          aVal = a.cases;
+          bVal = b.cases;
+          break;
+      }
+      
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        return direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      }
+      
+      return direction === 'asc' ? (aVal as number) - (bVal as number) : (bVal as number) - (aVal as number);
+    });
+    
+    return sorted;
+  }
+  
+  function renderTable() {
+    const tbody = document.querySelector('#leaderboard-table tbody');
+    if (!tbody) return;
+    
+    const sorted = sortModels(currentDataset.models, sortState.column, sortState.direction);
+    
+    tbody.innerHTML = '';
+    sorted.forEach((model, index) => {
+      const row = document.createElement('tr');
+      row.dataset.index = String(index);
+      row.tabIndex = 0;
+      row.setAttribute('role', 'button');
+      row.setAttribute('aria-expanded', 'false');
+      
+      const overall = calculateOverall(model);
+      
+      row.innerHTML = `
+        <td class="col-rank metric-value">${index + 1}</td>
+        <td>
+          <div class="model-name">${model.name}</div>
+          <div class="model-org">${model.developer}</div>
+        </td>
+        <td class="metric-value">${model.iou.toFixed(3)}</td>
+        <td class="metric-value">${model.structural.toFixed(1)}%</td>
+        <td class="metric-value">${model.assembly.toFixed(1)}%</td>
+        <td class="metric-value">${model.physical.toFixed(1)}%</td>
+        <td class="metric-value overall">${overall}</td>
+        <td class="col-cases metric-value">${model.cases.toLocaleString()}</td>
+      `;
+      
+      row.addEventListener('click', () => toggleRow(index, row));
+      row.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleRow(index, row);
+        }
+      });
+      
+      tbody.appendChild(row);
+      
+      if (expandedRow === index) {
+        const expandRow = createExpandRow(model);
+        tbody.appendChild(expandRow);
+      }
+    });
+  }
+  
+  function createExpandRow(model: Model): HTMLTableRowElement {
+    const row = document.createElement('tr');
+    row.className = 'expand-content';
+    
+    const overall = calculateOverall(model);
+    
+    row.innerHTML = `
+      <td colspan="8">
+        <div class="expand-title">Sample breakdown. Real results will link to the evaluation method and code.</div>
+        <div class="metric-bars">
+          <div class="metric-bar">
+            <div class="metric-bar-label">IoU (3D)</div>
+            <div class="metric-bar-track">
+              <div class="metric-bar-fill" style="width: ${model.iou * 100}%"></div>
+            </div>
+            <div class="metric-bar-value">${model.iou.toFixed(3)}</div>
+          </div>
+          <div class="metric-bar">
+            <div class="metric-bar-label">Structural</div>
+            <div class="metric-bar-track">
+              <div class="metric-bar-fill" style="width: ${model.structural}%"></div>
+            </div>
+            <div class="metric-bar-value">${model.structural.toFixed(1)}%</div>
+          </div>
+          <div class="metric-bar">
+            <div class="metric-bar-label">Assembly</div>
+            <div class="metric-bar-track">
+              <div class="metric-bar-fill" style="width: ${model.assembly}%"></div>
+            </div>
+            <div class="metric-bar-value">${model.assembly.toFixed(1)}%</div>
+          </div>
+          <div class="metric-bar">
+            <div class="metric-bar-label">Physical</div>
+            <div class="metric-bar-track">
+              <div class="metric-bar-fill" style="width: ${model.physical}%"></div>
+            </div>
+            <div class="metric-bar-value">${model.physical.toFixed(1)}%</div>
+          </div>
+          <div class="metric-bar">
+            <div class="metric-bar-label">Overall</div>
+            <div class="metric-bar-track">
+              <div class="metric-bar-fill" style="width: ${overall}%"></div>
+            </div>
+            <div class="metric-bar-value">${overall}</div>
+          </div>
+        </div>
+      </td>
+    `;
+    
+    return row;
+  }
+  
+  function toggleRow(index: number, row: HTMLTableRowElement) {
+    if (expandedRow === index) {
+      expandedRow = null;
+      row.setAttribute('aria-expanded', 'false');
+    } else {
+      expandedRow = index;
+      row.setAttribute('aria-expanded', 'true');
+    }
+    renderTable();
+    renderMobileCards();
+  }
+  
+  function renderMobileCards() {
+    const container = document.getElementById('mobile-cards');
+    if (!container) return;
+    
+    const sorted = sortModels(currentDataset.models, sortState.column, sortState.direction);
+    
+    container.innerHTML = '';
+    sorted.forEach((model, index) => {
+      const card = document.createElement('div');
+      card.className = 'mobile-card';
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-expanded', 'false');
+      
+      const overall = calculateOverall(model);
+      
+      card.innerHTML = `
+        <div class="mobile-card-header">
+          <div class="mobile-card-rank">#${index + 1}</div>
+          <div class="mobile-card-overall">${overall}</div>
+        </div>
+        <div class="mobile-card-model">
+          <div class="mobile-card-model-name">${model.name} (sample)</div>
+          <div class="mobile-card-model-org">${model.developer}</div>
+        </div>
+        <div class="mobile-card-metrics">
+          <div class="mobile-card-metric">
+            <div class="mobile-card-metric-label">IoU</div>
+            <div class="mobile-card-metric-value">${model.iou.toFixed(3)}</div>
+          </div>
+          <div class="mobile-card-metric">
+            <div class="mobile-card-metric-label">Structural</div>
+            <div class="mobile-card-metric-value">${model.structural.toFixed(1)}%</div>
+          </div>
+          <div class="mobile-card-metric">
+            <div class="mobile-card-metric-label">Assembly</div>
+            <div class="mobile-card-metric-value">${model.assembly.toFixed(1)}%</div>
+          </div>
+          <div class="mobile-card-metric">
+            <div class="mobile-card-metric-label">Physical</div>
+            <div class="mobile-card-metric-value">${model.physical.toFixed(1)}%</div>
+          </div>
+        </div>
+      `;
+      
+      const handleToggle = () => {
+        if (expandedRow === index) {
+          expandedRow = null;
+          card.setAttribute('aria-expanded', 'false');
+          const expand = card.querySelector('.mobile-card-expand');
+          if (expand) expand.remove();
+        } else {
+          expandedRow = index;
+          card.setAttribute('aria-expanded', 'true');
+          const expand = document.createElement('div');
+          expand.className = 'mobile-card-expand';
+          expand.innerHTML = `
+            <div class="expand-title">Sample breakdown. Real results will link to the evaluation method and code.</div>
+          `;
+          card.appendChild(expand);
+        }
+      };
+      
+      card.addEventListener('click', handleToggle);
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleToggle();
+        }
+      });
+      
+      container.appendChild(card);
+    });
+  }
+  
+  function updateSortButtons() {
+    const buttons = document.querySelectorAll('#leaderboard-table th button');
+    buttons.forEach(btn => {
+      const sortCol = btn.getAttribute('data-sort');
+      if (sortCol === sortState.column) {
+        btn.classList.add('active');
+        btn.classList.toggle('desc', sortState.direction === 'desc');
+      } else {
+        btn.classList.remove('active', 'desc');
+      }
+    });
+  }
+  
+  document.querySelectorAll('#leaderboard-table th button[data-sort]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const column = btn.getAttribute('data-sort');
+      if (!column) return;
+      
+      if (sortState.column === column) {
+        sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortState.column = column;
+        sortState.direction = column === 'model' ? 'asc' : 'desc';
+      }
+      
+      expandedRow = null;
+      updateSortButtons();
+      renderTable();
+      renderMobileCards();
+    });
+  });
+  
+  document.querySelectorAll('.metric-focus button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const metric = btn.getAttribute('data-metric');
+      if (!metric) return;
+      
+      document.querySelectorAll('.metric-focus button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      sortState.column = metric;
+      sortState.direction = 'desc';
+      expandedRow = null;
+      
+      updateSortButtons();
+      renderTable();
+      renderMobileCards();
+    });
+  });
+  
+  const taskSelect = document.getElementById('task-select') as HTMLSelectElement;
+  if (taskSelect) {
+    taskSelect.addEventListener('change', () => {
+      const task = taskSelect.value as keyof typeof datasets;
+      currentDataset = datasets[task];
+      expandedRow = null;
+      renderTable();
+      renderMobileCards();
+    });
+  }
+  
+  const tooltip = document.getElementById('tooltip');
+  document.querySelectorAll('.info-icon').forEach(icon => {
+    icon.addEventListener('mouseenter', (e) => {
+      const text = icon.getAttribute('data-tooltip');
+      if (text && tooltip) {
+        tooltip.textContent = text;
+        tooltip.hidden = false;
+        
+        const rect = (e.target as HTMLElement).getBoundingClientRect();
+        tooltip.style.left = rect.left + 'px';
+        tooltip.style.top = (rect.bottom + 8) + 'px';
+      }
+    });
+    
+    icon.addEventListener('mouseleave', () => {
+      if (tooltip) {
+        tooltip.hidden = true;
+      }
+    });
+    
+    icon.addEventListener('focus', (e) => {
+      const text = icon.getAttribute('data-tooltip');
+      if (text && tooltip) {
+        tooltip.textContent = text;
+        tooltip.hidden = false;
+        
+        const rect = (e.target as HTMLElement).getBoundingClientRect();
+        tooltip.style.left = rect.left + 'px';
+        tooltip.style.top = (rect.bottom + 8) + 'px';
+      }
+    });
+    
+    icon.addEventListener('blur', () => {
+      if (tooltip) {
+        tooltip.hidden = true;
+      }
+    });
+  });
+  
+  renderTable();
+  renderMobileCards();
+  updateSortButtons();
+</script>

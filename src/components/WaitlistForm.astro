@@ -1,0 +1,407 @@
+---
+// Waitlist form component
+---
+
+<div id="waitlist-form-container">
+  <form id="waitlist-form" novalidate>
+    <div class="form-group">
+      <label for="email">Email <span class="required">*</span></label>
+      <input 
+        type="email" 
+        id="email" 
+        name="email" 
+        required 
+        autocomplete="email"
+        aria-required="true"
+        aria-invalid="false"
+      />
+      <span class="error-message" id="email-error" role="alert"></span>
+    </div>
+    
+    <div class="form-group">
+      <fieldset>
+        <legend>Role <span class="required">*</span></legend>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input 
+              type="radio" 
+              name="role" 
+              value="contributor" 
+              required
+              aria-required="true"
+            />
+            <span>Contributor</span>
+          </label>
+          <label class="radio-label">
+            <input 
+              type="radio" 
+              name="role" 
+              value="ai_developer"
+            />
+            <span>AI developer</span>
+          </label>
+          <label class="radio-label">
+            <input 
+              type="radio" 
+              name="role" 
+              value="researcher"
+            />
+            <span>Researcher</span>
+          </label>
+        </div>
+        <span class="error-message" id="role-error" role="alert"></span>
+      </fieldset>
+    </div>
+    
+    <div class="form-group">
+      <label for="organisation">Organisation (optional)</label>
+      <input 
+        type="text" 
+        id="organisation" 
+        name="organisation" 
+        maxlength="120"
+        autocomplete="organization"
+      />
+    </div>
+    
+    <div class="form-group">
+      <label class="checkbox-label">
+        <input 
+          type="checkbox" 
+          name="consent" 
+          id="consent"
+          required
+          aria-required="true"
+          aria-invalid="false"
+        />
+        <span>Email me about the Sky3 beta. I can unsubscribe at any time. <span class="required">*</span></span>
+      </label>
+      <span class="error-message" id="consent-error" role="alert"></span>
+    </div>
+    
+    <input type="text" name="company_url" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
+    
+    <button type="submit" class="btn btn-primary" id="submit-btn">
+      <span class="btn-text">Join the waitlist</span>
+      <span class="btn-loading" hidden>Saving…</span>
+    </button>
+  </form>
+  
+  <div id="success-message" class="success-state" hidden>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12l5 5l10 -10"></path>
+    </svg>
+    <h3>You're on the list.</h3>
+    <p>We'll email <strong id="success-email"></strong> when the beta opens. No other emails before then.</p>
+  </div>
+  
+  <div id="error-message" class="error-state" hidden>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 9v4"></path>
+      <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z"></path>
+      <path d="M12 16h.01"></path>
+    </svg>
+    <p>Something went wrong saving your details. Please try again.</p>
+  </div>
+</div>
+
+<style>
+  #waitlist-form-container {
+    max-width: 480px;
+  }
+  
+  .form-group {
+    margin-bottom: 24px;
+  }
+  
+  label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+  }
+  
+  .required {
+    color: var(--accent);
+  }
+  
+  input[type="email"],
+  input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: var(--sans);
+    font-size: 1rem;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    transition: border-color 0.2s ease;
+  }
+  
+  input[type="email"]:focus,
+  input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  
+  input[type="email"]:invalid:not(:placeholder-shown),
+  input[aria-invalid="true"] {
+    border-color: #D9480F;
+  }
+  
+  fieldset {
+    border: none;
+    padding: 0;
+  }
+  
+  legend {
+    font-weight: 500;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+  
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: all 0.2s ease;
+  }
+  
+  .radio-label:hover {
+    background: var(--bg-secondary);
+    border-color: var(--border-strong);
+  }
+  
+  .radio-label:has(input:checked) {
+    background: var(--bg-secondary);
+    border-color: var(--accent);
+  }
+  
+  .radio-label:has(input:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  
+  input[type="radio"] {
+    margin: 0;
+    cursor: pointer;
+  }
+  
+  .checkbox-label {
+    display: flex;
+    align-items: start;
+    gap: 12px;
+    cursor: pointer;
+    font-weight: 400;
+  }
+  
+  .checkbox-label:has(input:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  
+  input[type="checkbox"] {
+    margin-top: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  
+  .honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  
+  .error-message {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.875rem;
+    color: #D9480F;
+  }
+  
+  .error-message:empty {
+    display: none;
+  }
+  
+  #submit-btn {
+    width: 100%;
+    margin-top: 8px;
+  }
+  
+  #submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .btn-loading {
+    display: none;
+  }
+  
+  #submit-btn.loading .btn-text {
+    display: none;
+  }
+  
+  #submit-btn.loading .btn-loading {
+    display: inline;
+  }
+  
+  .success-state,
+  .error-state {
+    padding: 32px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-align: center;
+  }
+  
+  .success-state svg {
+    color: #10B981;
+    margin-bottom: 16px;
+  }
+  
+  .success-state h3 {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+  
+  .success-state p {
+    color: var(--text-secondary);
+    margin-bottom: 0;
+  }
+  
+  .error-state svg {
+    color: #D9480F;
+    margin-bottom: 16px;
+  }
+  
+  .error-state p {
+    color: var(--text-secondary);
+    margin-bottom: 0;
+  }
+</style>
+
+<script>
+  const form = document.getElementById('waitlist-form') as HTMLFormElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const successMessage = document.getElementById('success-message') as HTMLDivElement;
+  const errorMessage = document.getElementById('error-message') as HTMLDivElement;
+  const successEmail = document.getElementById('success-email') as HTMLElement;
+  
+  function clearErrors() {
+    document.querySelectorAll('.error-message').forEach(el => {
+      el.textContent = '';
+    });
+    document.querySelectorAll('[aria-invalid="true"]').forEach(el => {
+      el.setAttribute('aria-invalid', 'false');
+    });
+  }
+  
+  function showError(fieldId: string, message: string) {
+    const errorEl = document.getElementById(`${fieldId}-error`);
+    if (errorEl) {
+      errorEl.textContent = message;
+    }
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.setAttribute('aria-invalid', 'true');
+    }
+  }
+  
+  function validateEmail(email: string): boolean {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email) && email.length <= 254;
+  }
+  
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearErrors();
+    
+    const formData = new FormData(form);
+    const email = formData.get('email') as string;
+    const role = formData.get('role') as string;
+    const organisation = formData.get('organisation') as string;
+    const consent = formData.get('consent') as string;
+    const honeypot = formData.get('company_url') as string;
+    
+    let hasError = false;
+    
+    if (!email || !validateEmail(email)) {
+      showError('email', 'Please enter a valid email address.');
+      hasError = true;
+    }
+    
+    if (!role) {
+      showError('role', 'Please select a role.');
+      hasError = true;
+    }
+    
+    if (!consent) {
+      showError('consent', 'Please confirm your consent to receive emails.');
+      hasError = true;
+    }
+    
+    if (hasError) {
+      return;
+    }
+    
+    submitBtn.disabled = true;
+    submitBtn.classList.add('loading');
+    
+    try {
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.toLowerCase().trim(),
+          role,
+          organisation: organisation || null,
+          consent: true,
+          company_url: honeypot
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        form.hidden = true;
+        successEmail.textContent = email;
+        successMessage.hidden = false;
+      } else {
+        if (data.errors) {
+          Object.keys(data.errors).forEach(field => {
+            showError(field, data.errors[field]);
+          });
+        } else {
+          errorMessage.hidden = false;
+          setTimeout(() => {
+            errorMessage.hidden = true;
+          }, 5000);
+        }
+      }
+    } catch (err) {
+      console.error('Waitlist submission error:', err);
+      errorMessage.hidden = false;
+      setTimeout(() => {
+        errorMessage.hidden = true;
+      }, 5000);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('loading');
+    }
+  });
+</script>

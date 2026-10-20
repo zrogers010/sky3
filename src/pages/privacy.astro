@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const title = 'Privacy Policy - Sky3 Network';
+const description = 'Privacy policy for Sky3 Network waitlist and data collection.';
+---
+
+<BaseLayout title={title} description={description}>
+  <Header />
+  
+  <main>
+    <section style="padding: 80px 0;">
+      <div class="container">
+        <div style="max-width: 720px; margin: 0 auto;">
+          <h1 style="margin-bottom: 2rem;">Privacy Policy</h1>
+          
+          <div class="content">
+            <p>Last updated: October 20, 2026</p>
+            
+            <h2>What we collect</h2>
+            <p>When you join the Sky3 Network waitlist, we collect:</p>
+            <ul>
+              <li>Your email address</li>
+              <li>Your role (Contributor, AI developer, or Researcher)</li>
+              <li>Your organisation name (optional)</li>
+            </ul>
+            
+            <h2>Why we collect it</h2>
+            <p>We collect this information to contact you about the Sky3 data-ingestion beta when places become available.</p>
+            
+            <h2>Where it's stored</h2>
+            <p>Your information is stored securely in our database. We do not share, sell, or provide your information to third parties.</p>
+            
+            <h2>Your rights</h2>
+            <p>You can request to be removed from the waitlist at any time. To do so, please contact us at the email address associated with your submission, stating that you wish to be removed.</p>
+            
+            <h2>Changes to this policy</h2>
+            <p>We may update this privacy policy from time to time. Any changes will be posted on this page with an updated date.</p>
+            
+            <h2>Contact</h2>
+            <p>If you have questions about this privacy policy or how your data is handled, please include them in your waitlist submission comments or reach out through our community channels once they are established.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <Footer />
+</BaseLayout>
+
+<style>
+  .content {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+  }
+  
+  .content h2 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .content ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+  }
+  
+  .content li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .content p {
+    margin-bottom: 1rem;
+  }
+</style>

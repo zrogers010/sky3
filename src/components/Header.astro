@@ -1,0 +1,152 @@
+---
+// Header component with sticky navigation
+---
+
+<header id="header">
+  <div class="header-container">
+    <a href="#top" class="wordmark">Sky3 Network</a>
+    
+    <nav class="desktop-nav">
+      <a href="#manifesto">Manifesto</a>
+      <a href="#leaderboard">Leaderboard</a>
+      <a href="#how">How it works</a>
+      <a href="#waitlist" class="btn btn-primary">Join the beta</a>
+    </nav>
+    
+    <button class="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-nav">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 6l16 0"></path>
+        <path d="M4 12l16 0"></path>
+        <path d="M4 18l16 0"></path>
+      </svg>
+    </button>
+    
+    <a href="#waitlist" class="mobile-cta btn btn-primary">Join the beta</a>
+  </div>
+  
+  <nav id="mobile-nav" class="mobile-nav" hidden>
+    <a href="#manifesto">Manifesto</a>
+    <a href="#leaderboard">Leaderboard</a>
+    <a href="#how">How it works</a>
+  </nav>
+</header>
+
+<style>
+  #header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border);
+    height: var(--header-height);
+  }
+  
+  .header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  
+  .wordmark {
+    font-family: var(--serif);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  
+  .desktop-nav a {
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+    transition: color 0.2s ease;
+  }
+  
+  .desktop-nav a:not(.btn):hover {
+    color: var(--accent);
+  }
+  
+  .mobile-menu-btn,
+  .mobile-cta,
+  .mobile-nav {
+    display: none;
+  }
+  
+  @media (max-width: 768px) {
+    .header-container {
+      padding: 0 16px;
+    }
+    
+    .desktop-nav {
+      display: none;
+    }
+    
+    .mobile-menu-btn {
+      display: block;
+      padding: 8px;
+      color: var(--text-primary);
+    }
+    
+    .mobile-cta {
+      display: block;
+      padding: 8px 16px;
+      font-size: 0.875rem;
+    }
+    
+    .mobile-nav {
+      display: block;
+      position: absolute;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+    }
+    
+    .mobile-nav[hidden] {
+      display: none;
+    }
+    
+    .mobile-nav a {
+      display: block;
+      padding: 12px 24px;
+      color: var(--text-primary);
+      font-size: 0.9375rem;
+      transition: background 0.2s ease;
+    }
+    
+    .mobile-nav a:hover {
+      background: var(--bg-secondary);
+    }
+  }
+</style>
+
+<script>
+  const menuBtn = document.querySelector('.mobile-menu-btn');
+  const mobileNav = document.getElementById('mobile-nav');
+  
+  if (menuBtn && mobileNav) {
+    menuBtn.addEventListener('click', () => {
+      const isExpanded = menuBtn.getAttribute('aria-expanded') === 'true';
+      menuBtn.setAttribute('aria-expanded', String(!isExpanded));
+      mobileNav.hidden = isExpanded;
+    });
+    
+    mobileNav.addEventListener('click', (e) => {
+      if (e.target instanceof HTMLAnchorElement) {
+        menuBtn.setAttribute('aria-expanded', 'false');
+        mobileNav.hidden = true;
+      }
+    });
+  }
+</script>
