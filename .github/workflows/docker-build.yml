@@ -97,12 +97,12 @@ jobs:
             echo "FAIL: /faq returned $HTTP_CODE, expected 200"
             exit 1
           fi
-          if ! grep -q "Frequently Asked Questions" /tmp/faq.html; then
-            echo "FAIL: /faq missing expected h1 marker"
+          if ! grep -q 'id="what-is-sky3"' /tmp/faq.html; then
+            echo "FAIL: /faq missing expected unique marker"
             exit 1
           fi
-          if grep -q "Decentralized Trust for Spatial AI" /tmp/faq.html; then
-            echo "FAIL: /faq serves homepage content"
+          if grep -q '<h1>Decentralized Trust for Spatial AI</h1>' /tmp/faq.html; then
+            echo "FAIL: /faq serves homepage h1"
             exit 1
           fi
           echo "PASS: /faq returns 200 with unique content"
