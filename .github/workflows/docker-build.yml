@@ -77,31 +77,55 @@ jobs:
             sleep 1
           done
           
-          # Test 1: Homepage returns 200
+          # Test 1: Homepage returns 200 with correct content
           echo "Test 1: Homepage"
           HTTP_CODE=$(curl -sf -o /tmp/homepage.html -w "%{http_code}" http://localhost:8080/)
           if [ "$HTTP_CODE" != "200" ]; then
             echo "FAIL: Homepage returned $HTTP_CODE, expected 200"
             exit 1
           fi
-          echo "PASS: Homepage returns 200"
+          if ! grep -q "Decentralized Trust for Spatial AI" /tmp/homepage.html; then
+            echo "FAIL: Homepage missing expected h1 marker"
+            exit 1
+          fi
+          echo "PASS: Homepage returns 200 with correct content"
           
-          # Test 2: /privacy returns 200 and is NOT the homepage
-          echo "Test 2: /privacy route"
-          HTTP_CODE=$(curl -sfL -o /tmp/privacy.html -w "%{http_code}" http://localhost:8080/privacy)
+          # Test 2: /faq returns 200 with unique content
+          echo "Test 2: /faq route"
+          HTTP_CODE=$(curl -sfL -o /tmp/faq.html -w "%{http_code}" http://localhost:8080/faq)
           if [ "$HTTP_CODE" != "200" ]; then
-            echo "FAIL: /privacy returned $HTTP_CODE, expected 200"
+            echo "FAIL: /faq returned $HTTP_CODE, expected 200"
             exit 1
           fi
-          # Check it's not serving the homepage (different content)
-          if diff -q /tmp/homepage.html /tmp/privacy.html >/dev/null 2>&1; then
-            echo "FAIL: /privacy serves the same content as homepage (SPA fallback active)"
+          if ! grep -q "Frequently Asked Questions" /tmp/faq.html; then
+            echo "FAIL: /faq missing expected h1 marker"
             exit 1
           fi
-          echo "PASS: /privacy returns 200 with unique content"
+          if grep -q "Decentralized Trust for Spatial AI" /tmp/faq.html; then
+            echo "FAIL: /faq serves homepage content"
+            exit 1
+          fi
+          echo "PASS: /faq returns 200 with unique content"
           
-          # Test 3: Unknown path returns 404
-          echo "Test 3: 404 for unknown paths"
+          # Test 3: /benchmarks returns 200 with unique content
+          echo "Test 3: /benchmarks route"
+          HTTP_CODE=$(curl -sfL -o /tmp/benchmarks.html -w "%{http_code}" http://localhost:8080/benchmarks)
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "FAIL: /benchmarks returned $HTTP_CODE, expected 200"
+            exit 1
+          fi
+          if ! grep -q "Public Spatial AI Benchmarks" /tmp/benchmarks.html; then
+            echo "FAIL: /benchmarks missing expected h1 marker"
+            exit 1
+          fi
+          if grep -q "Decentralized Trust for Spatial AI" /tmp/benchmarks.html; then
+            echo "FAIL: /benchmarks serves homepage content"
+            exit 1
+          fi
+          echo "PASS: /benchmarks returns 200 with unique content"
+          
+          # Test 4: Unknown path returns 404
+          echo "Test 4: 404 for unknown paths"
           HTTP_CODE=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:8080/does-not-exist || true)
           if [ "$HTTP_CODE" != "404" ]; then
             echo "FAIL: Unknown path returned $HTTP_CODE, expected 404"
@@ -109,8 +133,8 @@ jobs:
           fi
           echo "PASS: Unknown path returns 404"
           
-          # Test 4: /privacy redirect check (Location header should be relative, not absolute with port)
-          echo "Test 4: /privacy redirect Location header"
+          # Test 5: /privacy redirect check (Location header should be relative, not absolute with port)
+          echo "Test 5: /privacy redirect Location header"
           # Get just the redirect status and location header
           REDIRECT_LOCATION=$(curl -sI http://localhost:8080/privacy | grep -i "^location:" | cut -d' ' -f2- | tr -d '\r')
           # Location header should be relative (/privacy/) or absolute without explicit port
@@ -122,8 +146,8 @@ jobs:
             exit 1
           fi
           
-          # Test 5: Health endpoint returns valid JSON
-          echo "Test 5: Health endpoint"
+          # Test 6: Health endpoint returns valid JSON
+          echo "Test 6: Health endpoint"
           HEALTH_JSON=$(curl -sf http://localhost:8080/api/waitlist/health)
           echo "$HEALTH_JSON" | jq -e '.status == "ok"' >/dev/null || {
             echo "FAIL: Health check JSON invalid: $HEALTH_JSON"
@@ -132,7 +156,7 @@ jobs:
           echo "PASS: Health endpoint returns valid JSON"
           
           # Test 6: POST signup and verify persistence
-          echo "Test 6: Signup persistence"
+          echo "Test 7: Signup persistence"
           SIGNUP_RESULT=$(curl -sf -X POST http://localhost:8080/api/waitlist \
             -H "Content-Type: application/json" \
             -H "X-Forwarded-For: 10.0.0.100" \
@@ -157,8 +181,8 @@ jobs:
           fi
           echo "PASS: Signup persisted to database"
           
-          # Test 7: Rate limiting respects X-Forwarded-For (per-client)
-          echo "Test 7: Rate limiting per client (trust proxy 2 for ALB + nginx)"
+          # Test 8: Rate limiting respects X-Forwarded-For (per-client)
+          echo "Test 8: Rate limiting per client (trust proxy 2 for ALB + nginx)"
           # In prod: ALB sets XFF=client_ip, nginx adds ALB_ip, giving node "client_ip, ALB_ip"
           # In smoke test: send XFF=client_ip, nginx adds 127.0.0.1, giving node "client_ip, 127.0.0.1"
           # With trust proxy 2, req.ip = client_ip (leftmost untrusted entry)
