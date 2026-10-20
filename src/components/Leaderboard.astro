@@ -283,68 +283,68 @@
     color: var(--accent);
   }
   
-  #leaderboard-table tbody tr {
+  #leaderboard-table :global(tbody tr) {
     border-bottom: 1px solid var(--border);
     cursor: pointer;
     transition: background 0.2s ease;
   }
   
-  #leaderboard-table tbody tr:hover {
+  #leaderboard-table :global(tbody tr:hover) {
     background: var(--bg-secondary);
   }
   
-  #leaderboard-table tbody tr:last-child {
+  #leaderboard-table :global(tbody tr:last-child) {
     border-bottom: none;
   }
   
-  #leaderboard-table td {
+  #leaderboard-table :global(td) {
     padding: 18px 12px;
     vertical-align: middle;
   }
   
-  .col-rank {
+  #leaderboard-table :global(.col-rank) {
     font-family: var(--mono);
     text-align: center;
     color: var(--text-secondary);
     font-variant-numeric: tabular-nums;
   }
   
-  .model-cell {
+  #leaderboard-table :global(.model-cell) {
     display: flex;
     flex-direction: column;
     gap: 2px;
     justify-content: center;
   }
   
-  .model-name {
+  #leaderboard-table :global(.model-name) {
     font-weight: 500;
     line-height: 1.4;
     color: var(--text-primary);
   }
   
-  .model-org {
+  #leaderboard-table :global(.model-org) {
     font-size: 0.8125rem;
     color: #777777;
     line-height: 1.4;
   }
   
-  .metric-value {
+  #leaderboard-table :global(.metric-value) {
     font-family: var(--mono);
     text-align: right;
     font-size: 0.9375rem;
     font-variant-numeric: tabular-nums;
   }
   
-  .metric-value.overall {
+  #leaderboard-table :global(.metric-value.overall) {
     font-weight: 600;
   }
   
-  .expand-content {
+  #leaderboard-table :global(.expand-content) {
     background: var(--bg-secondary);
     border-top: 1px solid var(--border);
   }
   
-  .expand-content td {
+  #leaderboard-table :global(.expand-content td) {
     padding: 24px;
   }
   
