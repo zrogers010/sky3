@@ -134,7 +134,7 @@ jobs:
           echo "PASS: Unknown path returns 404"
           
           # Test 5: Health endpoint returns valid JSON
-          echo "Test 6: Health endpoint"
+          echo "Test 5: Health endpoint"
           HEALTH_JSON=$(curl -sf http://localhost:8080/api/waitlist/health)
           echo "$HEALTH_JSON" | jq -e '.status == "ok"' >/dev/null || {
             echo "FAIL: Health check JSON invalid: $HEALTH_JSON"
@@ -143,7 +143,7 @@ jobs:
           echo "PASS: Health endpoint returns valid JSON"
           
           # Test 6: POST signup and verify persistence
-          echo "Test 7: Signup persistence"
+          echo "Test 6: Signup persistence"
           SIGNUP_RESULT=$(curl -sf -X POST http://localhost:8080/api/waitlist \
             -H "Content-Type: application/json" \
             -H "X-Forwarded-For: 10.0.0.100" \
@@ -168,8 +168,8 @@ jobs:
           fi
           echo "PASS: Signup persisted to database"
           
-          # Test 8: Rate limiting respects X-Forwarded-For (per-client)
-          echo "Test 8: Rate limiting per client (trust proxy 2 for ALB + nginx)"
+          # Test 7: Rate limiting respects X-Forwarded-For (per-client)
+          echo "Test 7: Rate limiting per client (trust proxy 2 for ALB + nginx)"
           # In prod: ALB sets XFF=client_ip, nginx adds ALB_ip, giving node "client_ip, ALB_ip"
           # In smoke test: send XFF=client_ip, nginx adds 127.0.0.1, giving node "client_ip, 127.0.0.1"
           # With trust proxy 2, req.ip = client_ip (leftmost untrusted entry)
