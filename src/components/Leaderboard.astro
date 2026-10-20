@@ -427,7 +427,7 @@
       gap: 16px;
     }
     
-    .mobile-card {
+    :global(.mobile-card) {
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 16px;
@@ -436,68 +436,75 @@
       transition: background 0.2s ease;
     }
     
-    .mobile-card:hover {
+    :global(.mobile-card:hover) {
       background: var(--bg-secondary);
     }
     
-    .mobile-card-header {
+    :global(.mobile-card-header) {
       display: flex;
       justify-content: space-between;
       align-items: start;
       margin-bottom: 12px;
     }
     
-    .mobile-card-rank {
+    :global(.mobile-card-rank) {
       font-family: var(--mono);
       font-size: 0.875rem;
       color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
     }
     
-    .mobile-card-overall {
+    :global(.mobile-card-overall) {
       font-family: var(--mono);
       font-size: 1.25rem;
       font-weight: 600;
+      font-variant-numeric: tabular-nums;
     }
     
-    .mobile-card-model {
-      margin-bottom: 12px;
+    :global(.mobile-card-model) {
+      margin-bottom: 14px;
     }
     
-    .mobile-card-model-name {
+    :global(.mobile-card-model-name) {
       font-weight: 500;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
+      line-height: 1.4;
+      color: var(--text-primary);
     }
     
-    .mobile-card-model-org {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
+    :global(.mobile-card-model-org) {
+      font-size: 0.8125rem;
+      color: #777777;
+      line-height: 1.4;
     }
     
-    .mobile-card-metrics {
+    :global(.mobile-card-metrics) {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
     
-    .mobile-card-metric {
+    :global(.mobile-card-metric) {
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
     
-    .mobile-card-metric-label {
+    :global(.mobile-card-metric-label) {
       font-size: 0.75rem;
       color: var(--text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
     
-    .mobile-card-metric-value {
+    :global(.mobile-card-metric-value) {
       font-family: var(--mono);
       font-size: 0.9375rem;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
     }
     
-    .mobile-card-expand {
+    :global(.mobile-card-expand) {
       margin-top: 16px;
       padding-top: 16px;
       border-top: 1px solid var(--border);
@@ -702,7 +709,7 @@
       card.innerHTML = `
         <div class="mobile-card-header">
           <div class="mobile-card-rank">#${index + 1}</div>
-          <div class="mobile-card-overall">${overall}</div>
+          <div class="mobile-card-overall">${overall.toFixed(1)}</div>
         </div>
         <div class="mobile-card-model">
           <div class="mobile-card-model-name">${model.name} (sample)</div>
