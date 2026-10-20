@@ -7,6 +7,28 @@ interface Props {
 const { title, description } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const ogImageURL = new URL('/og-image.png', Astro.site);
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Sky3 Network",
+  "url": "https://www.sky3.org",
+  "logo": "https://www.sky3.org/favicon.svg",
+  "description": "An open protocol for verifying spatial AI. Stewarded by a non-profit foundation.",
+  "sameAs": []
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Sky3 Network",
+  "url": "https://www.sky3.org",
+  "description": "Decentralized Trust for Spatial AI",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Sky3 Network"
+  }
+};
 ---
 
 <!DOCTYPE html>
@@ -24,6 +46,8 @@ const ogImageURL = new URL('/og-image.png', Astro.site);
   <meta property="og:title" content={title}>
   <meta property="og:description" content={description}>
   <meta property="og:image" content={ogImageURL}>
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content={canonicalURL}>
@@ -36,6 +60,9 @@ const ogImageURL = new URL('/og-image.png', Astro.site);
   <meta name="theme-color" content="#FFFFFF">
   
   <link rel="sitemap" href="/sitemap.xml">
+  
+  <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
 </head>
 <body>
   <slot />

@@ -1,0 +1,204 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const title = 'World Models and How They Are Evaluated | Sky3 Network';
+const description = 'World models predict how the physical world evolves. Learn what world models are, how they work, and how they are evaluated for robotics and spatial AI applications.';
+---
+
+<BaseLayout title={title} description={description}>
+  <Header />
+  
+  <main>
+    <article>
+      <div class="container narrow">
+        <div class="breadcrumb">
+          <a href="/">Home</a>
+          <span>→</span>
+          <span>World Models</span>
+        </div>
+        
+        <h1>World Models and How They Are Evaluated</h1>
+        
+        <p class="lead">A world model is a system that predicts how the physical world changes over time. Given the current state and a proposed action, it forecasts what happens next—where objects move, what falls, what stays stable.</p>
+        
+        <h2>What world models do</h2>
+        
+        <p>World models learn representations of physical dynamics. They take sensor data—images, point clouds, depth maps—and build an internal model of the scene. When asked "what if I push this object?" or "what if the robot moves left?", the world model simulates the outcome without requiring real-world trial and error.</p>
+        
+        <p>This predictive capability is valuable for robotics, autonomous systems and industrial automation. A robot using a world model can evaluate multiple strategies in simulation before committing to an action, reducing mistakes and improving task success rates.</p>
+        
+        <h2>Types of world models</h2>
+        
+        <p>World models vary in scope and representation:</p>
+        
+        <ul>
+          <li><strong>Geometric world models:</strong> focus on spatial structure—object positions, shapes, and how they occlude one another. These models predict where things are, not necessarily how they behave.</li>
+          <li><strong>Physical world models:</strong> incorporate dynamics—forces, friction, gravity, collisions. They predict motion, stability and contact.</li>
+          <li><strong>Learned world models:</strong> use neural networks trained on data, learning to predict future states from observations without explicit physics equations.</li>
+          <li><strong>Hybrid models:</strong> combine learned representations with physical constraints or simulators, aiming for both generality and accuracy.</li>
+        </ul>
+        
+        <h2>How world models are evaluated</h2>
+        
+        <p>Evaluating a world model means testing whether its predictions match reality. Common evaluation methods include:</p>
+        
+        <h3>Prediction accuracy</h3>
+        
+        <p>Does the model correctly predict future sensor observations? Given the first few frames of a robot's trajectory, can it predict the next frames accurately? Metrics include pixel-level error for images, point cloud divergence for 3D scenes, and trajectory error for predicted paths.</p>
+        
+        <h3>Physical plausibility</h3>
+        
+        <p>Do the predicted states obey basic physical laws? Objects should not float without support, penetrate solid surfaces or accelerate without force. World models are tested on whether they produce physically consistent outcomes or hallucinate impossible configurations.</p>
+        
+        <h3>Generalisation</h3>
+        
+        <p>Can the model handle scenes and objects it has not seen before? Evaluation datasets test models on out-of-distribution cases: unusual object shapes, rare lighting conditions, novel materials or configurations that were absent from training data.</p>
+        
+        <h3>Task performance</h3>
+        
+        <p>Does using the world model improve downstream task success? For manipulation, navigation or planning tasks, the model's utility is measured by whether the robot succeeds more often when using the model's predictions versus baseline methods.</p>
+        
+        <h2>Challenges in evaluation</h2>
+        
+        <p>World model evaluation is difficult because real-world outcomes are complex and context-dependent. The same push on an object produces different results depending on friction, weight distribution and nearby supports. Benchmark datasets often simplify these factors, but deployed systems face the full complexity.</p>
+        
+        <p>Another challenge is data scarcity. Collecting verified real-world interaction data—complete with before-and-after 3D scans, force measurements and failure modes—is expensive. Most world models are tested on simulated or small-scale lab datasets, which do not fully capture real-world edge cases.</p>
+        
+        <h2>Sky3's approach to evaluating world models</h2>
+        
+        <p>Sky3 builds evaluation datasets from contributed real-world spatial data, focusing on the cases models find difficult: cluttered scenes, non-standard assemblies, ambiguous structures and edge geometries. World models and robotics foundation models are scored on:</p>
+        
+        <ul>
+          <li><strong>3D reconstruction accuracy:</strong> how well the model reconstructs spatial structure from partial observations (measured by IoU and other metrics detailed on the <a href="/metrics">metrics page</a>).</li>
+          <li><strong>Structural integrity:</strong> whether the model preserves load-bearing elements and connections.</li>
+          <li><strong>Assembly tree accuracy:</strong> how well the model understands part hierarchies and how components fit together.</li>
+          <li><strong>Physical logic checks:</strong> whether predicted configurations respect stability, support and contact constraints.</li>
+        </ul>
+        
+        <p>These evaluations are run on verified real-world cases that the model's developers did not select, providing an independent reference for model performance.</p>
+        
+        <nav class="page-nav">
+          <a href="/metrics" class="btn btn-secondary">See detailed evaluation metrics →</a>
+          <a href="/#leaderboard" class="btn btn-secondary">View the sample leaderboard →</a>
+        </nav>
+      </div>
+    </article>
+  </main>
+  
+  <Footer />
+</BaseLayout>
+
+<style>
+  .narrow {
+    max-width: 720px;
+  }
+  
+  .breadcrumb {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .breadcrumb a {
+    color: var(--accent);
+  }
+  
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+  
+  article {
+    padding: 80px 0;
+  }
+  
+  h1 {
+    margin-bottom: 1.5rem;
+  }
+  
+  .lead {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+  }
+  
+  h2 {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  h3 {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  p {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+  }
+  
+  ul {
+    margin: 1.5rem 0;
+    padding-left: 1.5rem;
+  }
+  
+  li {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+  }
+  
+  li strong {
+    color: var(--text-primary);
+  }
+  
+  p a,
+  li a {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+  
+  p a:hover,
+  li a:hover {
+    text-decoration: none;
+  }
+  
+  .page-nav {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .page-nav a {
+    text-decoration: none;
+  }
+  
+  .page-nav a:hover {
+    text-decoration: none;
+  }
+  
+  @media (max-width: 768px) {
+    article {
+      padding: 60px 0;
+    }
+    
+    .page-nav {
+      flex-direction: column;
+    }
+    
+    .page-nav .btn {
+      width: 100%;
+    }
+  }
+</style>

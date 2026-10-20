@@ -1,0 +1,233 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const title = 'Glossary | Sky3 Network';
+const description = 'Definitions of key terms in spatial AI, world models, 3D reconstruction, robotics benchmarking and DePIN protocols.';
+---
+
+<BaseLayout title={title} description={description}>
+  <Header />
+  
+  <main>
+    <article>
+      <div class="container narrow">
+        <div class="breadcrumb">
+          <a href="/">Home</a>
+          <span>→</span>
+          <span>Glossary</span>
+        </div>
+        
+        <h1>Glossary</h1>
+        
+        <p class="lead">Definitions of key terms used in spatial AI, benchmarking and the Sky3 protocol.</p>
+        
+        <dl class="glossary">
+          <dt id="3d-reconstruction">3D Reconstruction</dt>
+          <dd>The process of creating a three-dimensional model from 2D images, point clouds or other sensor data. Reconstruction produces meshes, voxel grids or implicit surface representations.</dd>
+          
+          <dt id="assembly-tree">Assembly Tree</dt>
+          <dd>A hierarchical representation of how parts and subassemblies fit together in a product or structure. Nodes represent components; edges represent "contains" or "attaches to" relationships.</dd>
+          
+          <dt id="benchmark">Benchmark</dt>
+          <dd>A standardised test suite used to compare model performance. Benchmarks specify test data, evaluation metrics and reporting conventions.</dd>
+          
+          <dt id="cad">CAD (Computer-Aided Design)</dt>
+          <dd>Software and file formats used for designing physical objects and structures. Common CAD formats include STEP, STL, OBJ and IGES.</dd>
+          
+          <dt id="depin">DePIN (Decentralized Physical Infrastructure Network)</dt>
+          <dd>A network where participants contribute physical resources—such as data, compute or sensor access—and are rewarded with tokens or points. Sky3 uses DePIN principles for crowdsourcing spatial data.</dd>
+          
+          <dt id="edge-case">Edge Case</dt>
+          <dd>A rare or unusual input that tests the limits of a model's capabilities. Edge cases are valuable for benchmarking because they reveal failure modes not seen in typical test data.</dd>
+          
+          <dt id="foundation-model">Foundation Model</dt>
+          <dd>A large-scale machine learning model trained on diverse data, designed to generalise across tasks and domains. In robotics, foundation models aim to transfer spatial understanding across different objects, scenes and sensor types.</dd>
+          
+          <dt id="geometric-accuracy">Geometric Accuracy</dt>
+          <dd>How closely a predicted 3D model matches the true shape and dimensions of an object or scene. Measured using metrics like IoU, Chamfer distance and surface error.</dd>
+          
+          <dt id="iou">IoU (Intersection over Union)</dt>
+          <dd>A metric comparing predicted and ground truth volumes or areas. IoU = volume of overlap / volume of union. Used for object detection, segmentation and 3D reconstruction.</dd>
+          
+          <dt id="lidar">LiDAR (Light Detection and Ranging)</dt>
+          <dd>A sensor that measures distances by emitting laser pulses and timing their return. LiDAR produces point clouds representing 3D spatial structure.</dd>
+          
+          <dt id="mesh">Mesh</dt>
+          <dd>A 3D surface representation made of vertices, edges and faces (usually triangles or quads). Meshes are common outputs of reconstruction algorithms and CAD systems.</dd>
+          
+          <dt id="physical-logic">Physical Logic</dt>
+          <dd>Automated checks verifying that a predicted structure obeys physical constraints: stability, support, contact and absence of interpenetration. Part of Sky3's evaluation protocol.</dd>
+          
+          <dt id="point-cloud">Point Cloud</dt>
+          <dd>A set of 3D points representing the surface of an object or scene. Point clouds are produced by LiDAR, depth cameras and photogrammetry.</dd>
+          
+          <dt id="robotics-foundation-model">Robotics Foundation Model</dt>
+          <dd>A foundation model specialised for robotics tasks such as manipulation, navigation and assembly. These models process spatial data and predict actions or outcomes in physical environments.</dd>
+          
+          <dt id="sim-to-real">Sim-to-Real Gap</dt>
+          <dd>The performance drop when a model trained in simulation is applied to real-world data. Caused by differences in sensor noise, object variation, lighting and dynamics between simulated and real environments.</dd>
+          
+          <dt id="spatial-ai">Spatial AI</dt>
+          <dd>Artificial intelligence systems that understand and reason about three-dimensional space, geometry and physical relationships. Includes 3D reconstruction, scene understanding and world models.</dd>
+          
+          <dt id="structural-integrity">Structural Integrity</dt>
+          <dd>A Sky3 metric measuring whether a reconstruction preserves load-bearing parts and connections. Critical for determining if an assembly will hold together under real conditions.</dd>
+          
+          <dt id="tree-edit-distance">Tree Edit Distance</dt>
+          <dd>The minimum number of insertions, deletions and relabellings needed to transform one tree into another. Used to measure assembly tree accuracy.</dd>
+          
+          <dt id="verification">Verification</dt>
+          <dd>The process of checking submitted data for quality, correctness and labeling accuracy. In Sky3, verification combines automated checks with independent human review.</dd>
+          
+          <dt id="voxel">Voxel</dt>
+          <dd>A 3D pixel—a cubic volume element in a grid. Voxel grids are used to represent 3D space at a fixed resolution. Common in volumetric reconstruction and simulation.</dd>
+          
+          <dt id="world-model">World Model</dt>
+          <dd>A system that predicts how the physical world changes over time. Given sensor data and a proposed action, a world model forecasts future states—where objects move, what falls, what remains stable.</dd>
+          
+          <dt id="3d-iou">3D IoU</dt>
+          <dd>Intersection over Union computed in three dimensions for volumetric predictions. Measures geometric overlap between predicted and ground truth 3D structures.</dd>
+          
+          <dt id="hitl">HITL (Human-in-the-Loop)</dt>
+          <dd>An evaluation or training process where human reviewers provide judgments, corrections or verification. Sky3 uses HITL auditing to verify contributed data.</dd>
+          
+          <dt id="occlusion">Occlusion</dt>
+          <dd>When one object blocks the view of another from a sensor's perspective. Handling occlusion is a key challenge in 3D reconstruction and scene understanding.</dd>
+          
+          <dt id="pose-estimation">Pose Estimation</dt>
+          <dd>Determining the position and orientation of an object or camera in 3D space. Essential for robotics, AR and mapping.</dd>
+        </dl>
+        
+        <nav class="page-nav">
+          <a href="/metrics" class="btn btn-secondary">View evaluation metrics →</a>
+          <a href="/faq" class="btn btn-secondary">Read the FAQ →</a>
+        </nav>
+      </div>
+    </article>
+  </main>
+  
+  <Footer />
+</BaseLayout>
+
+<style>
+  .narrow {
+    max-width: 720px;
+  }
+  
+  .breadcrumb {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .breadcrumb a {
+    color: var(--accent);
+  }
+  
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+  
+  article {
+    padding: 80px 0;
+  }
+  
+  h1 {
+    margin-bottom: 1.5rem;
+  }
+  
+  .lead {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+  }
+  
+  .glossary {
+    margin: 2rem 0;
+  }
+  
+  dt {
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    scroll-margin-top: calc(var(--header-height) + 20px);
+  }
+  
+  dt:first-of-type {
+    margin-top: 0;
+  }
+  
+  dd {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-left: 0;
+    margin-bottom: 0;
+  }
+  
+  p a,
+  dd a {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+  
+  p a:hover,
+  dd a:hover {
+    text-decoration: none;
+  }
+  
+  .page-nav {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .page-nav a {
+    text-decoration: none;
+  }
+  
+  .page-nav a:hover {
+    text-decoration: none;
+  }
+  
+  @media (max-width: 768px) {
+    article {
+      padding: 60px 0;
+    }
+    
+    .page-nav {
+      flex-direction: column;
+    }
+    
+    .page-nav .btn {
+      width: 100%;
+    }
+  }
+</style>
+
+<script type="application/ld+json" set:html={JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "DefinedTermSet",
+  "name": "Sky3 Network Spatial AI Glossary",
+  "description": "Definitions of key terms in spatial AI, world models, 3D reconstruction, robotics benchmarking and DePIN protocols.",
+  "hasDefinedTerm": [
+    { "@type": "DefinedTerm", "name": "3D Reconstruction", "description": "The process of creating a three-dimensional model from 2D images, point clouds or other sensor data." },
+    { "@type": "DefinedTerm", "name": "Assembly Tree", "description": "A hierarchical representation of how parts and subassemblies fit together in a product or structure." },
+    { "@type": "DefinedTerm", "name": "Spatial AI", "description": "Artificial intelligence systems that understand and reason about three-dimensional space, geometry and physical relationships." },
+    { "@type": "DefinedTerm", "name": "World Model", "description": "A system that predicts how the physical world changes over time." },
+    { "@type": "DefinedTerm", "name": "IoU", "description": "Intersection over Union - a metric comparing predicted and ground truth volumes or areas." }
+  ]
+})} />
+</BaseLayout>

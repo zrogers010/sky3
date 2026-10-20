@@ -1,16 +1,19 @@
 ---
 // Header component with sticky navigation
+const isHome = Astro.url.pathname === '/';
 ---
 
 <header id="header">
   <div class="header-container">
-    <a href="#top" class="wordmark">Sky3 Network</a>
+    <a href="/" class="wordmark">Sky3 Network</a>
     
     <nav class="desktop-nav">
-      <a href="#manifesto">Manifesto</a>
-      <a href="#leaderboard">Leaderboard</a>
-      <a href="#how">How it works</a>
-      <a href="#waitlist" class="btn btn-primary">Join the beta</a>
+      <a href={isHome ? '#manifesto' : '/#manifesto'}>Manifesto</a>
+      <a href={isHome ? '#leaderboard' : '/#leaderboard'}>Leaderboard</a>
+      <a href="/what-is-spatial-ai">Learn</a>
+      <a href="/metrics">Metrics</a>
+      <a href="/faq">FAQ</a>
+      <a href={isHome ? '#waitlist' : '/#waitlist'} class="btn btn-primary">Join the beta</a>
     </nav>
     
     <button class="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-nav">
@@ -21,13 +24,15 @@
       </svg>
     </button>
     
-    <a href="#waitlist" class="mobile-cta btn btn-primary">Join the beta</a>
+    <a href={isHome ? '#waitlist' : '/#waitlist'} class="mobile-cta btn btn-primary">Join the beta</a>
   </div>
   
   <nav id="mobile-nav" class="mobile-nav" hidden>
-    <a href="#manifesto">Manifesto</a>
-    <a href="#leaderboard">Leaderboard</a>
-    <a href="#how">How it works</a>
+    <a href={isHome ? '#manifesto' : '/#manifesto'}>Manifesto</a>
+    <a href={isHome ? '#leaderboard' : '/#leaderboard'}>Leaderboard</a>
+    <a href="/what-is-spatial-ai">Learn</a>
+    <a href="/metrics">Metrics</a>
+    <a href="/faq">FAQ</a>
   </nav>
 </header>
 

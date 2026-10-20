@@ -290,7 +290,8 @@
   }
   
   #leaderboard-table td {
-    padding: 12px;
+    padding: 16px 12px;
+    vertical-align: middle;
   }
   
   .col-rank {
@@ -299,13 +300,22 @@
     color: var(--text-secondary);
   }
   
+  .model-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    justify-content: center;
+  }
+  
   .model-name {
     font-weight: 500;
+    line-height: 1.3;
   }
   
   .model-org {
     font-size: 0.875rem;
     color: var(--text-secondary);
+    line-height: 1.3;
   }
   
   .metric-value {
@@ -568,8 +578,10 @@
       row.innerHTML = `
         <td class="col-rank metric-value">${index + 1}</td>
         <td>
-          <div class="model-name">${model.name}</div>
-          <div class="model-org">${model.developer}</div>
+          <div class="model-cell">
+            <div class="model-name">${model.name}</div>
+            <div class="model-org">${model.developer}</div>
+          </div>
         </td>
         <td class="metric-value">${model.iou.toFixed(3)}</td>
         <td class="metric-value">${model.structural.toFixed(1)}%</td>
