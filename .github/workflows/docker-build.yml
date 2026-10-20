@@ -175,17 +175,18 @@ jobs:
             fi
           done
           
-          # 6th request from IP A should be rate limited
-          RESULT_A6=$(curl -sf -X POST http://localhost:8080/api/waitlist \
+          # 6th request from IP A should be rate limited (429)
+          RESULT_A6=$(curl -s -X POST http://localhost:8080/api/waitlist \
             -H "Content-Type: application/json" \
             -H "X-Forwarded-For: $IP_A, $ALB_NODE" \
             -d '{"email":"ratelimit-a7@smoke.test","role":"contributor","consent":true}')
           
-          HTTP_STATUS_A6=$(echo "$RESULT_A6" | jq -r '.success')
+          HTTP_STATUS_A6=$(echo "$RESULT_A6" | jq -r '.success // "false"')
           if [ "$HTTP_STATUS_A6" = "true" ]; then
             echo "FAIL: 6th request from IP A should be rate limited (429) but succeeded"
             exit 1
           fi
+          echo "6th request from IP A correctly rate limited"
           
           # Request from IP B should succeed (separate bucket)
           RESULT_B=$(curl -sf -X POST http://localhost:8080/api/waitlist \
