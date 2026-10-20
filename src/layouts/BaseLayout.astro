@@ -5,8 +5,52 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+// Strip .html and index from pathname for canonical/og:url
+let pathname = Astro.url.pathname;
+
+// Handle index.html -> /
+if (pathname === '/index.html' || pathname === '/index') {
+  pathname = '/';
+} else {
+  // Strip .html extension
+  if (pathname.endsWith('.html')) {
+    pathname = pathname.slice(0, -5);
+  }
+  // Strip trailing /index
+  if (pathname.endsWith('/index')) {
+    pathname = pathname.slice(0, -6);
+  }
+  // Remove trailing slash (except for root)
+  if (pathname !== '/' && pathname.endsWith('/')) {
+    pathname = pathname.slice(0, -1);
+  }
+}
+
+const canonicalURL = new URL(pathname, Astro.site);
 const ogImageURL = new URL('/og-image.png', Astro.site);
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Sky3 Network",
+  "url": "https://www.sky3.org",
+  "logo": "https://www.sky3.org/favicon.svg",
+  "description": "An open protocol for independently benchmarking spatial AI and world models.",
+  "sameAs": []
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Sky3 Network",
+  "url": "https://www.sky3.org",
+  "description": "Decentralized Trust for Spatial AI",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Sky3 Network"
+  }
+};
 ---
 
 <!DOCTYPE html>
@@ -24,6 +68,8 @@ const ogImageURL = new URL('/og-image.png', Astro.site);
   <meta property="og:title" content={title}>
   <meta property="og:description" content={description}>
   <meta property="og:image" content={ogImageURL}>
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content={canonicalURL}>
@@ -36,6 +82,9 @@ const ogImageURL = new URL('/og-image.png', Astro.site);
   <meta name="theme-color" content="#FFFFFF">
   
   <link rel="sitemap" href="/sitemap.xml">
+  
+  <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
 </head>
 <body>
   <slot />

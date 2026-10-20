@@ -1,0 +1,382 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BetaCTA from '../components/BetaCTA.astro';
+
+const title = 'Evaluation Metrics | Sky3 Network';
+const description = 'Detailed explanation of the metrics used to evaluate spatial AI and world models: 2D-to-3D construction accuracy, bounding box IoU, structural integrity, assembly tree accuracy, and physical logic checks.';
+---
+
+<BaseLayout title={title} description={description}>
+  <Header />
+  
+  <main>
+    <article>
+      <div class="container narrow">
+        <div class="breadcrumb">
+          <a href="/">Home</a>
+          <span>→</span>
+          <span>Metrics</span>
+        </div>
+        
+        <h1>Evaluation Metrics</h1>
+        
+        <p class="lead">Sky3 scores spatial AI models on geometric accuracy, structural understanding and physical reasoning. This page explains each metric, how it is calculated, and which are standard industry metrics versus Sky3's proposed protocol metrics. For context on related public benchmarks, see the <a href="/benchmarks">benchmarks directory</a>.</p>
+        
+        <h2 id="2d-to-3d">2D-to-3D Construction Accuracy</h2>
+        
+        <p><strong>Type:</strong> Standard metric category (Sky3 applies it to real-world edge cases)</p>
+        
+        <p>2D-to-3D construction measures how accurately a model reconstructs three-dimensional structure from two-dimensional inputs such as images, sketches or technical drawings. This is a fundamental task for spatial AI: converting flat representations into volumetric models.</p>
+        
+        <p>Common input scenarios include:</p>
+        <ul>
+          <li>Multi-view imagery with known or estimated camera poses</li>
+          <li>Single-view reconstruction where the model infers depth and occluded geometry</li>
+          <li>Technical drawings or CAD sketches that specify dimensions and relationships</li>
+          <li>Hybrid inputs combining images with partial 3D data (sparse point clouds, depth maps)</li>
+        </ul>
+        
+        <p>Sky3 will evaluate 2D-to-3D construction by comparing the predicted 3D output to verified ground truth captured via LiDAR, photogrammetry or high-precision CAD. Accuracy will be measured using geometry metrics (IoU, Chamfer distance, surface normals) and completeness checks (coverage of visible and occluded regions).</p>
+        
+        <p><strong>Why it matters:</strong> 2D-to-3D construction is a core capability for robotics (understanding scenes from camera input), autonomous systems (mapping environments), and CAD automation (converting sketches to models). Models that fail on real-world edge cases—unusual perspectives, occlusions, non-standard objects—cannot be trusted in deployed systems.</p>
+        
+        <h2 id="bounding-boxes">Bounding Box Metrics (2D and 3D IoU, mAP)</h2>
+        
+        <p><strong>Type:</strong> Standard metrics</p>
+        
+        <p>Bounding boxes are the simplest spatial abstraction: axis-aligned or oriented boxes that enclose objects. Bounding box metrics measure how well a model detects and localizes objects in 2D images or 3D scenes.</p>
+        
+        <h3>2D Bounding Box IoU</h3>
+        
+        <p>For 2D object detection in images, IoU is computed over rectangular regions:</p>
+        
+        <div class="formula">
+          <p>IoU<sub>2D</sub> = Area(P ∩ G) / Area(P ∪ G)</p>
+        </div>
+        
+        <p>where P is the predicted bounding box and G is the ground truth box. An IoU threshold (commonly 0.5 or 0.75) determines whether a detection is considered correct.</p>
+        
+        <h3>3D Bounding Box IoU</h3>
+        
+        <p>For 3D object detection in point clouds or reconstructed scenes, IoU is computed over three-dimensional volumes. For axis-aligned boxes:</p>
+        
+        <div class="formula">
+          <p>IoU<sub>3D</sub> = Volume(P ∩ G) / Volume(P ∪ G)</p>
+        </div>
+        
+        <p>For oriented bounding boxes (OBB), the boxes may be rotated to fit the object's principal axes. Intersection and union volumes are computed in 3D space.</p>
+        
+        <h3>Mean Average Precision (mAP)</h3>
+        
+        <p>mAP summarizes detection performance across multiple object classes and IoU thresholds. For each class:</p>
+        
+        <ol>
+          <li>Rank detections by confidence score.</li>
+          <li>Compute precision and recall at each rank by comparing to ground truth using an IoU threshold.</li>
+          <li>Calculate Average Precision (AP) as the area under the precision-recall curve.</li>
+          <li>Average AP across all classes to produce mAP.</li>
+        </ol>
+        
+        <p>Sky3 will report mAP at IoU thresholds of 0.5 and 0.75 for both 2D and 3D detection tasks. Higher mAP indicates better localization and fewer false positives.</p>
+        
+        <p><strong>Why it matters:</strong> Bounding box detection is the foundation for scene understanding. Robotics, warehouse automation, and autonomous vehicles rely on accurate object localization. Errors in bounding boxes propagate to downstream tasks like grasping, path planning and collision avoidance.</p>
+        
+        <h2 id="structural-parsing">Structural Component Parsing</h2>
+        
+        <p><strong>Type:</strong> Standard task category (Sky3's integrity metric is a proposed extension)</p>
+        
+        <p>Structural component parsing refers to segmenting a scene or object into meaningful parts: walls, beams, fasteners, panels, joints. Beyond detecting that components exist, parsing identifies their role in the structure.</p>
+        
+        <p>Evaluation metrics for parsing include:</p>
+        <ul>
+          <li><strong>Part-level segmentation accuracy:</strong> IoU or F1 score computed per part category (standard semantic segmentation metrics).</li>
+          <li><strong>Instance segmentation:</strong> distinguishing individual instances of the same part type (e.g., multiple bolts).</li>
+          <li><strong>Hierarchical correctness:</strong> whether the model correctly identifies subassembly relationships (see Assembly Tree Accuracy below).</li>
+        </ul>
+        
+        <p><strong>Why it matters:</strong> Parsing is essential for tasks like disassembly, repair, inspection and manufacturing planning. A model that reconstructs geometry but cannot identify which parts are load-bearing or how they connect is not useful for real-world engineering applications.</p>
+        
+        <h2 id="volumetric-iou">Volumetric 3D IoU</h2>
+        
+        <p><strong>Type:</strong> Standard metric</p>
+        
+        <p>Volumetric IoU measures how well a predicted 3D reconstruction matches the ground truth across the entire volume. It is the ratio of the overlap volume to the total volume covered by either the prediction or the ground truth.</p>
+        
+        <div class="formula">
+          <p>IoU = V(P ∩ G) / V(P ∪ G)</p>
+        </div>
+        
+        <p>where:</p>
+        <ul>
+          <li><strong>P</strong> is the predicted volume (bounding box, mesh or voxel grid)</li>
+          <li><strong>G</strong> is the ground truth volume</li>
+          <li><strong>V(P ∩ G)</strong> is the volume of intersection</li>
+          <li><strong>V(P ∪ G)</strong> is the volume of union</li>
+        </ul>
+        
+        <p>IoU ranges from 0 (no overlap) to 1 (perfect match). Sky3 will report mean IoU across all verified test cases. For scenes with multiple objects, per-object IoU will be computed and averaged. For voxel grids, intersection and union will be counted at the voxel level.</p>
+        
+        <p><strong>Why it matters:</strong> IoU is a standard measure of spatial accuracy in 3D reconstruction and object detection. Higher IoU means the model's geometry is closer to the real structure.</p>
+        
+        <h2 id="structural-integrity">Structural Integrity</h2>
+        
+        <p><strong>Type:</strong> Sky3 proposed metric</p>
+        
+        <p>Structural integrity measures whether a reconstructed assembly preserves load-bearing components and connections. A model may achieve decent IoU while missing critical fasteners, joints or support elements that hold a structure together. This metric checks for those omissions.</p>
+        
+        <p>Calculation:</p>
+        <ol>
+          <li>Identify load-bearing parts and connections in the ground truth (verified by human reviewers or structural simulation).</li>
+          <li>Check which of those elements are present in the predicted reconstruction.</li>
+          <li>Compute the percentage of critical elements correctly detected.</li>
+        </ol>
+        
+        <div class="formula">
+          <p>Structural Integrity = (Detected Critical Elements / Total Critical Elements) × 100%</p>
+        </div>
+        
+        <p>A structure scores high on this metric only if it retains the components necessary for physical integrity. Missing a decorative panel is less penalised than missing a load-bearing beam or a connecting bolt.</p>
+        
+        <p><strong>Why it matters:</strong> For robotics and industrial applications, understanding which parts are essential is as important as reconstructing overall geometry. A model that ignores fasteners or connectors will produce assemblies that do not hold together.</p>
+        
+        <h2 id="assembly-tree">Assembly Tree Accuracy</h2>
+        
+        <p><strong>Type:</strong> Sky3 proposed metric</p>
+        
+        <p>Many physical structures are hierarchical assemblies: a product is made of subassemblies, which contain parts, which may themselves be composite. Assembly tree accuracy measures how well a model captures this hierarchy.</p>
+        
+        <p>The ground truth assembly tree is represented as a graph where nodes are parts or subassemblies and edges represent "contains" or "attaches to" relationships. The model's predicted tree is compared to this reference using tree edit distance or node-and-edge matching.</p>
+        
+        <p><strong>Tree Edit Distance approach:</strong></p>
+        
+        <div class="formula">
+          <p>Tree Edit Distance = minimum number of insertions, deletions and relabellings to transform the predicted tree into the ground truth tree</p>
+        </div>
+        
+        <p>We then compute accuracy as:</p>
+        
+        <div class="formula">
+          <p>Assembly Tree Accuracy = (1 - Tree Edit Distance / max(nodes in P, nodes in G)) × 100%</p>
+        </div>
+        
+        <p><strong>Node-and-Edge F1 approach (alternative):</strong></p>
+        
+        <p>Compute precision and recall for both nodes (parts correctly identified) and edges (relationships correctly identified), then take the F1 score:</p>
+        
+        <div class="formula">
+          <p>Node Precision = Correctly Predicted Nodes / Total Predicted Nodes</p>
+          <p>Node Recall = Correctly Predicted Nodes / Total Ground Truth Nodes</p>
+          <p>Node F1 = 2 × (Node Precision × Node Recall) / (Node Precision + Node Recall)</p>
+        </div>
+        
+        <p>Edge F1 is computed similarly. The final assembly tree accuracy is the average of node F1 and edge F1, scaled to a percentage.</p>
+        
+        <p><strong>Why it matters:</strong> Understanding part hierarchies is critical for tasks like disassembly, repair and manufacturing planning. A flat list of parts is less useful than a structured tree showing how they connect.</p>
+        
+        <h2 id="physical-logic">Physical Logic Checks</h2>
+        
+        <p><strong>Type:</strong> Sky3 proposed metric</p>
+        
+        <p>Physical logic checks test whether a predicted reconstruction obeys basic physical constraints. The protocol will run a suite of automated tests on each reconstruction:</p>
+        
+        <h3>Stability check</h3>
+        
+        <p>Does the structure have a stable center of mass and base of support? The test will compute the center of mass assuming uniform density and check whether it falls within the support polygon defined by contact points with the ground or supporting surfaces.</p>
+        
+        <h3>Support check</h3>
+        
+        <p>Are objects resting on appropriate supports? Floating objects (not in contact with a surface and not designated as suspended) will fail this check.</p>
+        
+        <h3>Contact check</h3>
+        
+        <p>Do connected parts actually touch or overlap? The test will verify that parts declared as connected have non-zero contact area in the predicted geometry.</p>
+        
+        <h3>Penetration check</h3>
+        
+        <p>Do solid objects improperly penetrate each other? Small overlaps (within tolerance for meshing artifacts) are allowed, but significant interpenetration indicates a geometric error.</p>
+        
+        <p>The physical logic pass rate is the percentage of these checks that the reconstruction passes:</p>
+        
+        <div class="formula">
+          <p>Physical Logic = (Passed Checks / Total Checks) × 100%</p>
+        </div>
+        
+        <p><strong>Why it matters:</strong> Geometric accuracy is not enough if the result is physically impossible. A model that predicts structures with floating parts or interpenetrating solids has not learned correct physical reasoning.</p>
+        
+        <h2 id="overall">Overall Score</h2>
+        
+        <p>The overall score is the unweighted mean of the four normalised metrics:</p>
+        
+        <div class="formula">
+          <p>Overall = (IoU × 100 + Structural Integrity + Assembly Tree Accuracy + Physical Logic) / 4</p>
+        </div>
+        
+        <p>This gives a single number summarising model performance across geometric, structural and physical dimensions. All four metrics are equally weighted in the current protocol.</p>
+        
+        <h2>Metric limitations and future work</h2>
+        
+        <p>These metrics are part of Sky3's draft protocol. They are designed to capture dimensions of spatial understanding that matter for real-world deployment, but they are not exhaustive. Planned extensions include:</p>
+        
+        <ul>
+          <li>Material property recognition (identifying which parts are rigid, flexible, brittle).</li>
+          <li>Temporal prediction accuracy for world models (how well they predict motion over time).</li>
+          <li>Task-specific scoring for manipulation, navigation and assembly planning.</li>
+          <li>Robustness metrics measuring performance degradation under sensor noise or occlusion.</li>
+        </ul>
+        
+        <p>The protocol and metrics will evolve based on feedback from the beta and the research community. Changes will be documented and versioned, and historical scores will be preserved for comparison.</p>
+        
+        <nav class="page-nav">
+          <a href="/#leaderboard" class="btn btn-secondary">View the sample leaderboard →</a>
+          <a href="/glossary" class="btn btn-secondary">See the glossary →</a>
+        </nav>
+        
+        <BetaCTA />
+      </div>
+    </article>
+  </main>
+  
+  <Footer />
+</BaseLayout>
+
+<style>
+  .narrow {
+    max-width: 720px;
+  }
+  
+  .breadcrumb {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .breadcrumb a {
+    color: var(--accent);
+  }
+  
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+  
+  article {
+    padding: 80px 0;
+  }
+  
+  h1 {
+    margin-bottom: 1.5rem;
+  }
+  
+  .lead {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+  }
+  
+  h2 {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  
+  h2:first-of-type {
+    border-top: none;
+  }
+  
+  h3 {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  p {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+  }
+  
+  ul, ol {
+    margin: 1.5rem 0;
+    padding-left: 1.5rem;
+  }
+  
+  li {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+  }
+  
+  li strong {
+    color: var(--text-primary);
+  }
+  
+  .formula {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 1.5rem 0;
+    font-family: var(--mono);
+    font-size: 0.9375rem;
+  }
+  
+  .formula p {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+  
+  .formula p + p {
+    margin-top: 0.5rem;
+  }
+  
+  p a,
+  li a {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+  
+  p a:hover,
+  li a:hover {
+    text-decoration: none;
+  }
+  
+  .page-nav {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .page-nav a {
+    text-decoration: none;
+  }
+  
+  .page-nav a:hover {
+    text-decoration: none;
+  }
+  
+  @media (max-width: 768px) {
+    article {
+      padding: 60px 0;
+    }
+    
+    .page-nav {
+      flex-direction: column;
+    }
+    
+    .page-nav .btn {
+      width: 100%;
+    }
+  }
+</style>

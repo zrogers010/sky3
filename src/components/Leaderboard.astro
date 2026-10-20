@@ -157,6 +157,18 @@
     border-radius: var(--radius);
     padding: 4px;
     background: var(--bg-secondary);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  @media (max-width: 420px) {
+    .metric-focus {
+      scrollbar-width: thin;
+    }
+    .metric-focus button {
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
   }
   
   .metric-focus button {
@@ -218,7 +230,7 @@
   
   #leaderboard-table th button {
     width: 100%;
-    padding: 12px;
+    padding: 14px 12px;
     text-align: left;
     display: flex;
     align-items: center;
@@ -235,19 +247,27 @@
     cursor: pointer;
   }
   
-  .col-rank,
-  .col-cases {
+  .col-rank {
     width: 80px;
+  }
+  
+  .col-cases {
+    width: 90px;
   }
   
   .col-metric {
     width: 110px;
   }
   
-  .col-rank button,
+  .col-rank button {
+    justify-content: center;
+    text-align: center;
+  }
+  
   .col-cases button,
   .col-metric button {
     justify-content: flex-end;
+    text-align: right;
   }
   
   .sort-icon {
@@ -275,55 +295,68 @@
     color: var(--accent);
   }
   
-  #leaderboard-table tbody tr {
+  #leaderboard-table :global(tbody tr) {
     border-bottom: 1px solid var(--border);
     cursor: pointer;
     transition: background 0.2s ease;
   }
   
-  #leaderboard-table tbody tr:hover {
+  #leaderboard-table :global(tbody tr:hover) {
     background: var(--bg-secondary);
   }
   
-  #leaderboard-table tbody tr:last-child {
+  #leaderboard-table :global(tbody tr:last-child) {
     border-bottom: none;
   }
   
-  #leaderboard-table td {
-    padding: 12px;
+  #leaderboard-table :global(td) {
+    padding: 18px 12px;
+    vertical-align: middle;
   }
   
-  .col-rank {
+  #leaderboard-table :global(.col-rank) {
     font-family: var(--mono);
-    text-align: right;
+    text-align: center;
     color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
   }
   
-  .model-name {
+  #leaderboard-table :global(.model-cell) {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    justify-content: center;
+  }
+  
+  #leaderboard-table :global(.model-name) {
     font-weight: 500;
+    line-height: 1.4;
+    color: var(--text-primary);
   }
   
-  .model-org {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
+  #leaderboard-table :global(.model-org) {
+    font-size: 0.8125rem;
+    color: #777777;
+    line-height: 1.4;
   }
   
-  .metric-value {
+  #leaderboard-table :global(.metric-value) {
     font-family: var(--mono);
     text-align: right;
     font-size: 0.9375rem;
+    font-variant-numeric: tabular-nums;
   }
   
-  .metric-value.overall {
+  #leaderboard-table :global(.metric-value.overall) {
     font-weight: 600;
   }
   
-  .expand-content {
+  #leaderboard-table :global(.expand-content) {
     background: var(--bg-secondary);
     border-top: 1px solid var(--border);
   }
   
-  .expand-content td {
+  #leaderboard-table :global(.expand-content td) {
     padding: 24px;
   }
   
@@ -406,7 +439,7 @@
       gap: 16px;
     }
     
-    .mobile-card {
+    :global(.mobile-card) {
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 16px;
@@ -415,68 +448,75 @@
       transition: background 0.2s ease;
     }
     
-    .mobile-card:hover {
+    :global(.mobile-card:hover) {
       background: var(--bg-secondary);
     }
     
-    .mobile-card-header {
+    :global(.mobile-card-header) {
       display: flex;
       justify-content: space-between;
       align-items: start;
       margin-bottom: 12px;
     }
     
-    .mobile-card-rank {
+    :global(.mobile-card-rank) {
       font-family: var(--mono);
       font-size: 0.875rem;
       color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
     }
     
-    .mobile-card-overall {
+    :global(.mobile-card-overall) {
       font-family: var(--mono);
       font-size: 1.25rem;
       font-weight: 600;
+      font-variant-numeric: tabular-nums;
     }
     
-    .mobile-card-model {
-      margin-bottom: 12px;
+    :global(.mobile-card-model) {
+      margin-bottom: 14px;
     }
     
-    .mobile-card-model-name {
+    :global(.mobile-card-model-name) {
       font-weight: 500;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
+      line-height: 1.4;
+      color: var(--text-primary);
     }
     
-    .mobile-card-model-org {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
+    :global(.mobile-card-model-org) {
+      font-size: 0.8125rem;
+      color: #777777;
+      line-height: 1.4;
     }
     
-    .mobile-card-metrics {
+    :global(.mobile-card-metrics) {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
     
-    .mobile-card-metric {
+    :global(.mobile-card-metric) {
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
     
-    .mobile-card-metric-label {
+    :global(.mobile-card-metric-label) {
       font-size: 0.75rem;
       color: var(--text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
     
-    .mobile-card-metric-value {
+    :global(.mobile-card-metric-value) {
       font-family: var(--mono);
       font-size: 0.9375rem;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
     }
     
-    .mobile-card-expand {
+    :global(.mobile-card-expand) {
       margin-top: 16px;
       padding-top: 16px;
       border-top: 1px solid var(--border);
@@ -568,14 +608,16 @@
       row.innerHTML = `
         <td class="col-rank metric-value">${index + 1}</td>
         <td>
-          <div class="model-name">${model.name}</div>
-          <div class="model-org">${model.developer}</div>
+          <div class="model-cell">
+            <div class="model-name">${model.name}</div>
+            <div class="model-org">${model.developer}</div>
+          </div>
         </td>
         <td class="metric-value">${model.iou.toFixed(3)}</td>
         <td class="metric-value">${model.structural.toFixed(1)}%</td>
         <td class="metric-value">${model.assembly.toFixed(1)}%</td>
         <td class="metric-value">${model.physical.toFixed(1)}%</td>
-        <td class="metric-value overall">${overall}</td>
+        <td class="metric-value overall">${overall.toFixed(1)}</td>
         <td class="col-cases metric-value">${model.cases.toLocaleString()}</td>
       `;
       
@@ -639,7 +681,7 @@
             <div class="metric-bar-track">
               <div class="metric-bar-fill" style="width: ${overall}%"></div>
             </div>
-            <div class="metric-bar-value">${overall}</div>
+            <div class="metric-bar-value">${overall.toFixed(1)}</div>
           </div>
         </div>
       </td>
@@ -679,7 +721,7 @@
       card.innerHTML = `
         <div class="mobile-card-header">
           <div class="mobile-card-rank">#${index + 1}</div>
-          <div class="mobile-card-overall">${overall}</div>
+          <div class="mobile-card-overall">${overall.toFixed(1)}</div>
         </div>
         <div class="mobile-card-model">
           <div class="mobile-card-model-name">${model.name} (sample)</div>

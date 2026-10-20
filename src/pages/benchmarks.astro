@@ -1,0 +1,334 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BetaCTA from '../components/BetaCTA.astro';
+
+const title = 'Public Spatial AI Benchmarks | Sky3 Network';
+const description = 'Major public benchmarks and datasets for 3D vision, spatial AI, autonomous driving, indoor scene understanding, and robotics: ScanNet, KITTI, nuScenes, Waymo, ShapeNet, ARKitScenes, Matterport3D, Replica, SUN RGB-D, Objaverse, and Open X-Embodiment.';
+---
+
+<BaseLayout title={title} description={description}>
+  <Header />
+  
+  <main>
+    <article class="container">
+      <header class="page-header">
+        <h1>Public Spatial AI Benchmarks</h1>
+        <p class="page-intro">Major public benchmarks and datasets for evaluating 3D vision, spatial understanding, and physical-world AI. These resources have driven advances in scene reconstruction, object detection, and robotics. Sky3 will provide a community-governed benchmark focused on real-world edge cases contributed and verified by independent participants.</p>
+      </header>
+
+      <section id="indoor-scenes">
+        <h2>Indoor Scene Understanding</h2>
+        
+        <dl class="benchmark-list">
+          <div class="benchmark-item">
+            <dt><a href="https://arxiv.org/abs/1702.04405" rel="nofollow noopener" target="_blank">ScanNet</a></dt>
+            <dd>RGB-D video dataset of indoor scenes with 3D camera poses, surface reconstructions, and semantic segmentations.</dd>
+            <dd class="meta"><a href="https://arxiv.org/abs/1702.04405" rel="nofollow noopener" target="_blank">Paper (CVPR 2017)</a></dd>
+          </div>
+
+          <div class="benchmark-item">
+            <dt><a href="https://github.com/apple/ARKitScenes" rel="nofollow noopener" target="_blank">ARKitScenes</a></dt>
+            <dd>High-resolution depth scans of indoor environments captured with LiDAR on mobile devices.</dd>
+            <dd class="meta"><a href="https://arxiv.org/abs/2111.08897" rel="nofollow noopener" target="_blank">Paper (NeurIPS 2021)</a></dd>
+          </div>
+
+          <div class="benchmark-item">
+            <dt><a href="https://niessner.github.io/Matterport/" rel="nofollow noopener" target="_blank">Matterport3D</a></dt>
+            <dd>Large-scale RGB-D dataset of building-scale indoor spaces with semantic annotations.</dd>
+            <dd class="meta"><a href="https://arxiv.org/abs/1709.06158" rel="nofollow noopener" target="_blank">Paper (3DV 2017)</a></dd>
+          </div>
+
+          <div class="benchmark-item">
+            <dt><a href="https://github.com/facebookresearch/Replica-Dataset" rel="nofollow noopener" target="_blank">Replica</a></dt>
+            <dd>High-quality 3D reconstructions of indoor spaces designed for evaluating visual SLAM and embodied AI.</dd>
+            <dd class="meta"><a href="https://arxiv.org/abs/1906.05797" rel="nofollow noopener" target="_blank">arXiv 2019 tech report</a></dd>
+          </div>
+
+          <div class="benchmark-item">
+            <dt><a href="https://rgbd.cs.princeton.edu/" rel="nofollow noopener" target="_blank">SUN RGB-D</a></dt>
+            <dd>Large-scale RGB-D scene understanding benchmark with 10,335 images and dense annotations.</dd>
+            <dd class="meta"><a href="https://rgbd.cs.princeton.edu/paper.pdf" rel="nofollow noopener" target="_blank">Paper (CVPR 2015)</a></dd>
+          </div>
+        </dl>
+      </section>
+
+      <section id="autonomous-driving">
+        <h2>Autonomous Driving and Outdoor Scenes</h2>
+        
+        <dl class="benchmark-list">
+          <div class="benchmark-item">
+            <dt><a href="https://www.cvlibs.net/datasets/kitti/" rel="nofollow noopener" target="_blank">KITTI Vision Benchmark Suite</a></dt>
+            <dd>Autonomous driving dataset with stereo video, LiDAR point clouds, GPS/IMU data, and 3D object annotations.</dd>
+            <dd class="meta"><a href="https://www.cvlibs.net/publications/Geiger2013IJRR.pdf" rel="nofollow noopener" target="_blank">Paper (IJRR 2013)</a></dd>
+          </div>
+
+          <div class="benchmark-item">
+            <dt><a href="https://www.nuscenes.org/" rel="nofollow noopener" target="_blank">nuScenes</a></dt>
+            <dd>Large-scale autonomous driving dataset with full sensor suite (cameras, LiDAR, radar) and 3D bounding boxes.</dd>
+            <dd class="meta"><a href="https://arxiv.org/abs/1903.11027" rel="nofollow noopener" target="_blank">Paper (CVPR 2020)</a></dd>
+          </div>
+
+          <div class="benchmark-item">
+            <dt><a href="https://waymo.com/open/" rel="nofollow noopener" target="_blank">Waymo Open Dataset</a></dt>
+            <dd>High-quality sensor data from autonomous vehicles, including LiDAR, cameras, and 3D labels for perception tasks.</dd>
+            <dd class="meta"><a href="https://arxiv.org/abs/1912.04838" rel="nofollow noopener" target="_blank">Paper (CVPR 2020)</a></dd>
+          </div>
+        </dl>
+      </section>
+
+      <section id="3d-objects">
+        <h2>3D Objects and Shapes</h2>
+        
+        <dl class="benchmark-list">
+          <div class="benchmark-item">
+            <dt><a href="https://shapenet.org/" rel="nofollow noopener" target="_blank">ShapeNet</a></dt>
+            <dd>Large-scale repository of 3D CAD models organized by category, widely used for shape analysis and synthesis research.</dd>
+            <dd class="meta"><a href="https://arxiv.org/abs/1512.03012" rel="nofollow noopener" target="_blank">Paper (arxiv 2015)</a></dd>
+          </div>
+
+          <div class="benchmark-item">
+            <dt><a href="https://objaverse.allenai.org/" rel="nofollow noopener" target="_blank">Objaverse</a></dt>
+            <dd>Large-scale dataset of annotated 3D objects for training and evaluating 3D vision models.</dd>
+            <dd class="meta"><a href="https://arxiv.org/abs/2212.08051" rel="nofollow noopener" target="_blank">Paper (CVPR 2023)</a></dd>
+          </div>
+        </dl>
+      </section>
+
+      <section id="robotics">
+        <h2>Robotics and Embodied AI</h2>
+        
+        <dl class="benchmark-list">
+          <div class="benchmark-item">
+            <dt><a href="https://robotics-transformer-x.github.io/" rel="nofollow noopener" target="_blank">Open X-Embodiment</a></dt>
+            <dd>Large-scale dataset of robotic manipulation demonstrations across multiple robot platforms and tasks.</dd>
+            <dd class="meta"><a href="https://arxiv.org/abs/2310.08864" rel="nofollow noopener" target="_blank">Paper (ICRA 2024)</a></dd>
+          </div>
+        </dl>
+      </section>
+
+      <BetaCTA />
+    </article>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<script type="application/ld+json" set:html={JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Public Spatial AI Benchmarks",
+  "description": "Major public benchmarks and datasets for 3D vision, spatial AI, autonomous driving, indoor scene understanding, and robotics.",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "item": {
+        "@type": "Dataset",
+        "name": "ScanNet",
+        "url": "https://arxiv.org/abs/1702.04405",
+        "description": "RGB-D video dataset of indoor scenes with 3D camera poses, surface reconstructions, and semantic segmentations."
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "item": {
+        "@type": "Dataset",
+        "name": "KITTI Vision Benchmark Suite",
+        "url": "https://www.cvlibs.net/datasets/kitti/",
+        "description": "Autonomous driving dataset with stereo video, LiDAR point clouds, GPS/IMU data, and 3D object annotations."
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "item": {
+        "@type": "Dataset",
+        "name": "nuScenes",
+        "url": "https://www.nuscenes.org/",
+        "description": "Large-scale autonomous driving dataset with full sensor suite and 3D bounding boxes."
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "item": {
+        "@type": "Dataset",
+        "name": "Waymo Open Dataset",
+        "url": "https://waymo.com/open/",
+        "description": "High-quality sensor data from autonomous vehicles, including LiDAR, cameras, and 3D labels."
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 5,
+      "item": {
+        "@type": "Dataset",
+        "name": "ShapeNet",
+        "url": "https://shapenet.org/",
+        "description": "Large-scale repository of 3D CAD models organized by category."
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 6,
+      "item": {
+        "@type": "Dataset",
+        "name": "ARKitScenes",
+        "url": "https://github.com/apple/ARKitScenes",
+        "description": "High-resolution depth scans of indoor environments captured with LiDAR on mobile devices."
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 7,
+      "item": {
+        "@type": "Dataset",
+        "name": "Matterport3D",
+        "url": "https://niessner.github.io/Matterport/",
+        "description": "Large-scale RGB-D dataset of building-scale indoor spaces with semantic annotations."
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 8,
+      "item": {
+        "@type": "Dataset",
+        "name": "Replica",
+        "url": "https://github.com/facebookresearch/Replica-Dataset",
+        "description": "High-quality 3D reconstructions of indoor spaces for visual SLAM and embodied AI."
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 9,
+      "item": {
+        "@type": "Dataset",
+        "name": "Open X-Embodiment",
+        "url": "https://robotics-transformer-x.github.io/",
+        "description": "Large-scale dataset of robotic manipulation demonstrations across multiple platforms."
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 10,
+      "item": {
+        "@type": "Dataset",
+        "name": "Objaverse",
+        "url": "https://objaverse.allenai.org/",
+        "description": "Large-scale dataset of annotated 3D objects for training and evaluating 3D vision models."
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 11,
+      "item": {
+        "@type": "Dataset",
+        "name": "SUN RGB-D",
+        "url": "https://rgbd.cs.princeton.edu/",
+        "description": "Large-scale RGB-D scene understanding benchmark with 10,335 images and dense annotations."
+      }
+    }
+  ]
+}, null, 2)} />
+
+<style>
+  .page-header {
+    margin: 80px 0 48px 0;
+  }
+
+  .page-intro {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-top: 24px;
+    max-width: 72ch;
+  }
+
+  section {
+    margin: 64px 0;
+  }
+
+  section h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 32px;
+    color: var(--text-primary);
+  }
+
+  .benchmark-list {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .benchmark-item {
+    border-left: 3px solid var(--border);
+    padding-left: 24px;
+  }
+
+  .benchmark-item dt {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .benchmark-item dt a {
+    color: var(--text-primary);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+
+  .benchmark-item dt a:hover {
+    border-bottom-color: var(--accent);
+  }
+
+  .benchmark-item dd {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0 0 6px 0;
+  }
+
+  .benchmark-item dd.meta {
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+    margin-top: 8px;
+  }
+
+  .benchmark-item dd.meta a {
+    color: var(--text-tertiary);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: border-color 0.2s ease;
+  }
+
+  .benchmark-item dd.meta a:hover {
+    border-bottom-color: var(--text-secondary);
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      margin: 40px 0 32px 0;
+    }
+
+    section {
+      margin: 48px 0;
+    }
+
+    section h2 {
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+    }
+
+    .benchmark-item {
+      padding-left: 16px;
+    }
+
+    .benchmark-item dt {
+      font-size: 1.125rem;
+    }
+  }
+</style>

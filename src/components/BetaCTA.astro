@@ -1,0 +1,53 @@
+---
+// Reusable beta waitlist CTA component
+---
+
+<div class="beta-cta">
+  <div class="beta-cta-content">
+    <h3>Join the data-ingestion beta</h3>
+    <p>Help build the benchmark for spatial AI. Contribute data, review cases, or test your models on verified real-world edge cases.</p>
+    <a href="/#waitlist" class="btn btn-primary">Join the waitlist →</a>
+  </div>
+</div>
+
+<style>
+  .beta-cta {
+    margin-top: 4rem;
+    padding: 32px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  
+  .beta-cta-content {
+    max-width: 560px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .beta-cta h3 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+  }
+  
+  .beta-cta p {
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+  }
+  
+  .beta-cta .btn {
+    text-decoration: none;
+  }
+  
+  @media (max-width: 768px) {
+    .beta-cta {
+      padding: 24px 16px;
+    }
+    
+    .beta-cta h3 {
+      font-size: 1.25rem;
+    }
+  }
+</style>

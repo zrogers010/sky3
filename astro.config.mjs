@@ -6,4 +6,8 @@ export default defineConfig({
   site: 'https://www.sky3.org',
   output: 'static',
   compressHTML: true,
+  trailingSlash: 'never',
+  build: {
+    format: 'file',
+  },
 });

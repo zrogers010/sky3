@@ -1,0 +1,168 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BetaCTA from '../components/BetaCTA.astro';
+
+const title = 'What is Spatial AI? | Sky3 Network';
+const description = 'Spatial AI refers to systems that understand and reason about three-dimensional space and the physical world. Learn how these models work and why they need independent testing.';
+---
+
+<BaseLayout title={title} description={description}>
+  <Header />
+  
+  <main>
+    <article>
+      <div class="container narrow">
+        <div class="breadcrumb">
+          <a href="/">Home</a>
+          <span>→</span>
+          <span>What is Spatial AI?</span>
+        </div>
+        
+        <h1>What is Spatial AI?</h1>
+        
+        <p class="lead">Spatial AI refers to systems that understand and reason about three-dimensional space and the physical world. Unlike models that work with text or flat images, spatial AI processes depth, geometry and physical relationships.</p>
+        
+        <h2>From pixels to physical understanding</h2>
+        
+        <p>Traditional computer vision identifies objects in photos: a chair, a table, a door. Spatial AI goes further. It knows how far away the chair is, whether the table is stable, and whether a robot could fit through the door. It reconstructs scenes in 3D, predicts how objects move and interact, and reasons about forces, contact and support.</p>
+        
+        <p>These capabilities matter when software controls something physical. A warehouse robot picking items from a shelf, a drone navigating a construction site, or an autonomous vehicle merging into traffic all rely on accurate spatial understanding. Mistakes in spatial reasoning do not just produce bad predictions—they cause collisions, dropped objects and failed tasks.</p>
+        
+        <h2>What spatial AI models do</h2>
+        
+        <p>Spatial AI systems take in data from the physical world—LiDAR scans, depth cameras, stereo images, CAD files or robot sensor streams—and produce structured representations of that world. Common tasks include:</p>
+        
+        <ul>
+          <li><strong>3D reconstruction:</strong> converting 2D images or point clouds into complete 3D models of objects and scenes.</li>
+          <li><strong>Scene understanding:</strong> identifying not just what objects are present, but how they relate spatially (on top of, inside, supported by).</li>
+          <li><strong>Structural parsing:</strong> breaking down a complex assembly into its parts and understanding how those parts connect.</li>
+          <li><strong>Physical reasoning:</strong> predicting stability, contact forces and whether a structure will hold together under load.</li>
+          <li><strong>Path planning:</strong> finding routes through space that avoid obstacles and respect physical constraints.</li>
+        </ul>
+        
+        <h2>World models and foundation models for robotics</h2>
+        
+        <p>A <strong>world model</strong> is a spatial AI system that predicts how the physical world evolves over time. Given sensor data and a proposed action, a world model forecasts what happens next: where objects move, what falls, what remains stable. These models help robots simulate outcomes before acting, reducing trial-and-error in the real world.</p>
+        
+        <p>Foundation models for robotics apply large-scale machine learning to spatial tasks, aiming to generalise across different scenes, objects and sensor types. Examples of research in this space include systems that reconstruct geometry from images, predict object affordances or plan manipulation tasks. Independent evaluation is essential because a model's ability to generalise from lab data to real-world edge cases determines whether it can be deployed safely.</p>
+        
+        <h2>The sim-to-real gap</h2>
+        
+        <p>Many spatial AI models are trained and tested in simulation. Simulated environments are clean, controlled and easy to label. Real-world data is messy: lighting changes, surfaces are worn or dirty, objects are non-standard, and sensors produce noise.</p>
+        
+        <p>The <strong>sim-to-real gap</strong> describes the performance drop when a model trained on synthetic data encounters real scenes. A model might score well on a simulated benchmark but fail on a cluttered factory floor. Bridging this gap requires testing on real-world data—preferably data the model's developers did not select.</p>
+        
+        <h2>Why independent benchmarking matters</h2>
+        
+        <p>Spatial AI is moving from research prototypes into robots, buildings and vehicles. Claims about model performance often come from the teams who built them, measured on benchmarks they chose. Independent testing on verified real-world cases provides a neutral reference, helping users compare models and identify which systems are ready for deployment.</p>
+        
+        <p>Sky3 is designed to provide that testing layer. Contributors will submit hard real-world cases, reviewers will verify them, and models will be scored in public on geometric accuracy, structural integrity and physical reasoning. The goal is a benchmark that reflects the conditions models will face when deployed, not the conditions their developers preferred.</p>
+        
+        <nav class="page-nav">
+          <a href="/world-models" class="btn btn-secondary">Learn about world models →</a>
+          <a href="/metrics" class="btn btn-secondary">See evaluation metrics →</a>
+        </nav>
+        
+        <BetaCTA />
+      </div>
+    </article>
+  </main>
+  
+  <Footer />
+</BaseLayout>
+
+<style>
+  .narrow {
+    max-width: 720px;
+  }
+  
+  .breadcrumb {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .breadcrumb a {
+    color: var(--accent);
+  }
+  
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+  
+  article {
+    padding: 80px 0;
+  }
+  
+  h1 {
+    margin-bottom: 1.5rem;
+  }
+  
+  .lead {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+  }
+  
+  h2 {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+  }
+  
+  ul {
+    margin: 1.5rem 0;
+    padding-left: 1.5rem;
+  }
+  
+  li {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+  }
+  
+  li strong {
+    color: var(--text-primary);
+  }
+  
+  p a,
+  li a {
+    text-decoration: underline;
+  }
+  
+  .page-nav {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  
+  @media (max-width: 768px) {
+    article {
+      padding: 60px 0;
+    }
+    
+    .page-nav {
+      flex-direction: column;
+    }
+    
+    .page-nav .btn {
+      width: 100%;
+    }
+  }
+</style>

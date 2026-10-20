@@ -1,5 +1,6 @@
 ---
 // Footer component
+const isHome = Astro.url.pathname === '/';
 ---
 
 <footer id="footer">
@@ -10,13 +11,30 @@
         <p class="footer-tagline">An open protocol for verifying spatial AI. Stewarded by a non-profit foundation (in formation).</p>
       </div>
       
-      <nav class="footer-nav">
-        <a href="#manifesto">Manifesto</a>
-        <a href="#leaderboard">Leaderboard</a>
-        <a href="#how">How it works</a>
-        <a href="#waitlist">Join the beta</a>
-        <a href="/privacy">Privacy</a>
-      </nav>
+      <div class="footer-links">
+        <nav class="footer-nav">
+          <div class="nav-label">Protocol</div>
+          <a href={isHome ? '#manifesto' : '/#manifesto'}>Manifesto</a>
+          <a href={isHome ? '#leaderboard' : '/#leaderboard'}>Leaderboard</a>
+          <a href="/roadmap">Roadmap</a>
+          <a href={isHome ? '#waitlist' : '/#waitlist'}>Join the beta</a>
+        </nav>
+        
+        <nav class="footer-nav">
+          <div class="nav-label">Learn</div>
+          <a href="/what-is-spatial-ai">What is Spatial AI?</a>
+          <a href="/world-models">World Models</a>
+          <a href="/metrics">Metrics</a>
+          <a href="/benchmarks">Benchmarks</a>
+          <a href="/glossary">Glossary</a>
+          <a href="/faq">FAQ</a>
+        </nav>
+        
+        <nav class="footer-nav">
+          <div class="nav-label">Legal</div>
+          <a href="/privacy">Privacy</a>
+        </nav>
+      </div>
     </div>
     
     <div class="footer-bottom">
@@ -39,14 +57,14 @@
   }
   
   .footer-main {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
     gap: 48px;
     margin-bottom: 40px;
   }
   
   .footer-brand {
-    max-width: 480px;
+    max-width: 400px;
   }
   
   .footer-title {
@@ -63,10 +81,25 @@
     line-height: 1.6;
   }
   
+  .footer-links {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+  
   .footer-nav {
     display: flex;
     flex-direction: column;
     gap: 12px;
+  }
+  
+  .nav-label {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
   }
   
   .footer-nav a {
@@ -100,13 +133,18 @@
     }
     
     .footer-main {
-      flex-direction: column;
+      grid-template-columns: 1fr;
       gap: 32px;
       margin-bottom: 32px;
     }
     
+    .footer-links {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    
     .footer-nav {
-      gap: 16px;
+      gap: 10px;
     }
   }
 </style>
