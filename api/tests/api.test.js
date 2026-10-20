@@ -149,21 +149,42 @@ describe('Waitlist API', () => {
   });
   
   it('should respect X-Forwarded-For for rate limiting', async () => {
-    // With trust proxy, different X-Forwarded-For IPs should be rate-limited separately
-    // Send requests from two different IPs - both should succeed
-    const ip1Result = await postWaitlist({
-      email: 'ratelimit1@example.com',
+    // With trust proxy 2 (ALB + nginx), rate limits should be per-client
+    // Send 6 signups from IP A - the 6th should be rate limited (limit is 5/10min)
+    // Then 1 from IP B should succeed (separate bucket)
+    
+    const ipA = '203.0.113.1';
+    const ipB = '203.0.113.2';
+    
+    // Simulate ALB + nginx: XFF header has "client, ALB-node"
+    // With trust proxy 2, req.ip will be the leftmost (client)
+    const headerA = { 'X-Forwarded-For': `${ipA}, 10.0.0.9` };
+    const headerB = { 'X-Forwarded-For': `${ipB}, 10.0.0.9` };
+    
+    // Send 5 requests from IP A - all should succeed
+    for (let i = 1; i <= 5; i++) {
+      const result = await postWaitlist({
+        email: `ratelimit-a${i}@example.com`,
+        role: 'contributor',
+        consent: true
+      }, headerA);
+      assert.strictEqual(result.status, 200, `Request ${i} from IP A should succeed`);
+    }
+    
+    // 6th request from IP A should be rate limited
+    const a6Result = await postWaitlist({
+      email: 'ratelimit-a6@example.com',
       role: 'contributor',
       consent: true
-    }, { 'X-Forwarded-For': '10.0.0.1' });
+    }, headerA);
+    assert.strictEqual(a6Result.status, 429, '6th request from IP A should be rate limited');
     
-    const ip2Result = await postWaitlist({
-      email: 'ratelimit2@example.com',
+    // Request from IP B should succeed (different bucket)
+    const bResult = await postWaitlist({
+      email: 'ratelimit-b1@example.com',
       role: 'contributor',
       consent: true
-    }, { 'X-Forwarded-For': '10.0.0.2' });
-    
-    assert.strictEqual(ip1Result.status, 200, 'First IP should not be rate limited');
-    assert.strictEqual(ip2Result.status, 200, 'Second IP should not be rate limited');
+    }, headerB);
+    assert.strictEqual(bResult.status, 200, 'Request from IP B should succeed (separate rate limit bucket)');
   });
 });
