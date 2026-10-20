@@ -7,7 +7,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const DB_PATH = process.env.DB_PATH || join(__dirname, 'waitlist.db');
-const OUTPUT_PATH = process.env.OUTPUT_PATH || join(__dirname, 'waitlist-export.csv');
+const OUTPUT_PATH = process.env.OUTPUT_PATH || (
+  // Use /tmp in production (writable), local directory in development
+  process.env.NODE_ENV === 'production' ? '/tmp/waitlist-export.csv' : join(__dirname, 'waitlist-export.csv')
+);
 
 const db = new Database(DB_PATH, { readonly: true });
 

@@ -1,4 +1,279 @@
-# Sky3 Network - Deployment Summary
+# Sky3 Network - Deployment Guide
+
+## AWS Production Deployment (Recommended)
+
+### Architecture
+
+The production deployment uses AWS Copilot to deploy to Fargate:
+- **Application**: `sky3`
+- **Service**: `web` (Load Balanced Web Service)
+- **Region**: `us-east-1`
+- **Account**: `486638851283`
+- **Container**: Single Fargate task running nginx (port 8080) + Node API (port 3001)
+- **Size**: 256 CPU / 512 MB RAM, 1 task
+- **Storage**: EFS volume mounted at `/data` for persistent SQLite database
+- **Domain**: `www.sky3.org` via ACM certificate (DNS-validated on DigitalOcean)
+- **DNS**: Managed on DigitalOcean (not Route53)
+
+### One-Time Setup
+
+These commands must be run once in AWS CloudShell by someone with admin access to account `486638851283`.
+
+#### 1. Initialize Copilot Application
+
+```bash
+# Install Copilot CLI (if not already installed)
+curl -Lo copilot https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux
+chmod +x copilot
+sudo mv copilot /usr/local/bin/
+
+# Initialize the app (creates VPC, ALB, etc.)
+copilot app init sky3 --domain none
+```
+
+#### 2. Initialize Environment
+
+```bash
+# Create the 'prod' environment in us-east-1
+copilot env init --name prod --profile default --region us-east-1
+copilot env deploy --name prod
+```
+
+#### 3. Initialize EFS Storage
+
+```bash
+# Create EFS volume for the SQLite database
+copilot storage init --name waitlistData \
+  --storage-type EFS \
+  --workload web \
+  --lifecycle-policy delete_after_30_days
+
+# This creates copilot/web/addons/waitlistData.yml
+# Note the EFS filesystem ID output: fs-XXXXXXXXX
+```
+
+After `storage init`, edit `copilot/web/manifest.yml` and replace `fs-XXXXXXXXX` with the actual EFS ID shown in the output.
+
+#### 4. Request ACM Certificate
+
+```bash
+# Request DNS-validated certificate for www.sky3.org
+aws acm request-certificate \
+  --domain-name www.sky3.org \
+  --validation-method DNS \
+  --region us-east-1
+
+# Note the certificate ARN: arn:aws:acm:us-east-1:486638851283:certificate/XXXXXXXX-XXXX-...
+```
+
+**Important**: The certificate will remain in "Pending validation" status until you add the DNS validation records.
+
+#### 5. Get DNS Validation Records
+
+```bash
+# List certificates to get the ARN
+aws acm list-certificates --region us-east-1
+
+# Get validation records (replace with your certificate ARN)
+aws acm describe-certificate \
+  --certificate-arn arn:aws:acm:us-east-1:486638851283:certificate/XXXXXXXX-XXXX-... \
+  --region us-east-1 \
+  --query 'Certificate.DomainValidationOptions[0].ResourceRecord' \
+  --output table
+```
+
+You'll see output like:
+
+```
+Name: _abc123def456.www.sky3.org.
+Type: CNAME
+Value: _xyz789.acm-validations.aws.
+```
+
+#### 6. Add DNS Records in DigitalOcean
+
+Log in to DigitalOcean's DNS management for `sky3.org` and add these records:
+
+**ACM Validation (from step 5 output):**
+```
+Type: CNAME
+Hostname: _abc123def456.www.sky3.org
+Value: _xyz789.acm-validations.aws.
+TTL: 1800
+```
+
+**IMPORTANT**: Do NOT add the www CNAME yet. You need to wait for the first deployment to get the ALB DNS name.
+
+After adding the validation CNAME, wait 5-10 minutes and verify the certificate status:
+
+```bash
+aws acm describe-certificate \
+  --certificate-arn arn:aws:acm:us-east-1:486638851283:certificate/XXXXXXXX-XXXX-... \
+  --region us-east-1 \
+  --query 'Certificate.Status'
+```
+
+It should show `"ISSUED"`.
+
+#### 7. Update Manifest with Certificate ARN
+
+Edit `copilot/web/manifest.yml` and update the `http` section:
+
+```yaml
+http:
+  path: '/'
+  healthcheck:
+    path: '/api/waitlist/health'
+    success_codes: '200'
+    interval: 30s
+    timeout: 10s
+    healthy_threshold: 2
+    unhealthy_threshold: 3
+  alias: www.sky3.org
+  hosted_zone: none
+  certificate: arn:aws:acm:us-east-1:486638851283:certificate/XXXXXXXX-XXXX-...
+```
+
+#### 8. Initial Deployment
+
+Clone the repository and deploy:
+
+```bash
+cd ~/
+git clone https://github.com/sky3network/sky3.git  # Update with actual repo URL
+cd sky3
+git checkout main
+
+# Deploy the service
+copilot svc deploy --name web --env prod --app sky3
+
+# Get the ALB DNS name
+copilot svc show --name web --app sky3 --json | jq -r '.routes[0].url'
+```
+
+The output will show something like: `sky3-prod-web-XXXXX.us-east-1.elb.amazonaws.com`
+
+#### 9. Add www CNAME in DigitalOcean
+
+Now add the www CNAME pointing to the ALB:
+
+```
+Type: CNAME
+Hostname: www
+Value: sky3-prod-web-XXXXX.us-east-1.elb.amazonaws.com.  (include trailing dot)
+TTL: 1800
+```
+
+#### 10. Verify
+
+Wait 5-10 minutes for DNS propagation, then test:
+
+```bash
+curl -i https://www.sky3.org/
+curl https://www.sky3.org/api/waitlist/health
+```
+
+### Regular Deployments
+
+After the one-time setup, deployments are done via the CloudShell script.
+
+#### Copy the Deploy Script
+
+```bash
+# In AWS CloudShell
+cd ~/
+SHA=abc1234567890abcdef1234567890abcdef1234  # Full 40-char commit SHA
+curl -o deploy-${SHA}.sh "https://raw.githubusercontent.com/sky3network/sky3/main/scripts/deploy-cloudshell.sh"
+chmod +x deploy-${SHA}.sh
+```
+
+#### Run Deployment
+
+```bash
+SHA=abc1234567890abcdef1234567890abcdef1234 ./deploy-${SHA}.sh
+```
+
+The script will:
+1. Clone the repo and checkout the specified SHA
+2. Build the Docker image
+3. Push to ECR
+4. Deploy to Fargate
+5. Wait for stability
+6. Verify https://www.sky3.org/ returns 200
+7. Verify the API health endpoint returns 200
+
+### Database Management
+
+#### Export Waitlist as CSV
+
+```bash
+copilot svc exec --app sky3 --name web --env prod \
+  --command 'cd /app && node export-csv.js && cat /tmp/waitlist-export.csv'
+```
+
+The output will be CSV format:
+
+```csv
+email,role,organisation,consent_at,created_at
+user@example.com,ai_developer,ACME Corp,2026-10-20T12:00:00.000Z,2026-10-20T12:00:00.000Z
+```
+
+To save to a file:
+
+```bash
+copilot svc exec --app sky3 --name web --env prod \
+  --command 'cd /app && node export-csv.js && cat /tmp/waitlist-export.csv' > waitlist-$(date +%Y%m%d).csv
+```
+
+#### Query Database Directly
+
+```bash
+copilot svc exec --app sky3 --name web --env prod \
+  --command 'sqlite3 /data/waitlist.db "SELECT COUNT(*) FROM waitlist;"'
+```
+
+#### View Logs
+
+```bash
+# Follow live logs
+copilot svc logs --app sky3 --name web --env prod --follow
+
+# View recent logs
+copilot svc logs --app sky3 --name web --env prod --since 1h
+
+# View specific container logs
+copilot svc logs --app sky3 --name web --env prod --container-name nginx --follow
+```
+
+#### Service Status
+
+```bash
+copilot svc status --app sky3 --name web --env prod
+```
+
+### DNS Configuration Summary
+
+**On DigitalOcean (sky3.org domain):**
+
+```
+# ACM validation (from `aws acm describe-certificate` output)
+Type: CNAME
+Hostname: _abc123def456.www.sky3.org
+Value: _xyz789.acm-validations.aws.
+TTL: 1800
+
+# www subdomain points to ALB (from `copilot svc show` output)
+Type: CNAME
+Hostname: www
+Value: sky3-prod-web-XXXXX.us-east-1.elb.amazonaws.com.
+TTL: 1800
+```
+
+**Apex redirect (existing, already configured):**
+
+The apex `sky3.org` already redirects to `www.sky3.org` via an existing DigitalOcean droplet at `164.92.87.51`. This remains unchanged.
+
+---
 
 ## What Was Built
 

@@ -1,0 +1,39 @@
+name: Docker Build
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build Copilot image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.copilot
+          push: false
+          tags: sky3-web:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Build API image (for local docker-compose)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api
+          file: ./api/Dockerfile
+          push: false
+          tags: sky3-api:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
