@@ -54,9 +54,6 @@ const limiter = rateLimit({
   legacyHeaders: false,
   keyGenerator: (req) => {
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(`[Rate Limit] IP=${ip}, XFF=${req.headers['x-forwarded-for']}, Socket=${req.socket.remoteAddress}`);
-    }
     return createHash('sha256').update(ip + 'sky3-waitlist').digest('hex');
   },
   handler: (req, res) => {
