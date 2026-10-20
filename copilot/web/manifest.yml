@@ -1,0 +1,39 @@
+# AWS Copilot manifest for sky3 web service
+# Single container running nginx (static site) + Node API with persistent EFS storage
+
+name: web
+type: Load Balanced Web Service
+
+image:
+  build:
+    dockerfile: Dockerfile.copilot
+    context: .
+  port: 8080
+
+cpu: 256
+memory: 512
+count: 1
+exec: true
+
+deployment:
+  rolling: recreate
+
+http:
+  path: '/'
+  healthcheck:
+    path: '/api/waitlist/health'
+    success_codes: '200'
+    interval: 30s
+    timeout: 10s
+    healthy_threshold: 2
+    unhealthy_threshold: 3
+  alias: www.sky3.org
+
+storage:
+  volumes:
+    waitlistData:
+      efs:
+        uid: 1000
+        gid: 1000
+      path: /data
+      read_only: false

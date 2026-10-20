@@ -49,10 +49,13 @@ function stopServer() {
   }
 }
 
-async function postWaitlist(data) {
+async function postWaitlist(data, headers = {}) {
   const response = await fetch(`${API_URL}/api/waitlist`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      ...headers
+    },
     body: JSON.stringify(data)
   });
   return { status: response.status, data: await response.json() };
@@ -143,5 +146,45 @@ describe('Waitlist API', () => {
     assert.strictEqual(response.status, 200);
     assert.strictEqual(data.status, 'ok');
     assert.ok(typeof data.signups === 'number');
+  });
+  
+  it('should respect X-Forwarded-For for rate limiting', async () => {
+    // With trust proxy 2 (ALB + nginx), rate limits should be per-client
+    // Send 6 signups from IP A - the 6th should be rate limited (limit is 5/10min)
+    // Then 1 from IP B should succeed (separate bucket)
+    
+    const ipA = '203.0.113.1';
+    const ipB = '203.0.113.2';
+    
+    // Simulate ALB + nginx: XFF header has "client, ALB-node"
+    // With trust proxy 2, req.ip will be the leftmost (client)
+    const headerA = { 'X-Forwarded-For': `${ipA}, 10.0.0.9` };
+    const headerB = { 'X-Forwarded-For': `${ipB}, 10.0.0.9` };
+    
+    // Send 5 requests from IP A - all should succeed
+    for (let i = 1; i <= 5; i++) {
+      const result = await postWaitlist({
+        email: `ratelimit-a${i}@example.com`,
+        role: 'contributor',
+        consent: true
+      }, headerA);
+      assert.strictEqual(result.status, 200, `Request ${i} from IP A should succeed`);
+    }
+    
+    // 6th request from IP A should be rate limited
+    const a6Result = await postWaitlist({
+      email: 'ratelimit-a6@example.com',
+      role: 'contributor',
+      consent: true
+    }, headerA);
+    assert.strictEqual(a6Result.status, 429, '6th request from IP A should be rate limited');
+    
+    // Request from IP B should succeed (different bucket)
+    const bResult = await postWaitlist({
+      email: 'ratelimit-b1@example.com',
+      role: 'contributor',
+      consent: true
+    }, headerB);
+    assert.strictEqual(bResult.status, 200, 'Request from IP B should succeed (separate rate limit bucket)');
   });
 });

@@ -1,0 +1,232 @@
+name: Docker Build
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build Copilot image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.copilot
+          push: false
+          load: true
+          tags: sky3-web:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Build API image (for local docker-compose)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api
+          file: ./api/Dockerfile
+          push: false
+          tags: sky3-api:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Run API unit tests
+        run: |
+          cd api
+          npm ci
+          npm test
+      
+      - name: Run container smoke tests
+        run: |
+          set -ex
+          
+          # Create temp data directory
+          TEMP_DATA=$(mktemp -d)
+          chmod 777 "$TEMP_DATA"
+          
+          # Start the Copilot container
+          CONTAINER_ID=$(docker run -d \
+            --name sky3-smoke-test \
+            -p 8080:8080 \
+            -v "$TEMP_DATA:/data" \
+            sky3-web:${{ github.sha }})
+          
+          echo "Started container: $CONTAINER_ID"
+          
+          # Wait for services to be ready (health check)
+          echo "Waiting for services to start..."
+          for i in {1..30}; do
+            if curl -sf http://localhost:8080/api/waitlist/health >/dev/null 2>&1; then
+              echo "Health check passed after ${i}s"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "Health check failed after 30s"
+              docker logs sky3-smoke-test
+              exit 1
+            fi
+            sleep 1
+          done
+          
+          # Test 1: Homepage returns 200 with correct content
+          echo "Test 1: Homepage"
+          HTTP_CODE=$(curl -sf -o /tmp/homepage.html -w "%{http_code}" http://localhost:8080/)
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "FAIL: Homepage returned $HTTP_CODE, expected 200"
+            exit 1
+          fi
+          if ! grep -q "Decentralized Trust for Spatial AI" /tmp/homepage.html; then
+            echo "FAIL: Homepage missing expected h1 marker"
+            exit 1
+          fi
+          echo "PASS: Homepage returns 200 with correct content"
+          
+          # Test 2: /faq returns 200 with unique content
+          echo "Test 2: /faq route"
+          HTTP_CODE=$(curl -sfL -o /tmp/faq.html -w "%{http_code}" http://localhost:8080/faq)
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "FAIL: /faq returned $HTTP_CODE, expected 200"
+            exit 1
+          fi
+          if ! grep -q 'id="what-is-sky3"' /tmp/faq.html; then
+            echo "FAIL: /faq missing expected unique marker"
+            exit 1
+          fi
+          if grep -q '<h1>Decentralized Trust for Spatial AI</h1>' /tmp/faq.html; then
+            echo "FAIL: /faq serves homepage h1"
+            exit 1
+          fi
+          echo "PASS: /faq returns 200 with unique content"
+          
+          # Test 3: /benchmarks returns 200 with unique content
+          echo "Test 3: /benchmarks route"
+          HTTP_CODE=$(curl -sfL -o /tmp/benchmarks.html -w "%{http_code}" http://localhost:8080/benchmarks)
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "FAIL: /benchmarks returned $HTTP_CODE, expected 200"
+            exit 1
+          fi
+          if ! grep -q 'id="indoor-scenes"' /tmp/benchmarks.html; then
+            echo "FAIL: /benchmarks missing expected unique marker"
+            exit 1
+          fi
+          if grep -q '<h1>Decentralized Trust for Spatial AI</h1>' /tmp/benchmarks.html; then
+            echo "FAIL: /benchmarks serves homepage h1"
+            exit 1
+          fi
+          echo "PASS: /benchmarks returns 200 with unique content"
+          
+          # Test 4: Unknown path returns 404
+          echo "Test 4: 404 for unknown paths"
+          HTTP_CODE=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:8080/does-not-exist || true)
+          if [ "$HTTP_CODE" != "404" ]; then
+            echo "FAIL: Unknown path returned $HTTP_CODE, expected 404"
+            exit 1
+          fi
+          echo "PASS: Unknown path returns 404"
+          
+          # Test 5: Health endpoint returns valid JSON
+          echo "Test 5: Health endpoint"
+          HEALTH_JSON=$(curl -sf http://localhost:8080/api/waitlist/health)
+          echo "$HEALTH_JSON" | jq -e '.status == "ok"' >/dev/null || {
+            echo "FAIL: Health check JSON invalid: $HEALTH_JSON"
+            exit 1
+          }
+          echo "PASS: Health endpoint returns valid JSON"
+          
+          # Test 6: POST signup and verify persistence
+          echo "Test 6: Signup persistence"
+          SIGNUP_RESULT=$(curl -sf -X POST http://localhost:8080/api/waitlist \
+            -H "Content-Type: application/json" \
+            -H "X-Forwarded-For: 10.0.0.100" \
+            -d '{"email":"test@smoke.test","role":"contributor","consent":true}')
+          
+          echo "$SIGNUP_RESULT" | jq -e '.success == true' >/dev/null || {
+            echo "FAIL: Signup failed: $SIGNUP_RESULT"
+            exit 1
+          }
+          
+          # Verify it persisted to database
+          SIGNUP_COUNT=$(curl -sf http://localhost:8080/api/waitlist/health | jq -r '.signups')
+          if [ "$SIGNUP_COUNT" != "1" ]; then
+            echo "FAIL: Expected 1 signup, got $SIGNUP_COUNT"
+            exit 1
+          fi
+          
+          # Check database file exists in mounted volume
+          if [ ! -f "$TEMP_DATA/waitlist.db" ]; then
+            echo "FAIL: Database file not created at $TEMP_DATA/waitlist.db"
+            exit 1
+          fi
+          echo "PASS: Signup persisted to database"
+          
+          # Test 7: Rate limiting respects X-Forwarded-For (per-client)
+          echo "Test 7: Rate limiting per client (trust proxy 2 for ALB + nginx)"
+          # In prod: ALB sets XFF=client_ip, nginx adds ALB_ip, giving node "client_ip, ALB_ip"
+          # In smoke test: send XFF=client_ip, nginx adds 127.0.0.1, giving node "client_ip, 127.0.0.1"
+          # With trust proxy 2, req.ip = client_ip (leftmost untrusted entry)
+          # Rate limit is 5/10min per IP.
+          
+          IP_A="203.0.113.100"
+          IP_B="203.0.113.200"
+          
+          # Send 5 signups from IP A - all should succeed
+          for i in {1..5}; do
+            RESULT=$(curl -sf -X POST http://localhost:8080/api/waitlist \
+              -H "Content-Type: application/json" \
+              -H "X-Forwarded-For: $IP_A" \
+              -d "{\"email\":\"ratelimit-a$i@smoke.test\",\"role\":\"contributor\",\"consent\":true}")
+            
+            SUCCESS=$(echo "$RESULT" | jq -r '.success')
+            if [ "$SUCCESS" != "true" ]; then
+              echo "FAIL: Request $i from IP A should succeed but got: $RESULT"
+              exit 1
+            fi
+          done
+          
+          # 6th request from IP A should be rate limited (429)
+          RESULT_A6=$(curl -s -X POST http://localhost:8080/api/waitlist \
+            -H "Content-Type: application/json" \
+            -H "X-Forwarded-For: $IP_A" \
+            -d '{"email":"ratelimit-a6@smoke.test","role":"contributor","consent":true}')
+          
+          HTTP_STATUS_A6=$(echo "$RESULT_A6" | jq -r '.success // "false"')
+          if [ "$HTTP_STATUS_A6" = "true" ]; then
+            echo "FAIL: 6th request from IP A should be rate limited (429) but succeeded"
+            exit 1
+          fi
+          echo "6th request from IP A correctly rate limited"
+          
+          # Request from IP B should succeed (separate bucket)
+          RESULT_B=$(curl -s -X POST http://localhost:8080/api/waitlist \
+            -H "Content-Type: application/json" \
+            -H "X-Forwarded-For: $IP_B" \
+            -d '{"email":"ratelimit-b1@smoke.test","role":"contributor","consent":true}')
+          
+          SUCCESS_B=$(echo "$RESULT_B" | jq -r '.success // "false"')
+          if [ "$SUCCESS_B" != "true" ]; then
+            echo "FAIL: Request from IP B should succeed (separate bucket) but got: $RESULT_B"
+            docker logs sky3-smoke-test | tail -50
+            exit 1
+          fi
+          
+          echo "PASS: Rate limiting per client (A limited at 6th, B succeeds)"
+          
+          # Cleanup
+          echo "Cleaning up..."
+          docker stop sky3-smoke-test
+          docker rm sky3-smoke-test
+          rm -rf "$TEMP_DATA"
+          
+          echo ""
+          echo "=============================="
+          echo "All smoke tests passed! ✅"
+          echo "=============================="

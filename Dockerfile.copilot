@@ -1,0 +1,61 @@
+# Multi-stage build for Sky3 Network on AWS Copilot
+# Single container running nginx (static site) + Node API
+
+# Stage 1: Build the Astro site
+FROM node:22-alpine AS builder
+WORKDIR /build
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Stage 2: Production container with nginx + Node API
+FROM node:22-alpine
+
+# Install nginx, supervisor for process management, and wget for health checks
+RUN apk add --no-cache nginx supervisor wget
+
+# Create nginx directories and set up non-privileged configuration
+RUN mkdir -p /run/nginx /var/log/nginx /var/lib/nginx/tmp \
+    /var/lib/nginx/tmp/client_body \
+    /var/lib/nginx/tmp/proxy \
+    /var/lib/nginx/tmp/fastcgi \
+    /var/lib/nginx/tmp/uwsgi \
+    /var/lib/nginx/tmp/scgi
+
+# Copy custom nginx config for port 8080 (non-privileged)
+COPY copilot/web/nginx-copilot.conf /etc/nginx/http.d/default.conf
+
+# Copy built static site
+COPY --from=builder /build/dist /usr/share/nginx/html
+
+# Set up API
+WORKDIR /app
+COPY api/package*.json ./
+RUN npm ci --omit=dev
+COPY api/*.js ./
+
+# Create data directory
+RUN mkdir -p /data
+
+# Copy supervisor config
+COPY copilot/web/supervisord.conf /etc/supervisord.conf
+
+# Set ownership to node user
+RUN chown -R node:node /app /data /usr/share/nginx/html \
+    /var/log/nginx /var/lib/nginx /run/nginx && \
+    chmod -R 755 /data
+
+# Environment variables
+ENV PORT=3001
+ENV DB_PATH=/data/waitlist.db
+ENV NODE_ENV=production
+
+# Expose port 8080 for nginx (non-privileged)
+EXPOSE 8080
+
+# Run as node user
+USER node
+
+# Start both services via supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
