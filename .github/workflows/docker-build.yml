@@ -114,12 +114,12 @@ jobs:
             echo "FAIL: /benchmarks returned $HTTP_CODE, expected 200"
             exit 1
           fi
-          if ! grep -q "Public Spatial AI Benchmarks" /tmp/benchmarks.html; then
-            echo "FAIL: /benchmarks missing expected h1 marker"
+          if ! grep -q 'id="indoor-scenes"' /tmp/benchmarks.html; then
+            echo "FAIL: /benchmarks missing expected unique marker"
             exit 1
           fi
-          if grep -q "Decentralized Trust for Spatial AI" /tmp/benchmarks.html; then
-            echo "FAIL: /benchmarks serves homepage content"
+          if grep -q '<h1>Decentralized Trust for Spatial AI</h1>' /tmp/benchmarks.html; then
+            echo "FAIL: /benchmarks serves homepage h1"
             exit 1
           fi
           echo "PASS: /benchmarks returns 200 with unique content"
