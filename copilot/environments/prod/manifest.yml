@@ -1,7 +1,0 @@
-# Environment manifest for sky3 prod environment
-# Imports the ACM certificate for www.sky3.org
-
-http:
-  public:
-    certificates:
-      - arn:aws:acm:us-east-1:486638851283:certificate/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX  # Replace with actual ACM certificate ARN for www.sky3.org

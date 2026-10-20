@@ -12,8 +12,8 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const DB_PATH = process.env.DB_PATH || join(__dirname, 'waitlist.db');
 
-// Trust proxy for rate limiting behind ALB + nginx
-app.set('trust proxy', 1);
+// Trust proxy for rate limiting behind ALB + nginx (2 hops)
+app.set('trust proxy', 2);
 
 const db = new Database(DB_PATH);
 

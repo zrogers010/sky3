@@ -96,9 +96,9 @@ jobs:
           
           # Test 3: Unknown path returns 404
           echo "Test 3: 404 for unknown paths"
-          HTTP_CODE=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:8080/does-not-exist || echo "$?")
-          if [ "$HTTP_CODE" = "200" ]; then
-            echo "FAIL: Unknown path returned 200, expected 404"
+          HTTP_CODE=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:8080/does-not-exist || true)
+          if [ "$HTTP_CODE" != "404" ]; then
+            echo "FAIL: Unknown path returned $HTTP_CODE, expected 404"
             exit 1
           fi
           echo "PASS: Unknown path returns 404"
@@ -151,21 +151,55 @@ jobs:
           fi
           echo "PASS: Signup persisted to database"
           
-          # Test 7: Rate limiting with different IPs
-          echo "Test 7: Rate limiting respects X-Forwarded-For"
-          # Two signups from different IPs should both succeed
-          for IP in 10.0.0.1 10.0.0.2; do
+          # Test 7: Rate limiting respects X-Forwarded-For (per-client)
+          echo "Test 7: Rate limiting per client (ALB + nginx = trust proxy 2)"
+          # With trust proxy 2, simulate "client, ALB" in XFF
+          # Rate limit is 5/10min per IP
+          # Send 5 from IP A (all succeed), then 6th from A (429), then 1 from B (200)
+          
+          IP_A="203.0.113.100"
+          IP_B="203.0.113.200"
+          ALB_NODE="10.0.0.9"
+          
+          # Send 5 signups from IP A - all should succeed
+          for i in {2..6}; do  # Start at 2 since Test 6 already did 1 signup
             RESULT=$(curl -sf -X POST http://localhost:8080/api/waitlist \
               -H "Content-Type: application/json" \
-              -H "X-Forwarded-For: $IP" \
-              -d "{\"email\":\"test-$IP@smoke.test\",\"role\":\"contributor\",\"consent\":true}")
+              -H "X-Forwarded-For: $IP_A, $ALB_NODE" \
+              -d "{\"email\":\"ratelimit-a$i@smoke.test\",\"role\":\"contributor\",\"consent\":true}")
             
-            echo "$RESULT" | jq -e '.success == true' >/dev/null || {
-              echo "FAIL: Signup from $IP failed (rate limit not per-IP): $RESULT"
+            SUCCESS=$(echo "$RESULT" | jq -r '.success')
+            if [ "$SUCCESS" != "true" ]; then
+              echo "FAIL: Request $i from IP A should succeed but got: $RESULT"
               exit 1
-            }
+            fi
           done
-          echo "PASS: Rate limiting respects X-Forwarded-For"
+          
+          # 6th request from IP A should be rate limited
+          RESULT_A6=$(curl -sf -X POST http://localhost:8080/api/waitlist \
+            -H "Content-Type: application/json" \
+            -H "X-Forwarded-For: $IP_A, $ALB_NODE" \
+            -d '{"email":"ratelimit-a7@smoke.test","role":"contributor","consent":true}')
+          
+          HTTP_STATUS_A6=$(echo "$RESULT_A6" | jq -r '.success')
+          if [ "$HTTP_STATUS_A6" = "true" ]; then
+            echo "FAIL: 6th request from IP A should be rate limited (429) but succeeded"
+            exit 1
+          fi
+          
+          # Request from IP B should succeed (separate bucket)
+          RESULT_B=$(curl -sf -X POST http://localhost:8080/api/waitlist \
+            -H "Content-Type: application/json" \
+            -H "X-Forwarded-For: $IP_B, $ALB_NODE" \
+            -d '{"email":"ratelimit-b1@smoke.test","role":"contributor","consent":true}')
+          
+          SUCCESS_B=$(echo "$RESULT_B" | jq -r '.success')
+          if [ "$SUCCESS_B" != "true" ]; then
+            echo "FAIL: Request from IP B should succeed (separate bucket) but got: $RESULT_B"
+            exit 1
+          fi
+          
+          echo "PASS: Rate limiting per client (A limited at 6th, B succeeds)"
           
           # Cleanup
           echo "Cleaning up..."

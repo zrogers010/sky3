@@ -21,11 +21,13 @@ These commands must be run once in AWS CloudShell by someone with admin access t
 
 #### 1. Install Copilot CLI
 
+Run in AWS CloudShell (working directory: `~`):
+
 ```bash
 # Install Copilot CLI to ~/bin (persists across CloudShell sessions)
-# Pin to a specific version since Copilot reached end-of-support on 2026-06-12
+# Pin to v1.34.1 (latest release, 2025-04-10; Copilot reached end-of-support 2026-06-12)
 mkdir -p ~/bin
-curl -Lo ~/bin/copilot https://github.com/aws/copilot-cli/releases/download/v1.33.0/copilot-linux
+curl -Lo ~/bin/copilot https://github.com/aws/copilot-cli/releases/download/v1.34.1/copilot-linux
 chmod +x ~/bin/copilot
 
 # Add to PATH if not already
@@ -163,7 +165,7 @@ copilot svc show --name web --app sky3 --json | jq -r '.routes[0].url'
 
 The output will show something like: `sky3-prod-web-XXXXX.us-east-1.elb.amazonaws.com`
 
-#### 9. Add www CNAME in DigitalOcean
+#### 8. Add www CNAME in DigitalOcean
 
 Now add the www CNAME pointing to the ALB:
 
@@ -174,7 +176,7 @@ Value: sky3-prod-web-XXXXX.us-east-1.elb.amazonaws.com.  (include trailing dot)
 TTL: 1800
 ```
 
-#### 10. Verify
+#### 9. Verify
 
 Wait 5-10 minutes for DNS propagation, then test:
 
@@ -242,10 +244,10 @@ copilot svc exec --app sky3 --name web --env prod \
 For a clean CSV without banner, extract between markers or use base64 encoding:
 
 ```bash
-# Clean version using markers
+# Clean version using markers (preserves all rows)
 copilot svc exec --app sky3 --name web --env prod \
-  --command "sh -c 'echo \"===CSV_START===\" && cd /app && node export-csv.js >/dev/null && cat /tmp/waitlist-export.csv && echo \"===CSV_END===\"'" \
-  | sed -n '/===CSV_START===/,/===CSV_END===/p' | grep -v "===" > waitlist-$(date +%Y%m%d).csv
+  --command "sh -c 'echo \"===CSV_START===\" && cd /app && node export-csv.js >/dev/null && cat /tmp/waitlist-export.csv && echo && echo \"===CSV_END===\"'" \
+  | sed -n '/===CSV_START===/,/===CSV_END===/p' | grep -v "===" | tr -d '\r' > waitlist-$(date +%Y%m%d).csv
 ```
 
 #### Interactive Shell Access
