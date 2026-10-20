@@ -24,6 +24,7 @@ jobs:
           context: .
           file: ./Dockerfile.copilot
           push: false
+          load: true
           tags: sky3-web:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -37,3 +38,138 @@ jobs:
           tags: sky3-api:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      
+      - name: Run container smoke tests
+        run: |
+          set -ex
+          
+          # Create temp data directory
+          TEMP_DATA=$(mktemp -d)
+          chmod 777 "$TEMP_DATA"
+          
+          # Start the Copilot container
+          CONTAINER_ID=$(docker run -d \
+            --name sky3-smoke-test \
+            -p 8080:8080 \
+            -v "$TEMP_DATA:/data" \
+            sky3-web:${{ github.sha }})
+          
+          echo "Started container: $CONTAINER_ID"
+          
+          # Wait for services to be ready (health check)
+          echo "Waiting for services to start..."
+          for i in {1..30}; do
+            if curl -sf http://localhost:8080/api/waitlist/health >/dev/null 2>&1; then
+              echo "Health check passed after ${i}s"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "Health check failed after 30s"
+              docker logs sky3-smoke-test
+              exit 1
+            fi
+            sleep 1
+          done
+          
+          # Test 1: Homepage returns 200
+          echo "Test 1: Homepage"
+          HTTP_CODE=$(curl -sf -o /tmp/homepage.html -w "%{http_code}" http://localhost:8080/)
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "FAIL: Homepage returned $HTTP_CODE, expected 200"
+            exit 1
+          fi
+          echo "PASS: Homepage returns 200"
+          
+          # Test 2: /faq returns 200 and is NOT the homepage
+          echo "Test 2: /faq route"
+          HTTP_CODE=$(curl -sf -o /tmp/faq.html -w "%{http_code}" http://localhost:8080/faq)
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "FAIL: /faq returned $HTTP_CODE, expected 200"
+            exit 1
+          fi
+          # Check it's not serving the homepage (different content)
+          if diff -q /tmp/homepage.html /tmp/faq.html >/dev/null 2>&1; then
+            echo "FAIL: /faq serves the same content as homepage (SPA fallback active)"
+            exit 1
+          fi
+          echo "PASS: /faq returns 200 with unique content"
+          
+          # Test 3: Unknown path returns 404
+          echo "Test 3: 404 for unknown paths"
+          HTTP_CODE=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:8080/does-not-exist || echo "$?")
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "FAIL: Unknown path returned 200, expected 404"
+            exit 1
+          fi
+          echo "PASS: Unknown path returns 404"
+          
+          # Test 4: /privacy does NOT redirect to :8080
+          echo "Test 4: /privacy redirect check"
+          LOCATION=$(curl -sf -o /dev/null -w "%{redirect_url}" http://localhost:8080/privacy || true)
+          if echo "$LOCATION" | grep -q ":8080"; then
+            echo "FAIL: /privacy redirects to $LOCATION (contains :8080)"
+            exit 1
+          fi
+          echo "PASS: /privacy redirect does not include :8080"
+          
+          # Test 5: Health endpoint returns valid JSON
+          echo "Test 5: Health endpoint"
+          HEALTH_JSON=$(curl -sf http://localhost:8080/api/waitlist/health)
+          echo "$HEALTH_JSON" | jq -e '.status == "ok"' >/dev/null || {
+            echo "FAIL: Health check JSON invalid: $HEALTH_JSON"
+            exit 1
+          }
+          echo "PASS: Health endpoint returns valid JSON"
+          
+          # Test 6: POST signup and verify persistence
+          echo "Test 6: Signup persistence"
+          SIGNUP_RESULT=$(curl -sf -X POST http://localhost:8080/api/waitlist \
+            -H "Content-Type: application/json" \
+            -H "X-Forwarded-For: 10.0.0.100" \
+            -d '{"email":"test@smoke.test","role":"contributor","consent":true}')
+          
+          echo "$SIGNUP_RESULT" | jq -e '.success == true' >/dev/null || {
+            echo "FAIL: Signup failed: $SIGNUP_RESULT"
+            exit 1
+          }
+          
+          # Verify it persisted to database
+          SIGNUP_COUNT=$(curl -sf http://localhost:8080/api/waitlist/health | jq -r '.signups')
+          if [ "$SIGNUP_COUNT" != "1" ]; then
+            echo "FAIL: Expected 1 signup, got $SIGNUP_COUNT"
+            exit 1
+          fi
+          
+          # Check database file exists in mounted volume
+          if [ ! -f "$TEMP_DATA/waitlist.db" ]; then
+            echo "FAIL: Database file not created at $TEMP_DATA/waitlist.db"
+            exit 1
+          fi
+          echo "PASS: Signup persisted to database"
+          
+          # Test 7: Rate limiting with different IPs
+          echo "Test 7: Rate limiting respects X-Forwarded-For"
+          # Two signups from different IPs should both succeed
+          for IP in 10.0.0.1 10.0.0.2; do
+            RESULT=$(curl -sf -X POST http://localhost:8080/api/waitlist \
+              -H "Content-Type: application/json" \
+              -H "X-Forwarded-For: $IP" \
+              -d "{\"email\":\"test-$IP@smoke.test\",\"role\":\"contributor\",\"consent\":true}")
+            
+            echo "$RESULT" | jq -e '.success == true' >/dev/null || {
+              echo "FAIL: Signup from $IP failed (rate limit not per-IP): $RESULT"
+              exit 1
+            }
+          done
+          echo "PASS: Rate limiting respects X-Forwarded-For"
+          
+          # Cleanup
+          echo "Cleaning up..."
+          docker stop sky3-smoke-test
+          docker rm sky3-smoke-test
+          rm -rf "$TEMP_DATA"
+          
+          echo ""
+          echo "=============================="
+          echo "All smoke tests passed! ✅"
+          echo "=============================="

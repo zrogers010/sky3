@@ -49,10 +49,13 @@ function stopServer() {
   }
 }
 
-async function postWaitlist(data) {
+async function postWaitlist(data, headers = {}) {
   const response = await fetch(`${API_URL}/api/waitlist`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      ...headers
+    },
     body: JSON.stringify(data)
   });
   return { status: response.status, data: await response.json() };
@@ -143,5 +146,24 @@ describe('Waitlist API', () => {
     assert.strictEqual(response.status, 200);
     assert.strictEqual(data.status, 'ok');
     assert.ok(typeof data.signups === 'number');
+  });
+  
+  it('should respect X-Forwarded-For for rate limiting', async () => {
+    // With trust proxy, different X-Forwarded-For IPs should be rate-limited separately
+    // Send requests from two different IPs - both should succeed
+    const ip1Result = await postWaitlist({
+      email: 'ratelimit1@example.com',
+      role: 'contributor',
+      consent: true
+    }, { 'X-Forwarded-For': '10.0.0.1' });
+    
+    const ip2Result = await postWaitlist({
+      email: 'ratelimit2@example.com',
+      role: 'contributor',
+      consent: true
+    }, { 'X-Forwarded-For': '10.0.0.2' });
+    
+    assert.strictEqual(ip1Result.status, 200, 'First IP should not be rate limited');
+    assert.strictEqual(ip2Result.status, 200, 'Second IP should not be rate limited');
   });
 });

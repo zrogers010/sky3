@@ -19,42 +19,26 @@ The production deployment uses AWS Copilot to deploy to Fargate:
 
 These commands must be run once in AWS CloudShell by someone with admin access to account `486638851283`.
 
-#### 1. Initialize Copilot Application
+#### 1. Install Copilot CLI
 
 ```bash
-# Install Copilot CLI (if not already installed)
-curl -Lo copilot https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux
-chmod +x copilot
-sudo mv copilot /usr/local/bin/
+# Install Copilot CLI to ~/bin (persists across CloudShell sessions)
+# Pin to a specific version since Copilot reached end-of-support on 2026-06-12
+mkdir -p ~/bin
+curl -Lo ~/bin/copilot https://github.com/aws/copilot-cli/releases/download/v1.33.0/copilot-linux
+chmod +x ~/bin/copilot
 
-# Initialize the app (creates VPC, ALB, etc.)
-copilot app init sky3 --domain none
+# Add to PATH if not already
+if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
+  echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
+  export PATH="$HOME/bin:$PATH"
+fi
+
+# Verify
+copilot --version
 ```
 
-#### 2. Initialize Environment
-
-```bash
-# Create the 'prod' environment in us-east-1
-copilot env init --name prod --profile default --region us-east-1
-copilot env deploy --name prod
-```
-
-#### 3. Initialize EFS Storage
-
-```bash
-# Create EFS volume for the SQLite database
-copilot storage init --name waitlistData \
-  --storage-type EFS \
-  --workload web \
-  --lifecycle-policy delete_after_30_days
-
-# This creates copilot/web/addons/waitlistData.yml
-# Note the EFS filesystem ID output: fs-XXXXXXXXX
-```
-
-After `storage init`, edit `copilot/web/manifest.yml` and replace `fs-XXXXXXXXX` with the actual EFS ID shown in the output.
-
-#### 4. Request ACM Certificate
+#### 2. Request ACM Certificate
 
 ```bash
 # Request DNS-validated certificate for www.sky3.org
@@ -63,20 +47,17 @@ aws acm request-certificate \
   --validation-method DNS \
   --region us-east-1
 
-# Note the certificate ARN: arn:aws:acm:us-east-1:486638851283:certificate/XXXXXXXX-XXXX-...
+# Note the certificate ARN from the output: arn:aws:acm:us-east-1:486638851283:certificate/XXXXXXXX-XXXX-...
 ```
 
 **Important**: The certificate will remain in "Pending validation" status until you add the DNS validation records.
 
-#### 5. Get DNS Validation Records
+#### 3. Get DNS Validation Records
 
 ```bash
-# List certificates to get the ARN
-aws acm list-certificates --region us-east-1
-
-# Get validation records (replace with your certificate ARN)
+# Get validation records (replace <ARN> with your certificate ARN from step 2)
 aws acm describe-certificate \
-  --certificate-arn arn:aws:acm:us-east-1:486638851283:certificate/XXXXXXXX-XXXX-... \
+  --certificate-arn <ARN> \
   --region us-east-1 \
   --query 'Certificate.DomainValidationOptions[0].ResourceRecord' \
   --output table
@@ -90,11 +71,10 @@ Type: CNAME
 Value: _xyz789.acm-validations.aws.
 ```
 
-#### 6. Add DNS Records in DigitalOcean
+#### 4. Add ACM Validation CNAME in DigitalOcean
 
-Log in to DigitalOcean's DNS management for `sky3.org` and add these records:
+Log in to DigitalOcean's DNS management for `sky3.org` and add the validation record:
 
-**ACM Validation (from step 5 output):**
 ```
 Type: CNAME
 Hostname: _abc123def456.www.sky3.org
@@ -102,37 +82,67 @@ Value: _xyz789.acm-validations.aws.
 TTL: 1800
 ```
 
-**IMPORTANT**: Do NOT add the www CNAME yet. You need to wait for the first deployment to get the ALB DNS name.
-
-After adding the validation CNAME, wait 5-10 minutes and verify the certificate status:
+Wait 5-10 minutes and verify the certificate is issued:
 
 ```bash
 aws acm describe-certificate \
-  --certificate-arn arn:aws:acm:us-east-1:486638851283:certificate/XXXXXXXX-XXXX-... \
+  --certificate-arn <ARN> \
   --region us-east-1 \
   --query 'Certificate.Status'
 ```
 
-It should show `"ISSUED"`.
+It should show `"ISSUED"`. If still "PENDING_VALIDATION", wait a bit longer.
 
-#### 7. Update Manifest with Certificate ARN
+#### 5. Initialize Copilot Application
 
-Edit `copilot/web/manifest.yml` and update the `http` section:
+```bash
+# Initialize the app (creates VPC, ALB, etc.)
+copilot app init sky3
+```
+
+#### 6. Initialize Environment with Imported Certificate
+
+```bash
+# Create the 'prod' environment in us-east-1
+# Replace <ARN> with your certificate ARN from step 2
+copilot env init \
+  --name prod \
+  --profile default \
+  --region us-east-1 \
+  --import-cert-arns <ARN> \
+  --default-config
+
+# Deploy the environment
+copilot env deploy --name prod
+```
+
+**Note**: If `--profile default` fails, first create `~/.aws/config`:
+```bash
+mkdir -p ~/.aws
+cat > ~/.aws/config << EOF
+[default]
+region = us-east-1
+EOF
+```
+
+#### 7. Update Environment Manifest with Certificate ARN
+
+The `env init --import-cert-arns` creates `copilot/environments/prod/manifest.yml`, but verify it contains the certificate:
+
+```bash
+cat copilot/environments/prod/manifest.yml
+```
+
+It should show:
 
 ```yaml
 http:
-  path: '/'
-  healthcheck:
-    path: '/api/waitlist/health'
-    success_codes: '200'
-    interval: 30s
-    timeout: 10s
-    healthy_threshold: 2
-    unhealthy_threshold: 3
-  alias: www.sky3.org
-  hosted_zone: none
-  certificate: arn:aws:acm:us-east-1:486638851283:certificate/XXXXXXXX-XXXX-...
+  public:
+    certificates:
+      - <your-certificate-ARN>
 ```
+
+If not present, edit the file and add it.
 
 #### 8. Initial Deployment
 
@@ -140,11 +150,11 @@ Clone the repository and deploy:
 
 ```bash
 cd ~/
-git clone https://github.com/sky3network/sky3.git  # Update with actual repo URL
+git clone https://github.com/zrogers010/sky3.git
 cd sky3
 git checkout main
 
-# Deploy the service
+# Deploy the service (EFS volume is created automatically from manifest)
 copilot svc deploy --name web --env prod --app sky3
 
 # Get the ALB DNS name
@@ -182,15 +192,17 @@ After the one-time setup, deployments are done via the CloudShell script.
 ```bash
 # In AWS CloudShell
 cd ~/
-SHA=abc1234567890abcdef1234567890abcdef1234  # Full 40-char commit SHA
-curl -o deploy-${SHA}.sh "https://raw.githubusercontent.com/sky3network/sky3/main/scripts/deploy-cloudshell.sh"
+SHA=a7fdbcd621c0d937c9130cbffc645ec95be3d4b4  # Full 40-char commit SHA (example)
+curl -o deploy-${SHA}.sh "https://raw.githubusercontent.com/zrogers010/sky3/${SHA}/scripts/deploy-cloudshell.sh"
 chmod +x deploy-${SHA}.sh
 ```
+
+**Important**: SHA must be exactly 40 hexadecimal characters. The script validates this and will exit if the checkout doesn't match.
 
 #### Run Deployment
 
 ```bash
-SHA=abc1234567890abcdef1234567890abcdef1234 ./deploy-${SHA}.sh
+SHA=a7fdbcd621c0d937c9130cbffc645ec95be3d4b4 ./deploy-${SHA}.sh
 ```
 
 The script will:
@@ -207,42 +219,54 @@ The script will:
 #### Export Waitlist as CSV
 
 ```bash
+# Export and view CSV (includes Session Manager banner and export summary)
 copilot svc exec --app sky3 --name web --env prod \
-  --command 'cd /app && node export-csv.js && cat /tmp/waitlist-export.csv'
+  --command "sh -c 'cd /app && node export-csv.js >/dev/null && cat /tmp/waitlist-export.csv'"
 ```
 
-The output will be CSV format:
+The CSV output format:
 
 ```csv
-email,role,organisation,consent_at,created_at
-user@example.com,ai_developer,ACME Corp,2026-10-20T12:00:00.000Z,2026-10-20T12:00:00.000Z
+id,email,role,organisation,consent_at,created_at
+1,user@example.com,ai_developer,ACME Corp,2026-10-20T12:00:00.000Z,2026-10-20T12:00:00.000Z
 ```
 
-To save to a file:
+To save to a file (note: output includes Session Manager banner lines):
 
 ```bash
 copilot svc exec --app sky3 --name web --env prod \
-  --command 'cd /app && node export-csv.js && cat /tmp/waitlist-export.csv' > waitlist-$(date +%Y%m%d).csv
+  --command "sh -c 'cd /app && node export-csv.js >/dev/null && cat /tmp/waitlist-export.csv'" \
+  > waitlist-$(date +%Y%m%d).csv
 ```
 
-#### Query Database Directly
+For a clean CSV without banner, extract between markers or use base64 encoding:
 
 ```bash
+# Clean version using markers
 copilot svc exec --app sky3 --name web --env prod \
-  --command 'sqlite3 /data/waitlist.db "SELECT COUNT(*) FROM waitlist;"'
+  --command "sh -c 'echo \"===CSV_START===\" && cd /app && node export-csv.js >/dev/null && cat /tmp/waitlist-export.csv && echo \"===CSV_END===\"'" \
+  | sed -n '/===CSV_START===/,/===CSV_END===/p' | grep -v "===" > waitlist-$(date +%Y%m%d).csv
+```
+
+#### Interactive Shell Access
+
+For interactive access (note: image uses Alpine Linux with `sh`, not `bash`):
+
+```bash
+copilot svc exec --app sky3 --name web --env prod --command sh
 ```
 
 #### View Logs
 
 ```bash
-# Follow live logs
+# Follow live logs (combined nginx + API)
 copilot svc logs --app sky3 --name web --env prod --follow
 
 # View recent logs
 copilot svc logs --app sky3 --name web --env prod --since 1h
 
-# View specific container logs
-copilot svc logs --app sky3 --name web --env prod --container-name nginx --follow
+# View logs for specific time range
+copilot svc logs --app sky3 --name web --env prod --start-time 2026-10-20T10:00:00 --end-time 2026-10-20T11:00:00
 ```
 
 #### Service Status
@@ -255,21 +279,23 @@ copilot svc status --app sky3 --name web --env prod
 
 **On DigitalOcean (sky3.org domain):**
 
+**ACM Validation CNAME** (from `aws acm describe-certificate` output):
 ```
-# ACM validation (from `aws acm describe-certificate` output)
 Type: CNAME
 Hostname: _abc123def456.www.sky3.org
 Value: _xyz789.acm-validations.aws.
 TTL: 1800
+```
 
-# www subdomain points to ALB (from `copilot svc show` output)
+**www Subdomain CNAME** (from `copilot svc show` output, add after first deployment):
+```
 Type: CNAME
 Hostname: www
 Value: sky3-prod-web-XXXXX.us-east-1.elb.amazonaws.com.
 TTL: 1800
 ```
 
-**Apex redirect (existing, already configured):**
+**Apex Redirect** (existing, no changes):
 
 The apex `sky3.org` already redirects to `www.sky3.org` via an existing DigitalOcean droplet at `164.92.87.51`. This remains unchanged.
 

@@ -1,19 +1,26 @@
 #!/bin/bash
 # Sky3 Network deployment script for AWS CloudShell
-# Usage: SHA=abc1234567890... ./deploy-cloudshell.sh
+# Usage: SHA=<40-char-commit-sha> ./deploy-cloudshell.sh
 
 set -euo pipefail
 
 # Configuration
-REPO_URL="https://github.com/sky3network/sky3.git"  # Update with actual repo URL
+REPO_URL="https://github.com/zrogers010/sky3.git"
 APP_NAME="sky3"
 SERVICE_NAME="web"
 ENV_NAME="prod"
 
-# Required: SHA environment variable
+# Required: SHA environment variable (must be 40 hex characters)
 if [ -z "${SHA:-}" ]; then
   echo "❌ Error: SHA environment variable is required"
-  echo "Usage: SHA=abc1234567890... $0"
+  echo "Usage: SHA=<40-char-commit-sha> $0"
+  exit 1
+fi
+
+# Validate SHA format (40 hexadecimal characters)
+if ! [[ "$SHA" =~ ^[0-9a-f]{40}$ ]]; then
+  echo "❌ Error: SHA must be exactly 40 hexadecimal characters"
+  echo "Provided: $SHA (${#SHA} characters)"
   exit 1
 fi
 
@@ -38,7 +45,8 @@ git checkout "$SHA"
 
 ACTUAL_SHA=$(git rev-parse HEAD)
 if [ "$ACTUAL_SHA" != "$SHA" ]; then
-  echo "⚠️  Warning: Checked out SHA ($ACTUAL_SHA) doesn't match requested SHA ($SHA)"
+  echo "❌ Error: Checked out SHA ($ACTUAL_SHA) doesn't match requested SHA ($SHA)"
+  exit 1
 fi
 
 echo "✅ Repository cloned at commit $ACTUAL_SHA"
@@ -93,15 +101,23 @@ for i in $(seq 1 $MAX_RETRIES); do
   fi
 done
 
-# Test homepage
+# Test homepage with retries
 echo ""
 echo "Testing https://www.sky3.org/"
-if curl -sf -o /dev/null -w "%{http_code}" https://www.sky3.org/ | grep -q "200"; then
-  echo "✅ Homepage returns 200"
-else
-  echo "❌ Homepage did not return 200"
-  exit 1
-fi
+for i in $(seq 1 $MAX_RETRIES); do
+  echo "Attempt $i/$MAX_RETRIES..."
+  HTTP_CODE=$(curl -sf -o /dev/null -w "%{http_code}" https://www.sky3.org/ || echo "000")
+  if [ "$HTTP_CODE" = "200" ]; then
+    echo "✅ Homepage returns 200"
+    break
+  elif [ $i -eq $MAX_RETRIES ]; then
+    echo "❌ Homepage did not return 200 after $MAX_RETRIES attempts (got $HTTP_CODE)"
+    exit 1
+  else
+    echo "   Got $HTTP_CODE, waiting ${RETRY_DELAY}s before retry..."
+    sleep $RETRY_DELAY
+  fi
+done
 
 echo ""
 echo "═══════════════════════════"

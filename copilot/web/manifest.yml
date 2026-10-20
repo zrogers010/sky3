@@ -15,6 +15,9 @@ memory: 512
 count: 1
 exec: true
 
+deployment:
+  rolling: recreate
+
 http:
   path: '/'
   healthcheck:
@@ -25,24 +28,12 @@ http:
     healthy_threshold: 2
     unhealthy_threshold: 3
   alias: www.sky3.org
-  hosted_zone: none
 
 storage:
   volumes:
     waitlistData:
-      efs: true
+      efs:
+        uid: 1000
+        gid: 1000
       path: /data
       read_only: false
-
-environments:
-  prod:
-    count: 1
-    cpu: 256
-    memory: 512
-    http:
-      alias: www.sky3.org
-    storage:
-      volumes:
-        waitlistData:
-          efs:
-            id: fs-XXXXXXXXX  # Replace with actual EFS ID after `copilot storage init`
