@@ -162,7 +162,7 @@ jobs:
           ALB_NODE="10.0.0.9"
           
           # Send 5 signups from IP A - all should succeed
-          for i in {2..6}; do  # Start at 2 since Test 6 already did 1 signup
+          for i in {1..5}; do
             RESULT=$(curl -sf -X POST http://localhost:8080/api/waitlist \
               -H "Content-Type: application/json" \
               -H "X-Forwarded-For: $IP_A, $ALB_NODE" \
@@ -179,7 +179,7 @@ jobs:
           RESULT_A6=$(curl -s -X POST http://localhost:8080/api/waitlist \
             -H "Content-Type: application/json" \
             -H "X-Forwarded-For: $IP_A, $ALB_NODE" \
-            -d '{"email":"ratelimit-a7@smoke.test","role":"contributor","consent":true}')
+            -d '{"email":"ratelimit-a6@smoke.test","role":"contributor","consent":true}')
           
           HTTP_STATUS_A6=$(echo "$RESULT_A6" | jq -r '.success // "false"')
           if [ "$HTTP_STATUS_A6" = "true" ]; then
@@ -189,12 +189,12 @@ jobs:
           echo "6th request from IP A correctly rate limited"
           
           # Request from IP B should succeed (separate bucket)
-          RESULT_B=$(curl -sf -X POST http://localhost:8080/api/waitlist \
+          RESULT_B=$(curl -s -X POST http://localhost:8080/api/waitlist \
             -H "Content-Type: application/json" \
             -H "X-Forwarded-For: $IP_B, $ALB_NODE" \
             -d '{"email":"ratelimit-b1@smoke.test","role":"contributor","consent":true}')
           
-          SUCCESS_B=$(echo "$RESULT_B" | jq -r '.success')
+          SUCCESS_B=$(echo "$RESULT_B" | jq -r '.success // "false"')
           if [ "$SUCCESS_B" != "true" ]; then
             echo "FAIL: Request from IP B should succeed (separate bucket) but got: $RESULT_B"
             exit 1
