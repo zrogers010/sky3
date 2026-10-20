@@ -2,9 +2,10 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import BetaCTA from '../components/BetaCTA.astro';
 
 const title = 'Evaluation Metrics | Sky3 Network';
-const description = 'Detailed explanation of the metrics used to evaluate spatial AI and world models: 3D IoU, structural integrity, assembly tree accuracy, and physical logic checks.';
+const description = 'Detailed explanation of the metrics used to evaluate spatial AI and world models: 2D-to-3D construction accuracy, bounding box IoU, structural integrity, assembly tree accuracy, and physical logic checks.';
 ---
 
 <BaseLayout title={title} description={description}>
@@ -23,11 +24,85 @@ const description = 'Detailed explanation of the metrics used to evaluate spatia
         
         <p class="lead">Sky3 scores spatial AI models on geometric accuracy, structural understanding and physical reasoning. This page explains each metric, how it is calculated, and which are standard industry metrics versus Sky3's proposed protocol metrics.</p>
         
-        <h2 id="iou">3D Intersection over Union (IoU)</h2>
+        <h2 id="2d-to-3d">2D-to-3D Construction Accuracy</h2>
+        
+        <p><strong>Type:</strong> Standard metric category (Sky3 applies it to real-world edge cases)</p>
+        
+        <p>2D-to-3D construction measures how accurately a model reconstructs three-dimensional structure from two-dimensional inputs such as images, sketches or technical drawings. This is a fundamental task for spatial AI: converting flat representations into volumetric models.</p>
+        
+        <p>Common input scenarios include:</p>
+        <ul>
+          <li>Multi-view imagery with known or estimated camera poses</li>
+          <li>Single-view reconstruction where the model infers depth and occluded geometry</li>
+          <li>Technical drawings or CAD sketches that specify dimensions and relationships</li>
+          <li>Hybrid inputs combining images with partial 3D data (sparse point clouds, depth maps)</li>
+        </ul>
+        
+        <p>Sky3 evaluates 2D-to-3D construction by comparing the predicted 3D output to verified ground truth captured via LiDAR, photogrammetry or high-precision CAD. Accuracy is measured using geometry metrics (IoU, Chamfer distance, surface normals) and completeness checks (coverage of visible and occluded regions).</p>
+        
+        <p><strong>Why it matters:</strong> 2D-to-3D construction is a core capability for robotics (understanding scenes from camera input), autonomous systems (mapping environments), and CAD automation (converting sketches to models). Models that fail on real-world edge cases—unusual perspectives, occlusions, non-standard objects—cannot be trusted in deployed systems.</p>
+        
+        <h2 id="bounding-boxes">Bounding Box Metrics (2D and 3D IoU, mAP)</h2>
+        
+        <p><strong>Type:</strong> Standard metrics</p>
+        
+        <p>Bounding boxes are the simplest spatial abstraction: axis-aligned or oriented boxes that enclose objects. Bounding box metrics measure how well a model detects and localizes objects in 2D images or 3D scenes.</p>
+        
+        <h3>2D Bounding Box IoU</h3>
+        
+        <p>For 2D object detection in images, IoU is computed over rectangular regions:</p>
+        
+        <div class="formula">
+          <p>IoU<sub>2D</sub> = Area(P ∩ G) / Area(P ∪ G)</p>
+        </div>
+        
+        <p>where P is the predicted bounding box and G is the ground truth box. An IoU threshold (commonly 0.5 or 0.75) determines whether a detection is considered correct.</p>
+        
+        <h3>3D Bounding Box IoU</h3>
+        
+        <p>For 3D object detection in point clouds or reconstructed scenes, IoU is computed over three-dimensional volumes. For axis-aligned boxes:</p>
+        
+        <div class="formula">
+          <p>IoU<sub>3D</sub> = Volume(P ∩ G) / Volume(P ∪ G)</p>
+        </div>
+        
+        <p>For oriented bounding boxes (OBB), the boxes may be rotated to fit the object's principal axes. Intersection and union volumes are computed in 3D space.</p>
+        
+        <h3>Mean Average Precision (mAP)</h3>
+        
+        <p>mAP summarizes detection performance across multiple object classes and IoU thresholds. For each class:</p>
+        
+        <ol>
+          <li>Rank detections by confidence score.</li>
+          <li>Compute precision and recall at each rank by comparing to ground truth using an IoU threshold.</li>
+          <li>Calculate Average Precision (AP) as the area under the precision-recall curve.</li>
+          <li>Average AP across all classes to produce mAP.</li>
+        </ol>
+        
+        <p>Sky3 reports mAP at IoU thresholds of 0.5 and 0.75 for both 2D and 3D detection tasks. Higher mAP indicates better localization and fewer false positives.</p>
+        
+        <p><strong>Why it matters:</strong> Bounding box detection is the foundation for scene understanding. Robotics, warehouse automation, and autonomous vehicles rely on accurate object localization. Errors in bounding boxes propagate to downstream tasks like grasping, path planning and collision avoidance.</p>
+        
+        <h2 id="structural-parsing">Structural Component Parsing</h2>
+        
+        <p><strong>Type:</strong> Standard task category (Sky3's integrity metric is a proposed extension)</p>
+        
+        <p>Structural component parsing refers to segmenting a scene or object into meaningful parts: walls, beams, fasteners, panels, joints. Beyond detecting that components exist, parsing identifies their role in the structure.</p>
+        
+        <p>Evaluation metrics for parsing include:</p>
+        <ul>
+          <li><strong>Part-level segmentation accuracy:</strong> IoU or F1 score computed per part category (standard semantic segmentation metrics).</li>
+          <li><strong>Instance segmentation:</strong> distinguishing individual instances of the same part type (e.g., multiple bolts).</li>
+          <li><strong>Hierarchical correctness:</strong> whether the model correctly identifies subassembly relationships (see Assembly Tree Accuracy below).</li>
+        </ul>
+        
+        <p><strong>Why it matters:</strong> Parsing is essential for tasks like disassembly, repair, inspection and manufacturing planning. A model that reconstructs geometry but cannot identify which parts are load-bearing or how they connect is not useful for real-world engineering applications.</p>
+        
+        <h2 id="volumetric-iou">Volumetric 3D IoU</h2>
         
         <p><strong>Type:</strong> Standard metric</p>
         
-        <p>IoU measures how well a predicted 3D reconstruction matches the ground truth. It is the ratio of the overlap volume to the total volume covered by either the prediction or the ground truth.</p>
+        <p>Volumetric IoU measures how well a predicted 3D reconstruction matches the ground truth across the entire volume. It is the ratio of the overlap volume to the total volume covered by either the prediction or the ground truth.</p>
         
         <div class="formula">
           <p>IoU = V(P ∩ G) / V(P ∪ G)</p>
@@ -157,6 +232,8 @@ const description = 'Detailed explanation of the metrics used to evaluate spatia
           <a href="/#leaderboard" class="btn btn-secondary">View the sample leaderboard →</a>
           <a href="/glossary" class="btn btn-secondary">See the glossary →</a>
         </nav>
+        
+        <BetaCTA />
       </div>
     </article>
   </main>

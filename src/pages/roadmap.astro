@@ -1,0 +1,341 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BetaCTA from '../components/BetaCTA.astro';
+
+const title = 'Roadmap | Sky3 Network';
+const description = 'Sky3 protocol development roadmap: from the current landing page and manifesto to the full DePIN data layer, benchmarking hub, and foundation governance.';
+---
+
+<BaseLayout title={title} description={description}>
+  <Header />
+  
+  <main>
+    <article>
+      <div class="container narrow">
+        <div class="breadcrumb">
+          <a href="/">Home</a>
+          <span>→</span>
+          <span>Roadmap</span>
+        </div>
+        
+        <h1>Protocol Roadmap</h1>
+        
+        <p class="lead">Sky3 is being built in phases. The landing page, manifesto and sample leaderboard are live today. The components below are planned for the beta and beyond.</p>
+        
+        <div class="status-legend">
+          <div class="status-item">
+            <span class="status-badge status-live">Live</span>
+            <span>Available now</span>
+          </div>
+          <div class="status-item">
+            <span class="status-badge status-planned">Planned</span>
+            <span>In development or scoping</span>
+          </div>
+        </div>
+        
+        <section class="roadmap-section">
+          <div class="section-header">
+            <h2>Phase 1: Landing Page & Protocol Manifesto</h2>
+            <span class="status-badge status-live">Live</span>
+          </div>
+          
+          <p>Establish credibility as a neutral standards body, build an early waiting list, and attract data contributors.</p>
+          
+          <ul>
+            <li><strong>Landing page:</strong> hero, manifesto, sample leaderboard, and how-it-works sections.</li>
+            <li><strong>Waitlist signup:</strong> data-ingestion beta registration.</li>
+            <li><strong>Documentation:</strong> explanatory pages covering spatial AI, world models, metrics, and protocol glossary.</li>
+          </ul>
+        </section>
+        
+        <section class="roadmap-section">
+          <div class="section-header">
+            <h2>Phase 2: Data-Ingestion Beta</h2>
+            <span class="status-badge status-planned">Planned</span>
+          </div>
+          
+          <p>Open the first ingestion pipeline to a small group of contributors, reviewers and AI developers.</p>
+          
+          <h3>DePIN Data Layer</h3>
+          <span class="status-badge status-planned">Planned</span>
+          
+          <ul>
+            <li><strong>Crowdsourced ingestion pipeline:</strong> upload interface for LiDAR scans (.las, .laz, .ply), CAD files (.step, .stl, .obj), robot trajectory logs (.csv, .json), and geometry imagery.</li>
+            <li><strong>Privacy and sanitization engine:</strong> automated metadata stripping, face detection and removal, and IP sanitization before data enters the archive.</li>
+            <li><strong>Point incentives:</strong> reward contributors for verified, rare or complex edge cases. Points are a record of contribution during the beta; they have no monetary value, and any future use will be decided through governance.</li>
+          </ul>
+          
+          <h3>Verification Protocol</h3>
+          <span class="status-badge status-planned">Planned</span>
+          
+          <ul>
+            <li><strong>Automated validation:</strong> file integrity checks, duplicate detection, format verification and label consistency.</li>
+            <li><strong>Human-in-the-loop (HITL) review:</strong> independent reviewers verify quality, correctness and labeling. Multiple reviewers per case, with agreement required before a case enters the benchmark.</li>
+            <li><strong>Reviewer incentives:</strong> points for accurate reviews, with reputation tracking.</li>
+          </ul>
+        </section>
+        
+        <section class="roadmap-section">
+          <div class="section-header">
+            <h2>Phase 3: Benchmarking Hub & Model Evaluation</h2>
+            <span class="status-badge status-planned">Planned</span>
+          </div>
+          
+          <p>Launch the live leaderboard and model sandbox API for independent testing.</p>
+          
+          <h3>Model Sandbox API</h3>
+          <span class="status-badge status-planned">Planned</span>
+          
+          <ul>
+            <li><strong>Inference endpoint:</strong> AI developers submit model outputs (predicted meshes, point clouds, part labels, assembly trees) for scoring on verified held-out test splits.</li>
+            <li><strong>Evaluation metrics:</strong> 2D-to-3D construction accuracy, 2D/3D bounding box IoU, structural integrity, assembly tree accuracy, and physical logic checks. Detailed metrics are defined on the <a href="/metrics">metrics page</a>.</li>
+            <li><strong>Result publication:</strong> scores published on the public leaderboard with links to evaluation methods and code.</li>
+          </ul>
+          
+          <h3>Live Spatial Leaderboard</h3>
+          <span class="status-badge status-planned">Planned</span>
+          
+          <p>Replace the current sample leaderboard with real model scores. Models ranked on verified real-world cases, not synthetic benchmarks chosen by their developers.</p>
+        </section>
+        
+        <section class="roadmap-section">
+          <div class="section-header">
+            <h2>Phase 4: Decentralized Storage & Governance</h2>
+            <span class="status-badge status-planned">Planned</span>
+          </div>
+          
+          <p>Transition to decentralized infrastructure and community governance.</p>
+          
+          <h3>Decentralized Storage</h3>
+          <span class="status-badge status-planned">Planned</span>
+          
+          <ul>
+            <li><strong>Storage backend:</strong> evaluate Filecoin/IPFS or Arweave for large 3D asset files, CAD models and point clouds.</li>
+            <li><strong>Proof-of-Validation consensus:</strong> define criteria for verification consensus, data provenance, and archive integrity.</li>
+          </ul>
+          
+          <h3>Non-Profit Foundation & Governance</h3>
+          <span class="status-badge status-planned">Planned</span>
+          
+          <ul>
+            <li><strong>Foundation formation:</strong> establish a non-profit entity to steward the protocol, maintain infrastructure, and facilitate governance.</li>
+            <li><strong>Community governance:</strong> protocol changes (metrics, verification rules, archive policies) decided through open processes with input from contributors, reviewers and model developers.</li>
+            <li><strong>Point-based participation:</strong> contributors and reviewers earn points during the beta. Any future use of points (such as governance voting) will be decided by the community, not by the foundation.</li>
+          </ul>
+        </section>
+        
+        <section class="roadmap-section">
+          <div class="section-header">
+            <h2>Future: Enterprise & Safety Certification</h2>
+            <span class="status-badge status-planned">Planned</span>
+          </div>
+          
+          <p>Long-term sustainability through optional enterprise services while keeping the core protocol free and open.</p>
+          
+          <ul>
+            <li><strong>Enterprise dataset licensing:</strong> premium access to high-fidelity, human-verified training data for AI labs fixing model hallucinations or sim-to-real gaps.</li>
+            <li><strong>Sky3 Compliance and Safety Certification:</strong> paid audits providing rigorous physical safety and reliability verification for robotics, autonomous vehicles, and industrial automation software.</li>
+            <li><strong>Custom benchmarks:</strong> private evaluation suites for companies testing proprietary models on verified real-world data.</li>
+          </ul>
+          
+          <p class="note">These services fund the protocol without charging for core access. The public leaderboard, verification protocol and evaluation code remain free and open.</p>
+        </section>
+        
+        <section class="roadmap-section">
+          <h2>What's Not on the Roadmap Yet</h2>
+          
+          <p>The protocol is in its early stages. Several questions remain open and will be refined through the beta:</p>
+          
+          <ul>
+            <li>Specific metrics for temporal prediction accuracy (world models forecasting motion over time).</li>
+            <li>Task-specific scoring for manipulation, navigation and assembly planning.</li>
+            <li>Robustness metrics measuring performance under sensor noise, occlusion and adversarial conditions.</li>
+            <li>Material property recognition (rigid, flexible, brittle, transparent).</li>
+            <li>The exact form of point-based incentives and whether they transition to governance weight.</li>
+          </ul>
+          
+          <p>These will be shaped by feedback from beta participants and the research community. All changes will be documented, versioned and decided through the governance process.</p>
+        </section>
+        
+        <BetaCTA />
+      </div>
+    </article>
+  </main>
+  
+  <Footer />
+</BaseLayout>
+
+<style>
+  .narrow {
+    max-width: 720px;
+  }
+  
+  .breadcrumb {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .breadcrumb a {
+    color: var(--accent);
+  }
+  
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+  
+  article {
+    padding: 80px 0;
+  }
+  
+  h1 {
+    margin-bottom: 1.5rem;
+  }
+  
+  .lead {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+  }
+  
+  .status-legend {
+    display: flex;
+    gap: 24px;
+    padding: 16px 20px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 3rem;
+  }
+  
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+  
+  .status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+  
+  .status-live {
+    background: #D1FAE5;
+    color: #065F46;
+    border: 1px solid #10B981;
+  }
+  
+  .status-planned {
+    background: #E0E7FF;
+    color: #3730A3;
+    border: 1px solid #6366F1;
+  }
+  
+  .roadmap-section {
+    margin-top: 3rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+  
+  .roadmap-section:first-of-type {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .section-header h2 {
+    margin: 0;
+  }
+  
+  h2 {
+    margin-bottom: 1rem;
+  }
+  
+  h3 {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  
+  p {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+  }
+  
+  ul {
+    margin: 1.5rem 0;
+    padding-left: 1.5rem;
+  }
+  
+  li {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+  }
+  
+  li strong {
+    color: var(--text-primary);
+  }
+  
+  p a,
+  li a {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+  
+  p a:hover,
+  li a:hover {
+    text-decoration: none;
+  }
+  
+  .note {
+    font-size: 0.9375rem;
+    color: var(--text-tertiary);
+    font-style: italic;
+  }
+  
+  @media (max-width: 768px) {
+    article {
+      padding: 60px 0;
+    }
+    
+    .status-legend {
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+  }
+</style>

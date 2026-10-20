@@ -10,8 +10,8 @@ const isHome = Astro.url.pathname === '/';
     <nav class="desktop-nav">
       <a href={isHome ? '#manifesto' : '/#manifesto'}>Manifesto</a>
       <a href={isHome ? '#leaderboard' : '/#leaderboard'}>Leaderboard</a>
+      <a href="/roadmap">Roadmap</a>
       <a href="/what-is-spatial-ai">Learn</a>
-      <a href="/metrics">Metrics</a>
       <a href="/faq">FAQ</a>
       <a href={isHome ? '#waitlist' : '/#waitlist'} class="btn btn-primary">Join the beta</a>
     </nav>
@@ -30,8 +30,8 @@ const isHome = Astro.url.pathname === '/';
   <nav id="mobile-nav" class="mobile-nav" hidden>
     <a href={isHome ? '#manifesto' : '/#manifesto'}>Manifesto</a>
     <a href={isHome ? '#leaderboard' : '/#leaderboard'}>Leaderboard</a>
+    <a href="/roadmap">Roadmap</a>
     <a href="/what-is-spatial-ai">Learn</a>
-    <a href="/metrics">Metrics</a>
     <a href="/faq">FAQ</a>
   </nav>
 </header>

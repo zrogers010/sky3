@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import BetaCTA from '../components/BetaCTA.astro';
 
 const title = 'Frequently Asked Questions | Sky3 Network';
 const description = 'Common questions about Sky3, the data-ingestion beta, how the leaderboard works, data privacy, and community governance.';
@@ -106,9 +107,11 @@ const description = 'Common questions about Sky3, the data-ingestion beta, how t
         </div>
         
         <nav class="page-nav">
-          <a href="/#waitlist" class="btn btn-primary">Join the beta waitlist →</a>
           <a href="/glossary" class="btn btn-secondary">View the glossary →</a>
+          <a href="/roadmap" class="btn btn-secondary">See the roadmap →</a>
         </nav>
+        
+        <BetaCTA />
       </div>
     </article>
   </main>

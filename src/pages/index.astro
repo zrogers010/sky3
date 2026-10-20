@@ -23,7 +23,13 @@ const description = 'Sky3 is an open, community-governed network for testing spa
             
             <div class="cta-group">
               <a href="#waitlist" class="btn btn-primary">Join the data-ingestion beta</a>
-              <a href="#manifesto" class="btn-link">Read the manifesto →</a>
+              <a href="/roadmap" class="btn btn-secondary">View the roadmap</a>
+            </div>
+            
+            <div class="hero-links">
+              <a href="#manifesto" class="text-link">Read the manifesto</a>
+              <span class="separator">·</span>
+              <a href="#leaderboard" class="text-link">See the sample leaderboard</a>
             </div>
           </div>
           
@@ -236,19 +242,29 @@ const description = 'Sky3 is an open, community-governed network for testing spa
   
   .cta-group {
     display: flex;
-    gap: 24px;
-    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
     flex-wrap: wrap;
   }
   
-  .btn-link {
+  .hero-links {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 0.9375rem;
+  }
+  
+  .text-link {
     color: var(--accent);
-    font-weight: 500;
     transition: opacity 0.2s ease;
   }
   
-  .btn-link:hover {
-    opacity: 0.8;
+  .text-link:hover {
+    text-decoration: underline;
+  }
+  
+  .separator {
+    color: var(--text-tertiary);
   }
   
   .hero-visual {
