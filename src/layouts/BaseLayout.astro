@@ -5,7 +5,29 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+// Strip .html and index from pathname for canonical/og:url
+let pathname = Astro.url.pathname;
+
+// Handle index.html -> /
+if (pathname === '/index.html' || pathname === '/index') {
+  pathname = '/';
+} else {
+  // Strip .html extension
+  if (pathname.endsWith('.html')) {
+    pathname = pathname.slice(0, -5);
+  }
+  // Strip trailing /index
+  if (pathname.endsWith('/index')) {
+    pathname = pathname.slice(0, -6);
+  }
+  // Remove trailing slash (except for root)
+  if (pathname !== '/' && pathname.endsWith('/')) {
+    pathname = pathname.slice(0, -1);
+  }
+}
+
+const canonicalURL = new URL(pathname, Astro.site);
 const ogImageURL = new URL('/og-image.png', Astro.site);
 
 const organizationSchema = {
