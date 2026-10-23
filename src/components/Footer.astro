@@ -17,7 +17,7 @@ const isHome = Astro.url.pathname === '/';
           <a href={isHome ? '#manifesto' : '/#manifesto'}>Manifesto</a>
           <a href={isHome ? '#leaderboard' : '/#leaderboard'}>Leaderboard</a>
           <a href="/roadmap">Roadmap</a>
-          <a href={isHome ? '#waitlist' : '/#waitlist'}>Join the beta</a>
+          <a href={isHome ? '#waitlist' : '/#waitlist'}>Join the waitlist</a>
         </nav>
         
         <nav class="footer-nav">
@@ -45,9 +45,9 @@ const isHome = Astro.url.pathname === '/';
 
 <style>
   #footer {
-    background: var(--bg-secondary);
+    background: var(--bg-primary);
     border-top: 1px solid var(--border);
-    padding: 60px 0 40px;
+    padding: 80px 0 48px;
   }
   
   .footer-container {
@@ -58,9 +58,9 @@ const isHome = Astro.url.pathname === '/';
   
   .footer-main {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 48px;
-    margin-bottom: 40px;
+    grid-template-columns: 1.2fr 2fr;
+    gap: 80px;
+    margin-bottom: 56px;
   }
   
   .footer-brand {
@@ -68,83 +68,87 @@ const isHome = Astro.url.pathname === '/';
   }
   
   .footer-title {
-    font-family: var(--serif);
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-family: var(--display);
+    font-size: 1.375rem;
+    font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
   }
   
   .footer-tagline {
     color: var(--text-secondary);
     font-size: 0.9375rem;
-    line-height: 1.6;
+    line-height: 1.7;
+    font-weight: 400;
   }
   
   .footer-links {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
+    gap: 48px;
   }
   
   .footer-nav {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
   }
   
   .nav-label {
     font-family: var(--mono);
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text-secondary);
-    margin-bottom: 4px;
+    letter-spacing: 0.15em;
+    color: var(--accent-primary);
+    margin-bottom: 6px;
+    font-weight: 600;
   }
   
   .footer-nav a {
-    color: var(--text-primary);
+    color: var(--text-secondary);
     font-size: 0.9375rem;
-    transition: color 0.2s ease;
+    transition: var(--transition);
+    font-weight: 500;
   }
   
   .footer-nav a:hover {
-    color: var(--accent);
+    color: var(--text-primary);
   }
   
   .footer-bottom {
-    padding-top: 24px;
+    padding-top: 32px;
     border-top: 1px solid var(--border);
   }
   
   .footer-copyright {
     font-size: 0.875rem;
     color: var(--text-tertiary);
-    line-height: 1.5;
+    line-height: 1.6;
   }
   
   @media (max-width: 768px) {
     #footer {
-      padding: 40px 0 32px;
+      padding: 60px 0 40px;
     }
     
     .footer-container {
-      padding: 0 16px;
+      padding: 0 20px;
     }
     
     .footer-main {
       grid-template-columns: 1fr;
-      gap: 32px;
-      margin-bottom: 32px;
+      gap: 48px;
+      margin-bottom: 40px;
     }
     
     .footer-links {
       grid-template-columns: 1fr;
-      gap: 24px;
+      gap: 32px;
     }
     
     .footer-nav {
-      gap: 10px;
+      gap: 12px;
     }
   }
 </style>

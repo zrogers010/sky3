@@ -1,0 +1,215 @@
+---
+// Spatial data visualization for hero section
+---
+
+<div class="spatial-viz">
+  <canvas id="spatial-canvas"></canvas>
+</div>
+
+<style>
+  .spatial-viz {
+    width: 100%;
+    height: 100%;
+    min-height: 500px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 70%);
+  }
+  
+  #spatial-canvas {
+    width: 100%;
+    height: 100%;
+  }
+  
+  @media (max-width: 768px) {
+    .spatial-viz {
+      min-height: 350px;
+    }
+  }
+</style>
+
+<script>
+  const canvas = document.getElementById('spatial-canvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Could not get canvas context');
+  
+  // Check for reduced motion preference
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  let width = canvas.offsetWidth;
+  let height = canvas.offsetHeight;
+  canvas.width = width * window.devicePixelRatio;
+  canvas.height = height * window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  
+  // Point cloud configuration
+  interface Point {
+    x: number;
+    y: number;
+    z: number;
+    vx: number;
+    vy: number;
+    vz: number;
+    size: number;
+    opacity: number;
+  }
+  
+  const points: Point[] = [];
+  const numPoints = 400;
+  const maxDepth = 400;
+  const connectionDistance = 80;
+  
+  // Initialize points in 3D space
+  for (let i = 0; i < numPoints; i++) {
+    points.push({
+      x: Math.random() * width - width / 2,
+      y: Math.random() * height - height / 2,
+      z: Math.random() * maxDepth - maxDepth / 2,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      vz: (Math.random() - 0.5) * 0.3,
+      size: Math.random() * 2 + 1,
+      opacity: Math.random() * 0.5 + 0.3
+    });
+  }
+  
+  let mouseX = 0;
+  let mouseY = 0;
+  let targetMouseX = 0;
+  let targetMouseY = 0;
+  
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    targetMouseX = (e.clientX - rect.left - width / 2) * 0.1;
+    targetMouseY = (e.clientY - rect.top - height / 2) * 0.1;
+  });
+  
+  function project(point: Point): { x: number; y: number; scale: number } {
+    const fov = 500;
+    const scale = fov / (fov + point.z);
+    return {
+      x: point.x * scale + width / 2,
+      y: point.y * scale + height / 2,
+      scale
+    };
+  }
+  
+  function update() {
+    if (!prefersReducedMotion) {
+      // Smooth mouse following
+      mouseX += (targetMouseX - mouseX) * 0.05;
+      mouseY += (targetMouseY - mouseY) * 0.05;
+      
+      points.forEach(point => {
+        point.x += point.vx;
+        point.y += point.vy;
+        point.z += point.vz;
+        
+        // Add subtle mouse influence
+        const dx = mouseX - point.x;
+        const dy = mouseY - point.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 200) {
+          const force = (200 - dist) / 200 * 0.5;
+          point.vx += dx / dist * force * 0.1;
+          point.vy += dy / dist * force * 0.1;
+        }
+        
+        // Boundary wrapping
+        if (point.x < -width / 2) point.x = width / 2;
+        if (point.x > width / 2) point.x = -width / 2;
+        if (point.y < -height / 2) point.y = height / 2;
+        if (point.y > height / 2) point.y = -height / 2;
+        if (point.z < -maxDepth / 2) point.z = maxDepth / 2;
+        if (point.z > maxDepth / 2) point.z = -maxDepth / 2;
+        
+        // Damping
+        point.vx *= 0.99;
+        point.vy *= 0.99;
+        point.vz *= 0.99;
+      });
+    }
+  }
+  
+  function draw() {
+    ctx.fillStyle = 'rgba(9, 9, 11, 0.1)';
+    ctx.fillRect(0, 0, width, height);
+    
+    // Sort points by depth for proper rendering
+    const sortedPoints = [...points].sort((a, b) => a.z - b.z);
+    
+    // Draw connections
+    ctx.strokeStyle = 'rgba(59, 130, 246, 0.15)';
+    ctx.lineWidth = 1;
+    
+    for (let i = 0; i < sortedPoints.length; i++) {
+      const p1 = sortedPoints[i];
+      const proj1 = project(p1);
+      
+      for (let j = i + 1; j < sortedPoints.length; j++) {
+        const p2 = sortedPoints[j];
+        const dx = p1.x - p2.x;
+        const dy = p1.y - p2.y;
+        const dz = p1.z - p2.z;
+        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        
+        if (dist < connectionDistance) {
+          const proj2 = project(p2);
+          const opacity = (1 - dist / connectionDistance) * 0.3 * Math.min(proj1.scale, proj2.scale);
+          ctx.globalAlpha = opacity;
+          ctx.beginPath();
+          ctx.moveTo(proj1.x, proj1.y);
+          ctx.lineTo(proj2.x, proj2.y);
+          ctx.stroke();
+        }
+      }
+    }
+    
+    // Draw points
+    sortedPoints.forEach(point => {
+      const proj = project(point);
+      const size = point.size * proj.scale;
+      const opacity = point.opacity * proj.scale;
+      
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle = `rgba(59, 130, 246, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(proj.x, proj.y, size, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Glow effect for closer points
+      if (proj.scale > 0.8) {
+        ctx.globalAlpha = opacity * 0.3;
+        ctx.beginPath();
+        ctx.arc(proj.x, proj.y, size * 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+    
+    ctx.globalAlpha = 1;
+  }
+  
+  function animate() {
+    update();
+    draw();
+    requestAnimationFrame(animate);
+  }
+  
+  // Handle resize
+  const resizeObserver = new ResizeObserver(() => {
+    width = canvas.offsetWidth;
+    height = canvas.offsetHeight;
+    canvas.width = width * window.devicePixelRatio;
+    canvas.height = height * window.devicePixelRatio;
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  });
+  
+  resizeObserver.observe(canvas);
+  
+  // Start animation
+  animate();
+</script>
