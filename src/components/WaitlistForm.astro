@@ -403,6 +403,13 @@
         form.hidden = true;
         successEmail.textContent = email;
         successMessage.hidden = false;
+        
+        // Track waitlist signup in Google Analytics
+        if (typeof gtag === 'function') {
+          gtag('event', 'sign_up', {
+            method: 'waitlist'
+          });
+        }
       } else {
         if (data.errors) {
           Object.keys(data.errors).forEach(field => {
