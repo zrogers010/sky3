@@ -28,7 +28,8 @@
   
   @media (max-width: 768px) {
     .spatial-viz {
-      min-height: 350px;
+      min-height: 280px;
+      max-height: 320px;
     }
   }
 </style>
@@ -47,150 +48,156 @@
   canvas.height = height * window.devicePixelRatio;
   ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
   
-  // Point cloud configuration - structured room corner
+  // Point cloud configuration - 3D room corner with staircase
   interface Point {
     x: number;
     y: number;
     z: number;
     size: number;
     baseOpacity: number;
-    type: 'wall' | 'floor' | 'ceiling' | 'object';
+    type: 'wall' | 'floor' | 'object';
   }
   
   const points: Point[] = [];
-  const maxDepth = 300;
   
-  // Create a room corner structure (back wall, left wall, floor)
-  const roomDepth = 200;
-  const roomWidth = 300;
-  const roomHeight = 250;
+  // Room dimensions
+  const roomWidth = 280;
+  const roomHeight = 220;
+  const roomDepth = 250;
   
-  // Back wall - dense grid
-  for (let x = -roomWidth/2; x < roomWidth/2; x += 12) {
-    for (let y = -roomHeight/2; y < roomHeight/2; y += 12) {
-      points.push({
-        x: x + (Math.random() - 0.5) * 4,
-        y: y + (Math.random() - 0.5) * 4,
-        z: -roomDepth/2 + (Math.random() - 0.5) * 8,
-        size: 1.5 + Math.random() * 0.5,
-        baseOpacity: 0.4 + Math.random() * 0.3,
-        type: 'wall'
-      });
+  // Helper to add point with sparsity (skip some points for realism)
+  function addPointWithNoise(x: number, y: number, z: number, type: 'wall' | 'floor' | 'object', density: number = 0.75) {
+    if (Math.random() > density) return; // Skip some points for realistic sparsity
+    
+    const noise = type === 'object' ? 2 : 4;
+    points.push({
+      x: x + (Math.random() - 0.5) * noise,
+      y: y + (Math.random() - 0.5) * noise,
+      z: z + (Math.random() - 0.5) * noise,
+      size: 1.2 + Math.random() * 0.6,
+      baseOpacity: 0.5 + Math.random() * 0.4,
+      type
+    });
+  }
+  
+  // Back wall (facing viewer)
+  for (let x = -roomWidth/2; x < roomWidth/2; x += 11) {
+    for (let y = -roomHeight/2; y < roomHeight/2; y += 11) {
+      addPointWithNoise(x, y, -roomDepth/2, 'wall', 0.8);
     }
   }
   
-  // Left wall - dense grid
-  for (let z = -roomDepth/2; z < roomDepth/2; z += 12) {
-    for (let y = -roomHeight/2; y < roomHeight/2; y += 12) {
-      points.push({
-        x: -roomWidth/2 + (Math.random() - 0.5) * 8,
-        y: y + (Math.random() - 0.5) * 4,
-        z: z + (Math.random() - 0.5) * 4,
-        size: 1.5 + Math.random() * 0.5,
-        baseOpacity: 0.35 + Math.random() * 0.25,
-        type: 'wall'
-      });
+  // Left wall (angled view)
+  for (let z = -roomDepth/2; z < roomDepth/2; z += 11) {
+    for (let y = -roomHeight/2; y < roomHeight/2; y += 11) {
+      addPointWithNoise(-roomWidth/2, y, z, 'wall', 0.7);
     }
   }
   
-  // Floor - dense grid
-  for (let x = -roomWidth/2; x < roomWidth/2; x += 12) {
-    for (let z = -roomDepth/2; z < roomDepth/2; z += 12) {
-      points.push({
-        x: x + (Math.random() - 0.5) * 4,
-        y: roomHeight/2 + (Math.random() - 0.5) * 8,
-        z: z + (Math.random() - 0.5) * 4,
-        size: 1.5 + Math.random() * 0.5,
-        baseOpacity: 0.3 + Math.random() * 0.2,
-        type: 'floor'
-      });
+  // Floor (visible plane)
+  for (let x = -roomWidth/2; x < roomWidth/2; x += 11) {
+    for (let z = -roomDepth/2; z < roomDepth/2; z += 11) {
+      addPointWithNoise(x, roomHeight/2, z, 'floor', 0.65);
     }
   }
   
-  // Add a box/object in the room for recognizable structure
-  const boxSize = 50;
-  const boxX = 30;
-  const boxY = 40;
-  const boxZ = -30;
+  // Create a staircase object - 5 steps
+  const stepWidth = 70;
+  const stepDepth = 18;
+  const stepHeight = 15;
+  const stairX = 20;
+  const stairBaseY = roomHeight/2 - 10;
+  const stairZ = -20;
   
-  for (let x = -boxSize/2; x < boxSize/2; x += 8) {
-    for (let y = -boxSize/2; y < boxSize/2; y += 8) {
-      // Front face
-      points.push({
-        x: boxX + x + (Math.random() - 0.5) * 3,
-        y: boxY + y + (Math.random() - 0.5) * 3,
-        z: boxZ + boxSize/2 + (Math.random() - 0.5) * 3,
-        size: 1.8 + Math.random() * 0.4,
-        baseOpacity: 0.6 + Math.random() * 0.3,
-        type: 'object'
-      });
-      // Top face
-      points.push({
-        x: boxX + x + (Math.random() - 0.5) * 3,
-        y: boxY - boxSize/2 + (Math.random() - 0.5) * 3,
-        z: boxZ + y + (Math.random() - 0.5) * 3,
-        size: 1.8 + Math.random() * 0.4,
-        baseOpacity: 0.5 + Math.random() * 0.3,
-        type: 'object'
-      });
+  for (let step = 0; step < 5; step++) {
+    const y = stairBaseY - step * stepHeight;
+    const z = stairZ + step * stepDepth;
+    
+    // Step surface (top)
+    for (let x = -stepWidth/2; x < stepWidth/2; x += 9) {
+      for (let zOffset = 0; zOffset < stepDepth; zOffset += 9) {
+        addPointWithNoise(stairX + x, y, z + zOffset, 'object', 0.85);
+      }
+    }
+    
+    // Step riser (front face)
+    if (step > 0) {
+      for (let x = -stepWidth/2; x < stepWidth/2; x += 9) {
+        for (let yOffset = 0; yOffset < stepHeight; yOffset += 9) {
+          addPointWithNoise(stairX + x, y + yOffset, z, 'object', 0.8);
+        }
+      }
     }
   }
   
-  let rotation = { x: 0.15, y: 0.2 };
-  let targetRotation = { x: 0.15, y: 0.2 };
+  let rotation = { x: 0.2, y: 0.3 };
+  let autoRotateSpeed = 0.0008; // Slow orbit
+  let time = 0;
+  let scanLineY = 0;
+  let mouseInfluence = { x: 0, y: 0 };
   
   canvas.addEventListener('mousemove', (e) => {
     const rect = canvas.getBoundingClientRect();
-    targetRotation.x = ((e.clientY - rect.top) / height - 0.5) * 0.4;
-    targetRotation.y = ((e.clientX - rect.left) / width - 0.5) * 0.4 + 0.2;
+    mouseInfluence.x = ((e.clientY - rect.top) / height - 0.5) * 0.15;
+    mouseInfluence.y = ((e.clientX - rect.left) / width - 0.5) * 0.15;
   });
   
-  function rotatePoint(x: number, y: number, z: number): { x: number; y: number; z: number } {
+  function rotatePoint(x: number, y: number, z: number, rx: number, ry: number): { x: number; y: number; z: number } {
     // Rotate around Y axis
-    let x1 = x * Math.cos(rotation.y) - z * Math.sin(rotation.y);
-    let z1 = x * Math.sin(rotation.y) + z * Math.cos(rotation.y);
+    let x1 = x * Math.cos(ry) - z * Math.sin(ry);
+    let z1 = x * Math.sin(ry) + z * Math.cos(ry);
     
     // Rotate around X axis
-    let y1 = y * Math.cos(rotation.x) - z1 * Math.sin(rotation.x);
-    let z2 = y * Math.sin(rotation.x) + z1 * Math.cos(rotation.x);
+    let y1 = y * Math.cos(rx) - z1 * Math.sin(rx);
+    let z2 = y * Math.sin(rx) + z1 * Math.cos(rx);
     
     return { x: x1, y: y1, z: z2 };
   }
   
-  function project(point: { x: number; y: number; z: number }): { x: number; y: number; scale: number } {
-    const fov = 400;
-    const scale = fov / (fov + point.z + 150);
+  function project(point: { x: number; y: number; z: number }): { x: number; y: number; scale: number; distance: number } {
+    const fov = 450;
+    const distance = Math.sqrt(point.x * point.x + point.y * point.y + point.z * point.z);
+    const scale = fov / (fov + point.z + 200);
     return {
       x: point.x * scale + width / 2,
       y: point.y * scale + height / 2,
-      scale
+      scale,
+      distance
     };
   }
   
   function update() {
+    time += 0.016; // ~60fps
+    
     if (!prefersReducedMotion) {
-      // Smooth rotation following mouse
-      rotation.x += (targetRotation.x - rotation.x) * 0.05;
-      rotation.y += (targetRotation.y - rotation.y) * 0.05;
+      // Slow automatic orbit
+      rotation.y += autoRotateSpeed;
+      
+      // Gentle mouse influence
+      rotation.x = 0.2 + mouseInfluence.x * 0.3;
+      rotation.y = rotation.y + mouseInfluence.y * 0.1;
     }
+    
+    // Scan line sweep (slow vertical sweep)
+    scanLineY = (Math.sin(time * 0.5) * 0.5 + 0.5) * height;
   }
   
   function draw() {
-    // Clear with fade for motion blur effect
-    ctx.fillStyle = 'rgba(9, 9, 11, 0.15)';
+    // Clear with slight fade
+    ctx.fillStyle = 'rgba(9, 9, 11, 0.12)';
     ctx.fillRect(0, 0, width, height);
     
-    // Transform and sort points by depth
+    // Transform and sort points by depth (back to front)
     const transformedPoints = points.map(point => {
-      const rotated = rotatePoint(point.x, point.y, point.z);
+      const rotated = rotatePoint(point.x, point.y, point.z, rotation.x, rotation.y);
       const proj = project(rotated);
       return { ...point, rotated, proj };
     }).sort((a, b) => a.rotated.z - b.rotated.z);
     
-    // Draw bounding box wireframe
-    ctx.strokeStyle = 'rgba(59, 130, 246, 0.15)';
-    ctx.lineWidth = 1;
-    ctx.globalAlpha = 0.3;
+    // Draw thin bounding box wireframe
+    ctx.strokeStyle = 'rgba(37, 99, 235, 0.2)';
+    ctx.lineWidth = 0.8;
+    ctx.globalAlpha = 0.4;
     
     const boxCorners = [
       [-roomWidth/2, -roomHeight/2, -roomDepth/2],
@@ -210,56 +217,81 @@
     ];
     
     boxEdges.forEach(([i, j]) => {
-      const p1 = project(rotatePoint(boxCorners[i][0], boxCorners[i][1], boxCorners[i][2]));
-      const p2 = project(rotatePoint(boxCorners[j][0], boxCorners[j][1], boxCorners[j][2]));
+      const p1 = project(rotatePoint(boxCorners[i][0], boxCorners[i][1], boxCorners[i][2], rotation.x, rotation.y));
+      const p2 = project(rotatePoint(boxCorners[j][0], boxCorners[j][1], boxCorners[j][2], rotation.x, rotation.y));
       ctx.beginPath();
       ctx.moveTo(p1.x, p1.y);
       ctx.lineTo(p2.x, p2.y);
       ctx.stroke();
     });
     
-    // Draw scan lines
+    // Draw points with depth-based size and brightness falloff
+    transformedPoints.forEach(point => {
+      const { proj, rotated, baseOpacity, size, type } = point;
+      
+      // Strong depth-based falloff for 3D perspective
+      const maxDist = 600;
+      const distanceFactor = Math.max(0, 1 - proj.distance / maxDist);
+      const depthBrightness = Math.pow(distanceFactor, 1.5); // Non-linear falloff
+      
+      // Size falloff - closer points are bigger
+      const depthSize = 0.4 + distanceFactor * 0.6;
+      
+      // Opacity based on depth and base opacity
+      const opacity = baseOpacity * depthBrightness * Math.max(0.15, proj.scale);
+      
+      // Color intensity based on type and depth
+      let r = 37, g = 99, b = 235;
+      if (type === 'object') {
+        r = 59; g = 130; b = 246; // Brighter blue for staircase
+      } else if (type === 'floor') {
+        r = 30; g = 80; b = 200; // Darker for floor
+      }
+      
+      // Apply depth brightness to color
+      const cr = Math.floor(r * (0.3 + depthBrightness * 0.7));
+      const cg = Math.floor(g * (0.3 + depthBrightness * 0.7));
+      const cb = Math.floor(b * (0.3 + depthBrightness * 0.7));
+      
+      const pointSize = size * proj.scale * depthSize * 1.4;
+      
+      // Skip very small/distant points
+      if (pointSize < 0.3 || opacity < 0.05) return;
+      
+      ctx.globalAlpha = Math.min(opacity, 0.9);
+      ctx.fillStyle = `rgb(${cr}, ${cg}, ${cb})`;
+      ctx.beginPath();
+      ctx.arc(proj.x, proj.y, pointSize, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Subtle glow for closer points
+      if (depthBrightness > 0.6) {
+        ctx.globalAlpha = opacity * 0.15;
+        ctx.beginPath();
+        ctx.arc(proj.x, proj.y, pointSize * 2.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+    
+    // Scan line sweep effect
     ctx.globalAlpha = 0.08;
-    for (let i = 0; i < 5; i++) {
-      const y = (i / 5) * height;
+    ctx.strokeStyle = 'rgba(37, 99, 235, 0.3)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, scanLineY);
+    ctx.lineTo(width, scanLineY);
+    ctx.stroke();
+    
+    // Subtle horizontal guide lines
+    ctx.globalAlpha = 0.03;
+    ctx.lineWidth = 0.5;
+    for (let i = 1; i < 6; i++) {
+      const y = (i / 6) * height;
       ctx.beginPath();
       ctx.moveTo(0, y);
       ctx.lineTo(width, y);
       ctx.stroke();
     }
-    
-    // Draw points with depth-based coloring
-    transformedPoints.forEach(point => {
-      const { proj, rotated, baseOpacity, size, type } = point;
-      
-      // Depth-based opacity and color intensity
-      const depthFactor = 1 - (rotated.z + maxDepth) / (maxDepth * 2);
-      const opacity = baseOpacity * proj.scale * Math.max(0.3, depthFactor);
-      
-      // Color based on type and depth
-      let r = 59, g = 130, b = 246;
-      if (type === 'object') {
-        r = 96; g = 165; b = 250; // Brighter blue for objects
-      } else if (type === 'floor') {
-        r = 45; g = 100; b = 200; // Slightly darker
-      }
-      
-      const pointSize = size * proj.scale * 1.2;
-      
-      ctx.globalAlpha = opacity;
-      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-      ctx.beginPath();
-      ctx.arc(proj.x, proj.y, pointSize, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Glow for closer/object points
-      if (proj.scale > 0.7 || type === 'object') {
-        ctx.globalAlpha = opacity * 0.2;
-        ctx.beginPath();
-        ctx.arc(proj.x, proj.y, pointSize * 2.5, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    });
     
     ctx.globalAlpha = 1;
   }

@@ -5,7 +5,10 @@ const isHome = Astro.url.pathname === '/';
 
 <header id="header">
   <div class="header-container">
-    <a href="/" class="wordmark">Sky3 Network</a>
+    <a href="/" class="wordmark">
+      <span class="full-name">Sky3 Network</span>
+      <span class="short-name">Sky3</span>
+    </a>
     
     <nav class="desktop-nav">
       <a href={isHome ? '#manifesto' : '/#manifesto'}>Manifesto</a>
@@ -23,8 +26,6 @@ const isHome = Astro.url.pathname === '/';
         <path d="M4 18l16 0"></path>
       </svg>
     </button>
-    
-    <a href={isHome ? '#waitlist' : '/#waitlist'} class="mobile-cta btn btn-primary">Join the waitlist</a>
   </div>
   
   <nav id="mobile-nav" class="mobile-nav" hidden>
@@ -33,6 +34,7 @@ const isHome = Astro.url.pathname === '/';
     <a href="/roadmap">Roadmap</a>
     <a href="/what-is-spatial-ai">Learn</a>
     <a href="/faq">FAQ</a>
+    <a href={isHome ? '#waitlist' : '/#waitlist'}>Join the waitlist</a>
   </nav>
 </header>
 
@@ -72,6 +74,14 @@ const isHome = Astro.url.pathname === '/';
     color: var(--accent-primary);
   }
   
+  .wordmark .full-name {
+    display: inline;
+  }
+  
+  .wordmark .short-name {
+    display: none;
+  }
+  
   .desktop-nav {
     display: flex;
     align-items: center;
@@ -95,14 +105,29 @@ const isHome = Astro.url.pathname === '/';
   }
   
   .mobile-menu-btn,
-  .mobile-cta,
   .mobile-nav {
     display: none;
   }
   
   @media (max-width: 768px) {
+    #header {
+      height: 60px;
+    }
+    
     .header-container {
       padding: 0 20px;
+    }
+    
+    .wordmark {
+      font-size: 1.125rem;
+    }
+    
+    .wordmark .full-name {
+      display: none;
+    }
+    
+    .wordmark .short-name {
+      display: inline;
     }
     
     .desktop-nav {
@@ -121,12 +146,6 @@ const isHome = Astro.url.pathname === '/';
     
     .mobile-menu-btn:hover {
       background: var(--bg-tertiary);
-    }
-    
-    .mobile-cta {
-      display: block;
-      padding: 10px 18px;
-      font-size: 0.875rem;
     }
     
     .mobile-nav {
