@@ -4,9 +4,10 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Leaderboard from '../components/Leaderboard.astro';
 import WaitlistForm from '../components/WaitlistForm.astro';
+import SpatialVisualization from '../components/SpatialVisualization.astro';
 
 const title = 'Sky3 Network: Decentralized Trust for Spatial AI';
-const description = 'Sky3 is an open, community-governed network for testing spatial and physical-world AI models against real-world data. Contributors will supply hard cases from the physical world, independent reviewers will verify them, and models will be scored in public.';
+const description = 'Sky3 is building an independent benchmark for spatial AI. Engineers, hobbyists and researchers contribute edge-case data from the physical world, the community verifies it, and AI models are scored in public so vendors stop grading their own homework.';
 ---
 
 <BaseLayout title={title} description={description}>
@@ -19,59 +20,58 @@ const description = 'Sky3 is an open, community-governed network for testing spa
           <div class="hero-text">
             <div class="kicker">OPEN PROTOCOL · DRAFT v0.1</div>
             <h1>Decentralized Trust for Spatial AI</h1>
-            <p class="subhead">Sky3 is an open, community-governed network for testing spatial and physical-world AI models against real-world data. Contributors will supply hard cases from the physical world, independent reviewers will verify them, and models will be scored in public.</p>
+            <p class="subhead">Sky3 is building an independent benchmark for spatial AI. Engineers, hobbyists and researchers contribute edge-case data from the physical world—the hard cases models fail on—the community verifies it, and AI models are scored in public so vendors stop grading their own homework.</p>
             
             <div class="cta-group">
-              <a href="#waitlist" class="btn btn-primary">Join the data-ingestion beta</a>
+              <a href="#waitlist" class="btn btn-primary">
+                Join the early contributor waitlist
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14"></path>
+                  <path d="M12 5l7 7l-7 7"></path>
+                </svg>
+              </a>
               <a href="/roadmap" class="btn btn-secondary">View the roadmap</a>
             </div>
             
             <div class="hero-links">
-              <a href="#manifesto" class="text-link">Read the manifesto</a>
+              <a href="#manifesto" class="text-link">
+                <span>Read the manifesto</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 7l10 10"></path>
+                  <path d="M17 8v9h-9"></path>
+                </svg>
+              </a>
               <span class="separator">·</span>
-              <a href="#leaderboard" class="text-link">See the sample leaderboard</a>
+              <a href="#leaderboard" class="text-link">
+                <span>See the sample leaderboard</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 7l10 10"></path>
+                  <path d="M17 8v9h-9"></path>
+                </svg>
+              </a>
             </div>
           </div>
           
           <div class="hero-visual">
-            <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <g stroke="currentColor" stroke-width="1.5" fill="none">
-                <path d="M100 100 L100 300 L300 300 L300 100 Z" />
-                <path d="M100 100 L200 50 L400 50 L300 100" />
-                <path d="M300 100 L400 50 L400 250 L300 300" />
-                <path d="M150 150 L150 250 L250 250 L250 150 Z" />
-                <path d="M150 150 L200 120 L300 120 L250 150" />
-                <path d="M250 150 L300 120 L300 220 L250 250" />
-                <circle cx="150" cy="150" r="3" fill="currentColor" />
-                <circle cx="250" cy="150" r="3" fill="currentColor" />
-                <circle cx="250" cy="250" r="3" fill="currentColor" />
-                <circle cx="150" cy="250" r="3" fill="currentColor" />
-                <circle cx="200" cy="120" r="3" fill="currentColor" />
-                <circle cx="300" cy="120" r="3" fill="currentColor" />
-                <circle cx="300" cy="220" r="3" fill="currentColor" />
-                <circle cx="200" cy="220" r="3" fill="currentColor" />
-              </g>
-            </svg>
+            <SpatialVisualization />
           </div>
         </div>
         
         <div class="fact-strip">
           <div class="fact-item">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z"></path>
-              <path d="M15 9l-6 0"></path>
-              <path d="M9 15l6 0"></path>
-              <path d="M9 12l0 3"></path>
-              <path d="M15 12l0 -3"></path>
+              <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path>
+              <path d="M7 9l5 -5l5 5"></path>
+              <path d="M12 4l0 12"></path>
             </svg>
-            <span>Planned intake: LiDAR, CAD, robot trajectories, geometry imagery</span>
+            <span>Contributors upload LiDAR scans, CAD files, robot logs and complex geometry imagery</span>
           </div>
           <div class="fact-item">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 12l2 2l4 -4"></path>
               <path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"></path>
             </svg>
-            <span>Designed for human and automated verification of every submission</span>
+            <span>Independent reviewers verify every case before it counts toward a benchmark</span>
           </div>
           <div class="fact-item">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -79,7 +79,7 @@ const description = 'Sky3 is an open, community-governed network for testing spa
               <path d="M9 8m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
               <path d="M15 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
             </svg>
-            <span>Designed for public, reproducible model scores</span>
+            <span>Models are scored in public on these verified real-world edge cases</span>
           </div>
         </div>
       </div>
@@ -125,11 +125,80 @@ const description = 'Sky3 is an open, community-governed network for testing spa
     
     <section id="leaderboard">
       <div class="container">
-        <div class="section-label">SPATIAL LEADERBOARD · PREVIEW</div>
+        <div class="section-label">SPATIAL LEADERBOARD · FORMAT PREVIEW</div>
         <h2>What a public scorecard looks like</h2>
-        <p class="intro-text">The leaderboard will rank spatial and physical-world models on verified real-world cases. The table below uses <strong>made-up models and made-up numbers</strong> to show the format.</p>
+        <p class="intro-text">The leaderboard will rank spatial and physical-world models on verified real-world cases. <strong>The table below shows the format only—all model names and scores are fictional</strong> to illustrate how results will be presented.</p>
         
         <Leaderboard />
+      </div>
+    </section>
+    
+    <section id="what-to-contribute">
+      <div class="container">
+        <div class="section-label">FOR CONTRIBUTORS</div>
+        <h2>What you'd upload, and why it matters</h2>
+        
+        <p class="intro-text">The benchmark will be built from edge cases that break current models. If you work with spatial data, you likely have examples that models consistently fail on.</p>
+        
+        <div class="contribution-examples">
+          <div class="example-card">
+            <div class="example-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
+                <path d="M9 8m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
+                <path d="M15 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
+                <path d="M4 20l14 0"></path>
+              </svg>
+            </div>
+            <h3>LiDAR and point clouds</h3>
+            <p>Scans with reflective surfaces, glass facades, or extreme weather artifacts. Cases where reconstruction algorithms misread structure or merge unconnected parts.</p>
+            <div class="example-formats">.las, .laz, .ply, .pcd</div>
+          </div>
+          
+          <div class="example-card">
+            <div class="example-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0"></path>
+                <path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0"></path>
+                <path d="M3 6l0 13"></path>
+                <path d="M12 6l0 13"></path>
+                <path d="M21 6l0 13"></path>
+              </svg>
+            </div>
+            <h3>CAD and 3D models</h3>
+            <p>Assemblies with non-standard fasteners, interference fits, or parts that only work in one configuration. Structures that look plausible but can't hold load.</p>
+            <div class="example-formats">.step, .stl, .obj, .fbx</div>
+          </div>
+          
+          <div class="example-card">
+            <div class="example-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5"></path>
+              </svg>
+            </div>
+            <h3>Robot trajectories and logs</h3>
+            <p>Paths through cluttered spaces, grasps that fail on ambiguous geometry, or pick sequences that ignore collision. Failure cases from real deployments.</p>
+            <div class="example-formats">.csv, .json, .bag</div>
+          </div>
+          
+          <div class="example-card">
+            <div class="example-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 8h.01"></path>
+                <path d="M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z"></path>
+                <path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5"></path>
+                <path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3"></path>
+              </svg>
+            </div>
+            <h3>Geometry imagery</h3>
+            <p>Photos of structures with hidden joints, transparent or mirrored materials, ambiguous depth cues, or lighting that breaks segmentation. Occlusion and multi-body contact.</p>
+            <div class="example-formats">.jpg, .png, .tiff</div>
+          </div>
+        </div>
+        
+        <div class="contribution-note">
+          <p><strong>Nothing is live yet.</strong> The upload pipeline is on the <a href="/roadmap">roadmap</a>. Joining the waitlist means you'd be among the first to contribute data when the system opens, helping shape what the benchmark measures and how contributors are credited.</p>
+        </div>
       </div>
     </section>
     
@@ -204,9 +273,9 @@ const description = 'Sky3 is an open, community-governed network for testing spa
     
     <section id="waitlist">
       <div class="container">
-        <div class="section-label">DATA-INGESTION BETA</div>
-        <h2>Join the beta</h2>
-        <p class="intro-text">We're opening the first data-ingestion beta to a small group of contributors, AI developers and researchers. Leave your details and we'll email you when there's a place.</p>
+        <div class="section-label">EARLY CONTRIBUTOR WAITLIST</div>
+        <h2>Be among the first to contribute</h2>
+        <p class="intro-text">The upload pipeline isn't built yet. Join the waitlist and we'll email you when it opens. You'll be among the first to upload spatial data and help shape the benchmark.</p>
         
         <WaitlistForm />
       </div>
@@ -218,201 +287,287 @@ const description = 'Sky3 is an open, community-governed network for testing spa
 
 <style>
   #hero {
-    padding: 100px 0 80px;
+    padding: 160px 0 140px;
+    background: radial-gradient(ellipse at top, rgba(59, 130, 246, 0.05) 0%, transparent 60%);
   }
   
   .hero-content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 80px;
     align-items: center;
     margin-bottom: 60px;
   }
   
   .hero-text {
-    max-width: 560px;
+    max-width: 620px;
   }
   
   .subhead {
-    font-size: 1.125rem;
+    font-size: 1.1875rem;
     color: var(--text-secondary);
-    line-height: 1.7;
-    margin-bottom: 2rem;
+    line-height: 1.65;
+    margin-bottom: 2.5rem;
+    font-weight: 400;
   }
   
   .cta-group {
     display: flex;
     gap: 16px;
-    margin-bottom: 16px;
+    margin-bottom: 24px;
     flex-wrap: wrap;
   }
   
   .hero-links {
     display: flex;
-    gap: 12px;
+    gap: 16px;
     align-items: center;
     font-size: 0.9375rem;
   }
   
   .text-link {
-    color: var(--accent);
-    transition: opacity 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+    transition: var(--transition);
+    font-weight: 500;
   }
   
   .text-link:hover {
-    text-decoration: underline;
+    color: var(--accent-primary);
+  }
+  
+  .text-link svg {
+    opacity: 0.6;
+    transition: var(--transition);
+  }
+  
+  .text-link:hover svg {
+    opacity: 1;
+    transform: translate(2px, -2px);
   }
   
   .separator {
-    color: var(--text-tertiary);
+    color: var(--border-strong);
   }
   
   .hero-visual {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-  
-  .hero-visual svg {
-    width: 100%;
-    max-width: 400px;
-    height: auto;
-    color: var(--text-primary);
+    height: 100%;
   }
   
   .fact-strip {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
+    gap: 24px;
     padding-top: 60px;
-    border-top: 1px solid var(--border);
   }
   
   .fact-item {
     display: flex;
-    gap: 12px;
-    align-items: start;
+    flex-direction: column;
+    gap: 16px;
+    padding: 32px 28px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: var(--transition);
+  }
+  
+  .fact-item:hover {
+    border-color: var(--border-accent);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
   }
   
   .fact-item svg {
     flex-shrink: 0;
-    margin-top: 2px;
-    color: var(--accent);
+    color: var(--accent-primary);
+    opacity: 0.9;
   }
   
   .fact-item span {
-    font-family: var(--mono);
-    font-size: 0.875rem;
-    line-height: 1.5;
+    font-size: 0.9375rem;
+    line-height: 1.6;
     color: var(--text-secondary);
+    font-weight: 400;
   }
   
   .manifesto-body {
-    max-width: 720px;
-    margin: 32px 0;
+    max-width: 820px;
+    margin: 40px 0 56px;
   }
   
   .manifesto-body p {
-    font-size: 1.0625rem;
-    line-height: 1.7;
+    font-size: 1.125rem;
+    line-height: 1.75;
     color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+  }
+  
+  .manifesto-body p:last-child {
+    margin-bottom: 0;
   }
   
   .principles-list {
-    max-width: 720px;
-    margin: 40px 0;
-    padding-left: 24px;
+    max-width: 820px;
+    margin: 48px 0;
+    padding-left: 0;
+    display: grid;
+    gap: 20px;
   }
   
   .principles-list li {
     font-size: 1.0625rem;
     line-height: 1.7;
     color: var(--text-secondary);
-    margin-bottom: 16px;
+    padding: 24px 28px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    list-style: none;
+    transition: var(--transition);
+  }
+  
+  .principles-list li:hover {
+    border-color: var(--border-accent);
+    box-shadow: var(--shadow-sm);
   }
   
   .principles-list li strong {
-    color: var(--text-primary);
+    color: var(--accent-primary);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1.125rem;
   }
   
   .footnote {
     font-size: 0.9375rem;
     color: var(--text-tertiary);
-    margin-top: 32px;
+    margin-top: 40px;
+    padding: 20px 24px;
+    background: var(--bg-secondary);
+    border-left: 3px solid var(--border-accent);
+    border-radius: var(--radius-sm);
   }
   
   .intro-text {
-    max-width: 720px;
-    font-size: 1.0625rem;
+    max-width: 820px;
+    font-size: 1.125rem;
+    line-height: 1.75;
     color: var(--text-secondary);
-    margin-bottom: 40px;
+    margin-bottom: 48px;
+    font-weight: 400;
+  }
+  
+  #what-to-contribute .intro-text {
+    margin-bottom: 32px;
   }
   
   .steps {
     display: grid;
     grid-template-columns: 1fr auto 1fr auto 1fr;
-    gap: 32px;
-    margin: 48px 0 40px;
+    gap: 40px;
+    margin: 56px 0 48px;
   }
   
   .step {
     display: flex;
     flex-direction: column;
+    padding: 32px 28px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: var(--transition);
+    position: relative;
+  }
+  
+  .step:hover {
+    border-color: var(--border-accent);
+    box-shadow: var(--shadow);
+    transform: translateY(-4px);
   }
   
   .step-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
+    gap: 16px;
+    margin-bottom: 20px;
   }
   
   .step-number {
-    font-family: var(--mono);
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--accent);
+    font-family: var(--display);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    opacity: 0.15;
+    line-height: 1;
   }
   
   .step-header svg {
-    color: var(--accent);
+    color: var(--accent-primary);
+    opacity: 0.9;
   }
   
   .step h3 {
     margin-bottom: 12px;
+    font-size: 1.25rem;
   }
   
   .step p {
     font-size: 0.9375rem;
     color: var(--text-secondary);
-    line-height: 1.6;
-    margin-bottom: 16px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    font-weight: 400;
   }
   
   .detail-list {
-    padding-left: 20px;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
   
   .detail-list li {
     font-size: 0.875rem;
     color: var(--text-tertiary);
     line-height: 1.6;
-    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+    list-style: none;
+  }
+  
+  .detail-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent-primary);
+    opacity: 0.6;
   }
   
   .step-arrow {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
-    color: var(--border-strong);
-    margin-top: 60px;
+    font-size: 1.5rem;
+    color: var(--border-accent);
+    margin-top: 80px;
   }
   
   .disclaimer {
     font-size: 0.9375rem;
     color: var(--text-tertiary);
-    max-width: 720px;
+    max-width: 820px;
+    padding: 20px 24px;
+    background: var(--bg-secondary);
+    border-left: 3px solid var(--border-accent);
+    border-radius: var(--radius-sm);
   }
   
   @media (max-width: 1024px) {
@@ -426,25 +581,158 @@ const description = 'Sky3 is an open, community-governed network for testing spa
     }
   }
   
+  .contribution-examples {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    margin: 48px 0;
+  }
+  
+  .example-card {
+    padding: 32px 28px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-secondary);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .example-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-primary), transparent);
+    opacity: 0;
+    transition: var(--transition);
+  }
+  
+  .example-card:hover {
+    border-color: var(--border-accent);
+    box-shadow: var(--shadow);
+    transform: translateY(-4px);
+  }
+  
+  .example-card:hover::before {
+    opacity: 1;
+  }
+  
+  .example-icon {
+    color: var(--accent-primary);
+    margin-bottom: 20px;
+    opacity: 0.9;
+  }
+  
+  .example-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+  
+  .example-card p {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    font-weight: 400;
+  }
+  
+  .example-formats {
+    font-family: var(--mono);
+    font-size: 0.8125rem;
+    color: var(--text-tertiary);
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    display: inline-block;
+  }
+  
+  .contribution-note {
+    max-width: 820px;
+    margin: 56px auto 0;
+    padding: 28px 32px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-accent);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .contribution-note p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+  
+  .contribution-note strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  
+  .contribution-note a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  
+  .contribution-note a:hover {
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 1024px) {
+    .contribution-examples {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 1024px) {
+    .contribution-examples {
+      grid-template-columns: 1fr;
+    }
+  }
+  
   @media (max-width: 768px) {
     #hero {
-      padding: 60px 0;
+      padding: 80px 0 60px;
     }
     
     .hero-content {
       grid-template-columns: 1fr;
-      gap: 40px;
-      margin-bottom: 40px;
+      gap: 32px;
+      margin-bottom: 48px;
     }
     
     .hero-visual {
-      order: -1;
+      order: 1;
+      min-height: 280px;
+      max-height: 300px;
+    }
+    
+    .hero-text h1 {
+      font-size: clamp(1.75rem, 8vw, 2.5rem);
+      line-height: 1.15;
+      word-break: break-word;
+    }
+    
+    .subhead {
+      font-size: 1rem;
+      margin-bottom: 1.75rem;
+      line-height: 1.6;
     }
     
     .fact-strip {
       grid-template-columns: 1fr;
-      gap: 24px;
-      padding-top: 40px;
+      gap: 20px;
+      padding-top: 48px;
+    }
+    
+    .fact-item {
+      padding: 24px 20px;
     }
     
     .cta-group {
@@ -454,6 +742,21 @@ const description = 'Sky3 is an open, community-governed network for testing spa
     
     .cta-group .btn {
       width: 100%;
+      justify-content: center;
+    }
+    
+    .hero-links {
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    
+    .separator {
+      display: none;
+    }
+    
+    .contribution-note {
+      padding: 20px 24px;
     }
   }
 </style>

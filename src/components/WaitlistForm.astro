@@ -128,28 +128,30 @@
   input[type="email"],
   input[type="text"] {
     width: 100%;
-    padding: 12px;
+    padding: 14px 16px;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     font-family: var(--sans);
-    font-size: 1rem;
+    font-size: 0.9375rem;
     color: var(--text-primary);
-    background: var(--bg-primary);
-    transition: border-color 0.2s ease;
+    background: var(--bg-tertiary);
+    transition: var(--transition);
   }
   
   input[type="email"]:focus,
   input[type="text"]:focus {
     outline: none;
-    border-color: var(--accent);
+    border-color: var(--border-accent);
+    background: var(--bg-elevated);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
   
   input[aria-invalid="true"] {
-    border-color: #D9480F;
+    border-color: var(--danger);
   }
   
   input[type="email"]:user-invalid {
-    border-color: #D9480F;
+    border-color: var(--danger);
   }
   
   fieldset {
@@ -172,26 +174,28 @@
   .radio-label {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     cursor: pointer;
-    padding: 12px;
+    padding: 14px 16px;
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    transition: all 0.2s ease;
+    background: var(--bg-tertiary);
+    transition: var(--transition);
   }
   
   .radio-label:hover {
-    background: var(--bg-secondary);
+    background: var(--bg-elevated);
     border-color: var(--border-strong);
   }
   
   .radio-label:has(input:checked) {
-    background: var(--bg-secondary);
-    border-color: var(--accent);
+    background: var(--bg-elevated);
+    border-color: var(--border-accent);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
   
   .radio-label:has(input:focus-visible) {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--accent-primary);
     outline-offset: 2px;
   }
   
@@ -263,36 +267,41 @@
   
   .success-state,
   .error-state {
-    padding: 32px;
+    padding: 40px 32px;
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
     text-align: center;
+    background: var(--bg-secondary);
+    box-shadow: var(--shadow-sm);
   }
   
   .success-state svg {
-    color: #10B981;
-    margin-bottom: 16px;
+    color: var(--success);
+    margin-bottom: 20px;
   }
   
   .success-state h3 {
-    font-family: var(--serif);
-    font-size: 1.5rem;
-    margin-bottom: 8px;
+    font-family: var(--display);
+    font-size: 1.75rem;
+    margin-bottom: 12px;
+    font-weight: 600;
   }
   
   .success-state p {
     color: var(--text-secondary);
     margin-bottom: 0;
+    font-size: 1rem;
   }
   
   .error-state svg {
-    color: #D9480F;
-    margin-bottom: 16px;
+    color: var(--danger);
+    margin-bottom: 20px;
   }
   
   .error-state p {
     color: var(--text-secondary);
     margin-bottom: 0;
+    font-size: 1rem;
   }
 </style>
 

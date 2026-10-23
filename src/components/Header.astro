@@ -5,7 +5,10 @@ const isHome = Astro.url.pathname === '/';
 
 <header id="header">
   <div class="header-container">
-    <a href="/" class="wordmark">Sky3 Network</a>
+    <a href="/" class="wordmark">
+      <span class="full-name">Sky3 Network</span>
+      <span class="short-name">Sky3</span>
+    </a>
     
     <nav class="desktop-nav">
       <a href={isHome ? '#manifesto' : '/#manifesto'}>Manifesto</a>
@@ -13,7 +16,7 @@ const isHome = Astro.url.pathname === '/';
       <a href="/roadmap">Roadmap</a>
       <a href="/what-is-spatial-ai">Learn</a>
       <a href="/faq">FAQ</a>
-      <a href={isHome ? '#waitlist' : '/#waitlist'} class="btn btn-primary">Join the beta</a>
+      <a href={isHome ? '#waitlist' : '/#waitlist'} class="btn btn-primary">Join the waitlist</a>
     </nav>
     
     <button class="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-nav">
@@ -23,8 +26,6 @@ const isHome = Astro.url.pathname === '/';
         <path d="M4 18l16 0"></path>
       </svg>
     </button>
-    
-    <a href={isHome ? '#waitlist' : '/#waitlist'} class="mobile-cta btn btn-primary">Join the beta</a>
   </div>
   
   <nav id="mobile-nav" class="mobile-nav" hidden>
@@ -33,6 +34,7 @@ const isHome = Astro.url.pathname === '/';
     <a href="/roadmap">Roadmap</a>
     <a href="/what-is-spatial-ai">Learn</a>
     <a href="/faq">FAQ</a>
+    <a href={isHome ? '#waitlist' : '/#waitlist'}>Join the waitlist</a>
   </nav>
 </header>
 
@@ -41,7 +43,9 @@ const isHome = Astro.url.pathname === '/';
     position: sticky;
     top: 0;
     z-index: 100;
-    background: var(--bg-primary);
+    background: rgba(9, 9, 11, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
     height: var(--header-height);
   }
@@ -58,10 +62,24 @@ const isHome = Astro.url.pathname === '/';
   }
   
   .wordmark {
-    font-family: var(--serif);
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-family: var(--display);
+    font-size: 1.25rem;
+    font-weight: 700;
     color: var(--text-primary);
+    letter-spacing: -0.02em;
+    transition: var(--transition);
+  }
+  
+  .wordmark:hover {
+    color: var(--accent-primary);
+  }
+  
+  .wordmark .full-name {
+    display: inline;
+  }
+  
+  .wordmark .short-name {
+    display: none;
   }
   
   .desktop-nav {
@@ -72,23 +90,44 @@ const isHome = Astro.url.pathname === '/';
   
   .desktop-nav a {
     font-size: 0.9375rem;
-    color: var(--text-primary);
-    transition: color 0.2s ease;
+    color: var(--text-secondary);
+    transition: var(--transition);
+    font-weight: 500;
   }
   
   .desktop-nav a:not(.btn):hover {
-    color: var(--accent);
+    color: var(--text-primary);
+  }
+  
+  .desktop-nav .btn {
+    padding: 10px 22px;
+    font-size: 0.875rem;
   }
   
   .mobile-menu-btn,
-  .mobile-cta,
   .mobile-nav {
     display: none;
   }
   
   @media (max-width: 768px) {
+    #header {
+      height: 60px;
+    }
+    
     .header-container {
-      padding: 0 16px;
+      padding: 0 20px;
+    }
+    
+    .wordmark {
+      font-size: 1.125rem;
+    }
+    
+    .wordmark .full-name {
+      display: none;
+    }
+    
+    .wordmark .short-name {
+      display: inline;
     }
     
     .desktop-nav {
@@ -96,15 +135,17 @@ const isHome = Astro.url.pathname === '/';
     }
     
     .mobile-menu-btn {
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       padding: 8px;
       color: var(--text-primary);
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
     }
     
-    .mobile-cta {
-      display: block;
-      padding: 8px 16px;
-      font-size: 0.875rem;
+    .mobile-menu-btn:hover {
+      background: var(--bg-tertiary);
     }
     
     .mobile-nav {
@@ -113,9 +154,12 @@ const isHome = Astro.url.pathname === '/';
       top: var(--header-height);
       left: 0;
       right: 0;
-      background: var(--bg-primary);
+      background: rgba(9, 9, 11, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
-      padding: 16px 0;
+      padding: 20px 0;
+      box-shadow: var(--shadow-lg);
     }
     
     .mobile-nav[hidden] {
@@ -124,14 +168,16 @@ const isHome = Astro.url.pathname === '/';
     
     .mobile-nav a {
       display: block;
-      padding: 12px 24px;
-      color: var(--text-primary);
+      padding: 14px 24px;
+      color: var(--text-secondary);
       font-size: 0.9375rem;
-      transition: background 0.2s ease;
+      font-weight: 500;
+      transition: var(--transition);
     }
     
     .mobile-nav a:hover {
       background: var(--bg-secondary);
+      color: var(--text-primary);
     }
   }
 </style>

@@ -1,0 +1,318 @@
+---
+// Spatial data visualization for hero section
+---
+
+<div class="spatial-viz">
+  <canvas id="spatial-canvas"></canvas>
+</div>
+
+<style>
+  .spatial-viz {
+    width: 100%;
+    height: 100%;
+    min-height: 500px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.02) 0%, rgba(9, 9, 11, 0.98) 100%);
+    box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.5);
+  }
+  
+  #spatial-canvas {
+    width: 100%;
+    height: 100%;
+  }
+  
+  @media (max-width: 768px) {
+    .spatial-viz {
+      min-height: 280px;
+      max-height: 320px;
+    }
+  }
+</style>
+
+<script>
+  const canvas = document.getElementById('spatial-canvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Could not get canvas context');
+  
+  // Check for reduced motion preference
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  let width = canvas.offsetWidth;
+  let height = canvas.offsetHeight;
+  canvas.width = width * window.devicePixelRatio;
+  canvas.height = height * window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  
+  // Point cloud configuration - 3D room corner with staircase
+  interface Point {
+    x: number;
+    y: number;
+    z: number;
+    size: number;
+    baseOpacity: number;
+    type: 'wall' | 'floor' | 'object';
+  }
+  
+  const points: Point[] = [];
+  
+  // Room dimensions
+  const roomWidth = 280;
+  const roomHeight = 220;
+  const roomDepth = 250;
+  
+  // Helper to add point with sparsity (skip some points for realism)
+  function addPointWithNoise(x: number, y: number, z: number, type: 'wall' | 'floor' | 'object', density: number = 0.75) {
+    if (Math.random() > density) return; // Skip some points for realistic sparsity
+    
+    const noise = type === 'object' ? 2 : 4;
+    points.push({
+      x: x + (Math.random() - 0.5) * noise,
+      y: y + (Math.random() - 0.5) * noise,
+      z: z + (Math.random() - 0.5) * noise,
+      size: 1.2 + Math.random() * 0.6,
+      baseOpacity: 0.5 + Math.random() * 0.4,
+      type
+    });
+  }
+  
+  // Back wall (facing viewer)
+  for (let x = -roomWidth/2; x < roomWidth/2; x += 11) {
+    for (let y = -roomHeight/2; y < roomHeight/2; y += 11) {
+      addPointWithNoise(x, y, -roomDepth/2, 'wall', 0.8);
+    }
+  }
+  
+  // Left wall (angled view)
+  for (let z = -roomDepth/2; z < roomDepth/2; z += 11) {
+    for (let y = -roomHeight/2; y < roomHeight/2; y += 11) {
+      addPointWithNoise(-roomWidth/2, y, z, 'wall', 0.7);
+    }
+  }
+  
+  // Floor (visible plane)
+  for (let x = -roomWidth/2; x < roomWidth/2; x += 11) {
+    for (let z = -roomDepth/2; z < roomDepth/2; z += 11) {
+      addPointWithNoise(x, roomHeight/2, z, 'floor', 0.65);
+    }
+  }
+  
+  // Create a staircase object - 5 steps
+  const stepWidth = 70;
+  const stepDepth = 18;
+  const stepHeight = 15;
+  const stairX = 20;
+  const stairBaseY = roomHeight/2 - 10;
+  const stairZ = -20;
+  
+  for (let step = 0; step < 5; step++) {
+    const y = stairBaseY - step * stepHeight;
+    const z = stairZ + step * stepDepth;
+    
+    // Step surface (top)
+    for (let x = -stepWidth/2; x < stepWidth/2; x += 9) {
+      for (let zOffset = 0; zOffset < stepDepth; zOffset += 9) {
+        addPointWithNoise(stairX + x, y, z + zOffset, 'object', 0.85);
+      }
+    }
+    
+    // Step riser (front face)
+    if (step > 0) {
+      for (let x = -stepWidth/2; x < stepWidth/2; x += 9) {
+        for (let yOffset = 0; yOffset < stepHeight; yOffset += 9) {
+          addPointWithNoise(stairX + x, y + yOffset, z, 'object', 0.8);
+        }
+      }
+    }
+  }
+  
+  let rotation = { x: 0.2, y: 0.3 };
+  let autoRotateSpeed = 0.0008; // Slow orbit
+  let time = 0;
+  let scanLineY = 0;
+  let mouseInfluence = { x: 0, y: 0 };
+  
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouseInfluence.x = ((e.clientY - rect.top) / height - 0.5) * 0.15;
+    mouseInfluence.y = ((e.clientX - rect.left) / width - 0.5) * 0.15;
+  });
+  
+  function rotatePoint(x: number, y: number, z: number, rx: number, ry: number): { x: number; y: number; z: number } {
+    // Rotate around Y axis
+    let x1 = x * Math.cos(ry) - z * Math.sin(ry);
+    let z1 = x * Math.sin(ry) + z * Math.cos(ry);
+    
+    // Rotate around X axis
+    let y1 = y * Math.cos(rx) - z1 * Math.sin(rx);
+    let z2 = y * Math.sin(rx) + z1 * Math.cos(rx);
+    
+    return { x: x1, y: y1, z: z2 };
+  }
+  
+  function project(point: { x: number; y: number; z: number }): { x: number; y: number; scale: number; distance: number } {
+    const fov = 450;
+    const distance = Math.sqrt(point.x * point.x + point.y * point.y + point.z * point.z);
+    const scale = fov / (fov + point.z + 200);
+    return {
+      x: point.x * scale + width / 2,
+      y: point.y * scale + height / 2,
+      scale,
+      distance
+    };
+  }
+  
+  function update() {
+    time += 0.016; // ~60fps
+    
+    if (!prefersReducedMotion) {
+      // Slow automatic orbit
+      rotation.y += autoRotateSpeed;
+      
+      // Gentle mouse influence
+      rotation.x = 0.2 + mouseInfluence.x * 0.3;
+      rotation.y = rotation.y + mouseInfluence.y * 0.1;
+    }
+    
+    // Scan line sweep (slow vertical sweep)
+    scanLineY = (Math.sin(time * 0.5) * 0.5 + 0.5) * height;
+  }
+  
+  function draw() {
+    // Clear with slight fade
+    ctx.fillStyle = 'rgba(9, 9, 11, 0.12)';
+    ctx.fillRect(0, 0, width, height);
+    
+    // Transform and sort points by depth (back to front)
+    const transformedPoints = points.map(point => {
+      const rotated = rotatePoint(point.x, point.y, point.z, rotation.x, rotation.y);
+      const proj = project(rotated);
+      return { ...point, rotated, proj };
+    }).sort((a, b) => a.rotated.z - b.rotated.z);
+    
+    // Draw thin bounding box wireframe
+    ctx.strokeStyle = 'rgba(37, 99, 235, 0.2)';
+    ctx.lineWidth = 0.8;
+    ctx.globalAlpha = 0.4;
+    
+    const boxCorners = [
+      [-roomWidth/2, -roomHeight/2, -roomDepth/2],
+      [roomWidth/2, -roomHeight/2, -roomDepth/2],
+      [roomWidth/2, roomHeight/2, -roomDepth/2],
+      [-roomWidth/2, roomHeight/2, -roomDepth/2],
+      [-roomWidth/2, -roomHeight/2, roomDepth/2],
+      [roomWidth/2, -roomHeight/2, roomDepth/2],
+      [roomWidth/2, roomHeight/2, roomDepth/2],
+      [-roomWidth/2, roomHeight/2, roomDepth/2],
+    ];
+    
+    const boxEdges = [
+      [0,1], [1,2], [2,3], [3,0], // back face
+      [4,5], [5,6], [6,7], [7,4], // front face
+      [0,4], [1,5], [2,6], [3,7]  // connecting edges
+    ];
+    
+    boxEdges.forEach(([i, j]) => {
+      const p1 = project(rotatePoint(boxCorners[i][0], boxCorners[i][1], boxCorners[i][2], rotation.x, rotation.y));
+      const p2 = project(rotatePoint(boxCorners[j][0], boxCorners[j][1], boxCorners[j][2], rotation.x, rotation.y));
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    });
+    
+    // Draw points with depth-based size and brightness falloff
+    transformedPoints.forEach(point => {
+      const { proj, rotated, baseOpacity, size, type } = point;
+      
+      // Strong depth-based falloff for 3D perspective
+      const maxDist = 600;
+      const distanceFactor = Math.max(0, 1 - proj.distance / maxDist);
+      const depthBrightness = Math.pow(distanceFactor, 1.5); // Non-linear falloff
+      
+      // Size falloff - closer points are bigger
+      const depthSize = 0.4 + distanceFactor * 0.6;
+      
+      // Opacity based on depth and base opacity
+      const opacity = baseOpacity * depthBrightness * Math.max(0.15, proj.scale);
+      
+      // Color intensity based on type and depth
+      let r = 37, g = 99, b = 235;
+      if (type === 'object') {
+        r = 59; g = 130; b = 246; // Brighter blue for staircase
+      } else if (type === 'floor') {
+        r = 30; g = 80; b = 200; // Darker for floor
+      }
+      
+      // Apply depth brightness to color
+      const cr = Math.floor(r * (0.3 + depthBrightness * 0.7));
+      const cg = Math.floor(g * (0.3 + depthBrightness * 0.7));
+      const cb = Math.floor(b * (0.3 + depthBrightness * 0.7));
+      
+      const pointSize = size * proj.scale * depthSize * 1.4;
+      
+      // Skip very small/distant points
+      if (pointSize < 0.3 || opacity < 0.05) return;
+      
+      ctx.globalAlpha = Math.min(opacity, 0.9);
+      ctx.fillStyle = `rgb(${cr}, ${cg}, ${cb})`;
+      ctx.beginPath();
+      ctx.arc(proj.x, proj.y, pointSize, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Subtle glow for closer points
+      if (depthBrightness > 0.6) {
+        ctx.globalAlpha = opacity * 0.15;
+        ctx.beginPath();
+        ctx.arc(proj.x, proj.y, pointSize * 2.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+    
+    // Scan line sweep effect
+    ctx.globalAlpha = 0.08;
+    ctx.strokeStyle = 'rgba(37, 99, 235, 0.3)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, scanLineY);
+    ctx.lineTo(width, scanLineY);
+    ctx.stroke();
+    
+    // Subtle horizontal guide lines
+    ctx.globalAlpha = 0.03;
+    ctx.lineWidth = 0.5;
+    for (let i = 1; i < 6; i++) {
+      const y = (i / 6) * height;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+    
+    ctx.globalAlpha = 1;
+  }
+  
+  function animate() {
+    update();
+    draw();
+    requestAnimationFrame(animate);
+  }
+  
+  // Handle resize
+  const resizeObserver = new ResizeObserver(() => {
+    width = canvas.offsetWidth;
+    height = canvas.offsetHeight;
+    canvas.width = width * window.devicePixelRatio;
+    canvas.height = height * window.devicePixelRatio;
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  });
+  
+  resizeObserver.observe(canvas);
+  
+  // Start animation
+  animate();
+</script>
