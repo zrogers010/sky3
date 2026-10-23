@@ -6,7 +6,7 @@ import Leaderboard from '../components/Leaderboard.astro';
 import WaitlistForm from '../components/WaitlistForm.astro';
 
 const title = 'Sky3 Network: Decentralized Trust for Spatial AI';
-const description = 'Sky3 is an open, community-governed network for testing spatial and physical-world AI models against real-world data. Contributors will supply hard cases from the physical world, independent reviewers will verify them, and models will be scored in public.';
+const description = 'Sky3 is building an independent benchmark for spatial AI. Engineers, hobbyists and researchers contribute edge-case data from the physical world, the community verifies it, and AI models are scored in public so vendors stop grading their own homework.';
 ---
 
 <BaseLayout title={title} description={description}>
@@ -19,10 +19,10 @@ const description = 'Sky3 is an open, community-governed network for testing spa
           <div class="hero-text">
             <div class="kicker">OPEN PROTOCOL · DRAFT v0.1</div>
             <h1>Decentralized Trust for Spatial AI</h1>
-            <p class="subhead">Sky3 is an open, community-governed network for testing spatial and physical-world AI models against real-world data. Contributors will supply hard cases from the physical world, independent reviewers will verify them, and models will be scored in public.</p>
+            <p class="subhead">Sky3 is building an independent benchmark for spatial AI. Engineers, hobbyists and researchers contribute edge-case data from the physical world—the hard cases models fail on—the community verifies it, and AI models are scored in public so vendors stop grading their own homework.</p>
             
             <div class="cta-group">
-              <a href="#waitlist" class="btn btn-primary">Join the data-ingestion beta</a>
+              <a href="#waitlist" class="btn btn-primary">Join the early contributor waitlist</a>
               <a href="/roadmap" class="btn btn-secondary">View the roadmap</a>
             </div>
             
@@ -58,20 +58,18 @@ const description = 'Sky3 is an open, community-governed network for testing spa
         <div class="fact-strip">
           <div class="fact-item">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z"></path>
-              <path d="M15 9l-6 0"></path>
-              <path d="M9 15l6 0"></path>
-              <path d="M9 12l0 3"></path>
-              <path d="M15 12l0 -3"></path>
+              <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path>
+              <path d="M7 9l5 -5l5 5"></path>
+              <path d="M12 4l0 12"></path>
             </svg>
-            <span>Planned intake: LiDAR, CAD, robot trajectories, geometry imagery</span>
+            <span>Contributors upload LiDAR scans, CAD files, robot logs and complex geometry imagery</span>
           </div>
           <div class="fact-item">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 12l2 2l4 -4"></path>
               <path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"></path>
             </svg>
-            <span>Designed for human and automated verification of every submission</span>
+            <span>Independent reviewers verify every case before it counts toward a benchmark</span>
           </div>
           <div class="fact-item">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -79,7 +77,7 @@ const description = 'Sky3 is an open, community-governed network for testing spa
               <path d="M9 8m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
               <path d="M15 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
             </svg>
-            <span>Designed for public, reproducible model scores</span>
+            <span>Models are scored in public on these verified real-world edge cases</span>
           </div>
         </div>
       </div>
@@ -125,11 +123,80 @@ const description = 'Sky3 is an open, community-governed network for testing spa
     
     <section id="leaderboard">
       <div class="container">
-        <div class="section-label">SPATIAL LEADERBOARD · PREVIEW</div>
+        <div class="section-label">SPATIAL LEADERBOARD · FORMAT PREVIEW</div>
         <h2>What a public scorecard looks like</h2>
-        <p class="intro-text">The leaderboard will rank spatial and physical-world models on verified real-world cases. The table below uses <strong>made-up models and made-up numbers</strong> to show the format.</p>
+        <p class="intro-text">The leaderboard will rank spatial and physical-world models on verified real-world cases. <strong>The table below shows the format only—all model names and scores are fictional</strong> to illustrate how results will be presented.</p>
         
         <Leaderboard />
+      </div>
+    </section>
+    
+    <section id="what-to-contribute">
+      <div class="container">
+        <div class="section-label">FOR CONTRIBUTORS</div>
+        <h2>What you'd upload, and why it matters</h2>
+        
+        <p class="intro-text">The benchmark will be built from edge cases that break current models. If you work with spatial data, you likely have examples that models consistently fail on.</p>
+        
+        <div class="contribution-examples">
+          <div class="example-card">
+            <div class="example-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
+                <path d="M9 8m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
+                <path d="M15 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path>
+                <path d="M4 20l14 0"></path>
+              </svg>
+            </div>
+            <h3>LiDAR and point clouds</h3>
+            <p>Scans with reflective surfaces, glass facades, or extreme weather artifacts. Cases where reconstruction algorithms misread structure or merge unconnected parts.</p>
+            <div class="example-formats">.las, .laz, .ply, .pcd</div>
+          </div>
+          
+          <div class="example-card">
+            <div class="example-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0"></path>
+                <path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0"></path>
+                <path d="M3 6l0 13"></path>
+                <path d="M12 6l0 13"></path>
+                <path d="M21 6l0 13"></path>
+              </svg>
+            </div>
+            <h3>CAD and 3D models</h3>
+            <p>Assemblies with non-standard fasteners, interference fits, or parts that only work in one configuration. Structures that look plausible but can't hold load.</p>
+            <div class="example-formats">.step, .stl, .obj, .fbx</div>
+          </div>
+          
+          <div class="example-card">
+            <div class="example-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5"></path>
+              </svg>
+            </div>
+            <h3>Robot trajectories and logs</h3>
+            <p>Paths through cluttered spaces, grasps that fail on ambiguous geometry, or pick sequences that ignore collision. Failure cases from real deployments.</p>
+            <div class="example-formats">.csv, .json, .bag</div>
+          </div>
+          
+          <div class="example-card">
+            <div class="example-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 8h.01"></path>
+                <path d="M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z"></path>
+                <path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5"></path>
+                <path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3"></path>
+              </svg>
+            </div>
+            <h3>Geometry imagery</h3>
+            <p>Photos of structures with hidden joints, transparent or mirrored materials, ambiguous depth cues, or lighting that breaks segmentation. Occlusion and multi-body contact.</p>
+            <div class="example-formats">.jpg, .png, .tiff</div>
+          </div>
+        </div>
+        
+        <div class="contribution-note">
+          <p><strong>Nothing is live yet.</strong> The upload pipeline is on the <a href="/roadmap">roadmap</a>. Joining the waitlist means you'd be among the first to contribute data when the system opens, helping shape what the benchmark measures and how contributors are credited.</p>
+        </div>
       </div>
     </section>
     
@@ -204,9 +271,9 @@ const description = 'Sky3 is an open, community-governed network for testing spa
     
     <section id="waitlist">
       <div class="container">
-        <div class="section-label">DATA-INGESTION BETA</div>
-        <h2>Join the beta</h2>
-        <p class="intro-text">We're opening the first data-ingestion beta to a small group of contributors, AI developers and researchers. Leave your details and we'll email you when there's a place.</p>
+        <div class="section-label">EARLY CONTRIBUTOR WAITLIST</div>
+        <h2>Be among the first to contribute</h2>
+        <p class="intro-text">The upload pipeline isn't built yet. Join the waitlist and we'll email you when it opens. You'll be among the first to upload spatial data and help shape the benchmark.</p>
         
         <WaitlistForm />
       </div>
@@ -218,15 +285,15 @@ const description = 'Sky3 is an open, community-governed network for testing spa
 
 <style>
   #hero {
-    padding: 100px 0 80px;
+    padding: 120px 0 100px;
   }
   
   .hero-content {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 60px;
+    gap: 80px;
     align-items: center;
-    margin-bottom: 60px;
+    margin-bottom: 80px;
   }
   
   .hero-text {
@@ -309,13 +376,18 @@ const description = 'Sky3 is an open, community-governed network for testing spa
   
   .manifesto-body {
     max-width: 720px;
-    margin: 32px 0;
+    margin: 32px 0 48px;
   }
   
   .manifesto-body p {
     font-size: 1.0625rem;
-    line-height: 1.7;
+    line-height: 1.8;
     color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+  }
+  
+  .manifesto-body p:last-child {
+    margin-bottom: 0;
   }
   
   .principles-list {
@@ -344,8 +416,13 @@ const description = 'Sky3 is an open, community-governed network for testing spa
   .intro-text {
     max-width: 720px;
     font-size: 1.0625rem;
+    line-height: 1.7;
     color: var(--text-secondary);
     margin-bottom: 40px;
+  }
+  
+  #what-to-contribute .intro-text {
+    margin-bottom: 24px;
   }
   
   .steps {
@@ -423,6 +500,80 @@ const description = 'Sky3 is an open, community-governed network for testing spa
     
     .step-arrow {
       display: none;
+    }
+  }
+  
+  .contribution-examples {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin: 40px 0;
+  }
+  
+  .example-card {
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-primary);
+    transition: border-color 0.2s ease;
+  }
+  
+  .example-card:hover {
+    border-color: var(--border-strong);
+  }
+  
+  .example-icon {
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  
+  .example-card h3 {
+    font-size: 1.125rem;
+    margin-bottom: 12px;
+  }
+  
+  .example-card p {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+  
+  .example-formats {
+    font-family: var(--mono);
+    font-size: 0.8125rem;
+    color: var(--text-tertiary);
+  }
+  
+  .contribution-note {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 20px 24px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-align: center;
+  }
+  
+  .contribution-note p {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+  
+  .contribution-note strong {
+    color: var(--text-primary);
+  }
+  
+  .contribution-note a {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 1024px) {
+    .contribution-examples {
+      grid-template-columns: 1fr;
     }
   }
   
