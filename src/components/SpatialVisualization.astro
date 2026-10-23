@@ -17,7 +17,8 @@
     justify-content: center;
     overflow: hidden;
     border-radius: var(--radius-lg);
-    background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 70%);
+    background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.02) 0%, rgba(9, 9, 11, 0.98) 100%);
+    box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.5);
   }
   
   #spatial-canvas {
@@ -46,51 +47,119 @@
   canvas.height = height * window.devicePixelRatio;
   ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
   
-  // Point cloud configuration
+  // Point cloud configuration - structured room corner
   interface Point {
     x: number;
     y: number;
     z: number;
-    vx: number;
-    vy: number;
-    vz: number;
     size: number;
-    opacity: number;
+    baseOpacity: number;
+    type: 'wall' | 'floor' | 'ceiling' | 'object';
   }
   
   const points: Point[] = [];
-  const numPoints = 400;
-  const maxDepth = 400;
-  const connectionDistance = 80;
+  const maxDepth = 300;
   
-  // Initialize points in 3D space
-  for (let i = 0; i < numPoints; i++) {
-    points.push({
-      x: Math.random() * width - width / 2,
-      y: Math.random() * height - height / 2,
-      z: Math.random() * maxDepth - maxDepth / 2,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      vz: (Math.random() - 0.5) * 0.3,
-      size: Math.random() * 2 + 1,
-      opacity: Math.random() * 0.5 + 0.3
-    });
+  // Create a room corner structure (back wall, left wall, floor)
+  const roomDepth = 200;
+  const roomWidth = 300;
+  const roomHeight = 250;
+  
+  // Back wall - dense grid
+  for (let x = -roomWidth/2; x < roomWidth/2; x += 12) {
+    for (let y = -roomHeight/2; y < roomHeight/2; y += 12) {
+      points.push({
+        x: x + (Math.random() - 0.5) * 4,
+        y: y + (Math.random() - 0.5) * 4,
+        z: -roomDepth/2 + (Math.random() - 0.5) * 8,
+        size: 1.5 + Math.random() * 0.5,
+        baseOpacity: 0.4 + Math.random() * 0.3,
+        type: 'wall'
+      });
+    }
   }
   
-  let mouseX = 0;
-  let mouseY = 0;
-  let targetMouseX = 0;
-  let targetMouseY = 0;
+  // Left wall - dense grid
+  for (let z = -roomDepth/2; z < roomDepth/2; z += 12) {
+    for (let y = -roomHeight/2; y < roomHeight/2; y += 12) {
+      points.push({
+        x: -roomWidth/2 + (Math.random() - 0.5) * 8,
+        y: y + (Math.random() - 0.5) * 4,
+        z: z + (Math.random() - 0.5) * 4,
+        size: 1.5 + Math.random() * 0.5,
+        baseOpacity: 0.35 + Math.random() * 0.25,
+        type: 'wall'
+      });
+    }
+  }
+  
+  // Floor - dense grid
+  for (let x = -roomWidth/2; x < roomWidth/2; x += 12) {
+    for (let z = -roomDepth/2; z < roomDepth/2; z += 12) {
+      points.push({
+        x: x + (Math.random() - 0.5) * 4,
+        y: roomHeight/2 + (Math.random() - 0.5) * 8,
+        z: z + (Math.random() - 0.5) * 4,
+        size: 1.5 + Math.random() * 0.5,
+        baseOpacity: 0.3 + Math.random() * 0.2,
+        type: 'floor'
+      });
+    }
+  }
+  
+  // Add a box/object in the room for recognizable structure
+  const boxSize = 50;
+  const boxX = 30;
+  const boxY = 40;
+  const boxZ = -30;
+  
+  for (let x = -boxSize/2; x < boxSize/2; x += 8) {
+    for (let y = -boxSize/2; y < boxSize/2; y += 8) {
+      // Front face
+      points.push({
+        x: boxX + x + (Math.random() - 0.5) * 3,
+        y: boxY + y + (Math.random() - 0.5) * 3,
+        z: boxZ + boxSize/2 + (Math.random() - 0.5) * 3,
+        size: 1.8 + Math.random() * 0.4,
+        baseOpacity: 0.6 + Math.random() * 0.3,
+        type: 'object'
+      });
+      // Top face
+      points.push({
+        x: boxX + x + (Math.random() - 0.5) * 3,
+        y: boxY - boxSize/2 + (Math.random() - 0.5) * 3,
+        z: boxZ + y + (Math.random() - 0.5) * 3,
+        size: 1.8 + Math.random() * 0.4,
+        baseOpacity: 0.5 + Math.random() * 0.3,
+        type: 'object'
+      });
+    }
+  }
+  
+  let rotation = { x: 0.15, y: 0.2 };
+  let targetRotation = { x: 0.15, y: 0.2 };
   
   canvas.addEventListener('mousemove', (e) => {
     const rect = canvas.getBoundingClientRect();
-    targetMouseX = (e.clientX - rect.left - width / 2) * 0.1;
-    targetMouseY = (e.clientY - rect.top - height / 2) * 0.1;
+    targetRotation.x = ((e.clientY - rect.top) / height - 0.5) * 0.4;
+    targetRotation.y = ((e.clientX - rect.left) / width - 0.5) * 0.4 + 0.2;
   });
   
-  function project(point: Point): { x: number; y: number; scale: number } {
-    const fov = 500;
-    const scale = fov / (fov + point.z);
+  function rotatePoint(x: number, y: number, z: number): { x: number; y: number; z: number } {
+    // Rotate around Y axis
+    let x1 = x * Math.cos(rotation.y) - z * Math.sin(rotation.y);
+    let z1 = x * Math.sin(rotation.y) + z * Math.cos(rotation.y);
+    
+    // Rotate around X axis
+    let y1 = y * Math.cos(rotation.x) - z1 * Math.sin(rotation.x);
+    let z2 = y * Math.sin(rotation.x) + z1 * Math.cos(rotation.x);
+    
+    return { x: x1, y: y1, z: z2 };
+  }
+  
+  function project(point: { x: number; y: number; z: number }): { x: number; y: number; scale: number } {
+    const fov = 400;
+    const scale = fov / (fov + point.z + 150);
     return {
       x: point.x * scale + width / 2,
       y: point.y * scale + height / 2,
@@ -100,92 +169,94 @@
   
   function update() {
     if (!prefersReducedMotion) {
-      // Smooth mouse following
-      mouseX += (targetMouseX - mouseX) * 0.05;
-      mouseY += (targetMouseY - mouseY) * 0.05;
-      
-      points.forEach(point => {
-        point.x += point.vx;
-        point.y += point.vy;
-        point.z += point.vz;
-        
-        // Add subtle mouse influence
-        const dx = mouseX - point.x;
-        const dy = mouseY - point.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 200) {
-          const force = (200 - dist) / 200 * 0.5;
-          point.vx += dx / dist * force * 0.1;
-          point.vy += dy / dist * force * 0.1;
-        }
-        
-        // Boundary wrapping
-        if (point.x < -width / 2) point.x = width / 2;
-        if (point.x > width / 2) point.x = -width / 2;
-        if (point.y < -height / 2) point.y = height / 2;
-        if (point.y > height / 2) point.y = -height / 2;
-        if (point.z < -maxDepth / 2) point.z = maxDepth / 2;
-        if (point.z > maxDepth / 2) point.z = -maxDepth / 2;
-        
-        // Damping
-        point.vx *= 0.99;
-        point.vy *= 0.99;
-        point.vz *= 0.99;
-      });
+      // Smooth rotation following mouse
+      rotation.x += (targetRotation.x - rotation.x) * 0.05;
+      rotation.y += (targetRotation.y - rotation.y) * 0.05;
     }
   }
   
   function draw() {
-    ctx.fillStyle = 'rgba(9, 9, 11, 0.1)';
+    // Clear with fade for motion blur effect
+    ctx.fillStyle = 'rgba(9, 9, 11, 0.15)';
     ctx.fillRect(0, 0, width, height);
     
-    // Sort points by depth for proper rendering
-    const sortedPoints = [...points].sort((a, b) => a.z - b.z);
+    // Transform and sort points by depth
+    const transformedPoints = points.map(point => {
+      const rotated = rotatePoint(point.x, point.y, point.z);
+      const proj = project(rotated);
+      return { ...point, rotated, proj };
+    }).sort((a, b) => a.rotated.z - b.rotated.z);
     
-    // Draw connections
+    // Draw bounding box wireframe
     ctx.strokeStyle = 'rgba(59, 130, 246, 0.15)';
     ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.3;
     
-    for (let i = 0; i < sortedPoints.length; i++) {
-      const p1 = sortedPoints[i];
-      const proj1 = project(p1);
-      
-      for (let j = i + 1; j < sortedPoints.length; j++) {
-        const p2 = sortedPoints[j];
-        const dx = p1.x - p2.x;
-        const dy = p1.y - p2.y;
-        const dz = p1.z - p2.z;
-        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-        
-        if (dist < connectionDistance) {
-          const proj2 = project(p2);
-          const opacity = (1 - dist / connectionDistance) * 0.3 * Math.min(proj1.scale, proj2.scale);
-          ctx.globalAlpha = opacity;
-          ctx.beginPath();
-          ctx.moveTo(proj1.x, proj1.y);
-          ctx.lineTo(proj2.x, proj2.y);
-          ctx.stroke();
-        }
-      }
+    const boxCorners = [
+      [-roomWidth/2, -roomHeight/2, -roomDepth/2],
+      [roomWidth/2, -roomHeight/2, -roomDepth/2],
+      [roomWidth/2, roomHeight/2, -roomDepth/2],
+      [-roomWidth/2, roomHeight/2, -roomDepth/2],
+      [-roomWidth/2, -roomHeight/2, roomDepth/2],
+      [roomWidth/2, -roomHeight/2, roomDepth/2],
+      [roomWidth/2, roomHeight/2, roomDepth/2],
+      [-roomWidth/2, roomHeight/2, roomDepth/2],
+    ];
+    
+    const boxEdges = [
+      [0,1], [1,2], [2,3], [3,0], // back face
+      [4,5], [5,6], [6,7], [7,4], // front face
+      [0,4], [1,5], [2,6], [3,7]  // connecting edges
+    ];
+    
+    boxEdges.forEach(([i, j]) => {
+      const p1 = project(rotatePoint(boxCorners[i][0], boxCorners[i][1], boxCorners[i][2]));
+      const p2 = project(rotatePoint(boxCorners[j][0], boxCorners[j][1], boxCorners[j][2]));
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    });
+    
+    // Draw scan lines
+    ctx.globalAlpha = 0.08;
+    for (let i = 0; i < 5; i++) {
+      const y = (i / 5) * height;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
     }
     
-    // Draw points
-    sortedPoints.forEach(point => {
-      const proj = project(point);
-      const size = point.size * proj.scale;
-      const opacity = point.opacity * proj.scale;
+    // Draw points with depth-based coloring
+    transformedPoints.forEach(point => {
+      const { proj, rotated, baseOpacity, size, type } = point;
+      
+      // Depth-based opacity and color intensity
+      const depthFactor = 1 - (rotated.z + maxDepth) / (maxDepth * 2);
+      const opacity = baseOpacity * proj.scale * Math.max(0.3, depthFactor);
+      
+      // Color based on type and depth
+      let r = 59, g = 130, b = 246;
+      if (type === 'object') {
+        r = 96; g = 165; b = 250; // Brighter blue for objects
+      } else if (type === 'floor') {
+        r = 45; g = 100; b = 200; // Slightly darker
+      }
+      
+      const pointSize = size * proj.scale * 1.2;
       
       ctx.globalAlpha = opacity;
-      ctx.fillStyle = `rgba(59, 130, 246, ${opacity})`;
+      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
       ctx.beginPath();
-      ctx.arc(proj.x, proj.y, size, 0, Math.PI * 2);
+      ctx.arc(proj.x, proj.y, pointSize, 0, Math.PI * 2);
       ctx.fill();
       
-      // Glow effect for closer points
-      if (proj.scale > 0.8) {
-        ctx.globalAlpha = opacity * 0.3;
+      // Glow for closer/object points
+      if (proj.scale > 0.7 || type === 'object') {
+        ctx.globalAlpha = opacity * 0.2;
         ctx.beginPath();
-        ctx.arc(proj.x, proj.y, size * 2, 0, Math.PI * 2);
+        ctx.arc(proj.x, proj.y, pointSize * 2.5, 0, Math.PI * 2);
         ctx.fill();
       }
     });

@@ -294,9 +294,9 @@ const description = 'Sky3 is building an independent benchmark for spatial AI. E
   .hero-content {
     display: grid;
     grid-template-columns: 1.1fr 1fr;
-    gap: 100px;
+    gap: 80px;
     align-items: center;
-    margin-bottom: 100px;
+    margin-bottom: 60px;
   }
   
   .hero-text {
@@ -363,7 +363,7 @@ const description = 'Sky3 is building an independent benchmark for spatial AI. E
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
-    padding-top: 100px;
+    padding-top: 60px;
   }
   
   .fact-item {
@@ -703,23 +703,31 @@ const description = 'Sky3 is building an independent benchmark for spatial AI. E
     
     .hero-content {
       grid-template-columns: 1fr;
-      gap: 48px;
+      gap: 40px;
       margin-bottom: 60px;
     }
     
     .hero-visual {
       order: -1;
+      min-height: 300px;
+    }
+    
+    .hero-text h1 {
+      font-size: clamp(1.75rem, 8vw, 2.5rem);
+      line-height: 1.15;
+      word-break: break-word;
     }
     
     .subhead {
-      font-size: 1.0625rem;
+      font-size: 1rem;
       margin-bottom: 2rem;
+      line-height: 1.6;
     }
     
     .fact-strip {
       grid-template-columns: 1fr;
       gap: 20px;
-      padding-top: 60px;
+      padding-top: 48px;
     }
     
     .fact-item {

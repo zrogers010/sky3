@@ -4,9 +4,9 @@
 
 :root {
   /* Color System */
-  --accent-primary: #3B82F6;
-  --accent-hover: #2563EB;
-  --accent-subtle: rgba(59, 130, 246, 0.1);
+  --accent-primary: #2563EB;
+  --accent-hover: #1D4ED8;
+  --accent-subtle: rgba(37, 99, 235, 0.1);
   
   --text-primary: #FAFAFA;
   --text-secondary: #A1A1AA;
